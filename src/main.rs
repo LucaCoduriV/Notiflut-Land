@@ -1,23 +1,23 @@
-use ::dbus::blocking::Connection;
-use std::time::Duration;
+use std::{time::Duration, sync::{Arc, Mutex}};
 
 mod dbus;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // First open up a connection to the session bus.
-    let conn = Connection::new_session()?;
+    let stop_server = Arc::new(Mutex::new(false));
+    let stop_server_copy = Arc::clone(&stop_server);
+    ctrlc::set_handler(move || {
+        println!("received Ctrl+C!");
+        let mut stop_server = stop_server_copy.lock().unwrap();
+        *stop_server = true;
+    })
+    .expect("Error setting Ctrl-C handler");
 
-    // Second, create a wrapper struct around the connection that makes it easy
-    // to send method calls to a specific destination and path.
-    let proxy = conn.with_proxy("org.freedesktop.DBus", "/", Duration::from_millis(5000));
-    
-    // Now make the method call. The ListNames method call takes zero input parameters and
-    // one output parameter which is an array of strings.
-    // Therefore the input is a zero tuple "()", and the output is a single tuple "(names,)".
-    let (names,): (Vec<String>,) = proxy.method_call("org.freedesktop.DBus", "ListNames", ())?;
-        
-    // Let's print all the names to stdout.
-    for name in names { println!("{}", name); }
+    let (sdr, _recv) = std::sync::mpsc::channel();
+    let mut dbus_server = dbus::DbusServer::init()?;
 
+    dbus_server.register_notification_handler(sdr)?;
+    while !*stop_server.lock().unwrap() {
+       dbus_server.wait_and_process(Duration::from_secs(1))?;
+    }
     Ok(())
 }
