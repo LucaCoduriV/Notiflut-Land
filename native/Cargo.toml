@@ -1,14 +1,19 @@
 [package]
-name = "notification_deamon"
+name = "native"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["lib","staticlib","cdylib"]
 
 [dependencies]
+flutter_rust_bridge = "1"
+once_cell = "1.17.1"
 ctrlc = "3.2.5"
 dbus = "0.9.7"
 dbus-crossroads = "0.5.2"
 
 [build-dependencies]
+flutter_rust_bridge_codegen = "1"
 dbus-codegen = "0.10.0"
