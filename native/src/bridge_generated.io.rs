@@ -2,8 +2,18 @@ use super::*;
 // Section: wire functions
 
 #[no_mangle]
-pub extern "C" fn wire_main(port_: i64) {
-    wire_main_impl(port_)
+pub extern "C" fn wire_setup(port_: i64) {
+    wire_setup_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_start_deamon(port_: i64) {
+    wire_start_deamon_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_stop_deamon(port_: i64) {
+    wire_stop_deamon_impl(port_)
 }
 
 #[no_mangle]

@@ -21,14 +21,34 @@ use std::sync::Arc;
 
 // Section: wire functions
 
-fn wire_main_impl(port_: MessagePort) {
+fn wire_setup_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "main",
+            debug_name: "setup",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| Ok(main()),
+        move || move |task_callback| Ok(setup()),
+    )
+}
+fn wire_start_deamon_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "start_deamon",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(start_deamon()),
+    )
+}
+fn wire_stop_deamon_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "stop_deamon",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(stop_deamon()),
     )
 }
 fn wire_create_sink_impl(port_: MessagePort) {

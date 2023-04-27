@@ -11,9 +11,17 @@ import 'package:uuid/uuid.dart';
 import 'dart:ffi' as ffi;
 
 abstract class Native {
-  Future<void> main({dynamic hint});
+  Future<void> setup({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kMainConstMeta;
+  FlutterRustBridgeTaskConstMeta get kSetupConstMeta;
+
+  Future<void> startDeamon({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kStartDeamonConstMeta;
+
+  Future<void> stopDeamon({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kStopDeamonConstMeta;
 
   Stream<int> createSink({dynamic hint});
 
@@ -31,18 +39,48 @@ class NativeImpl implements Native {
   /// Only valid on web/WASM platforms.
   factory NativeImpl.wasm(FutureOr<WasmModule> module) => NativeImpl(module as ExternalLibrary);
   NativeImpl.raw(this._platform);
-  Future<void> main({dynamic hint}) {
+  Future<void> setup({dynamic hint}) {
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_main(port_),
+      callFfi: (port_) => _platform.inner.wire_setup(port_),
       parseSuccessData: _wire2api_unit,
-      constMeta: kMainConstMeta,
+      constMeta: kSetupConstMeta,
       argValues: [],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kMainConstMeta => const FlutterRustBridgeTaskConstMeta(
-        debugName: "main",
+  FlutterRustBridgeTaskConstMeta get kSetupConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "setup",
+        argNames: [],
+      );
+
+  Future<void> startDeamon({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_start_deamon(port_),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kStartDeamonConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kStartDeamonConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "start_deamon",
+        argNames: [],
+      );
+
+  Future<void> stopDeamon({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_stop_deamon(port_),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kStopDeamonConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kStopDeamonConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "stop_deamon",
         argNames: [],
       );
 
@@ -180,16 +218,38 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _init_frb_dart_api_dlPtr = _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.Pointer<ffi.Void>)>>('init_frb_dart_api_dl');
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr.asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
-  void wire_main(
+  void wire_setup(
     int port_,
   ) {
-    return _wire_main(
+    return _wire_setup(
       port_,
     );
   }
 
-  late final _wire_mainPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_main');
-  late final _wire_main = _wire_mainPtr.asFunction<void Function(int)>();
+  late final _wire_setupPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_setup');
+  late final _wire_setup = _wire_setupPtr.asFunction<void Function(int)>();
+
+  void wire_start_deamon(
+    int port_,
+  ) {
+    return _wire_start_deamon(
+      port_,
+    );
+  }
+
+  late final _wire_start_deamonPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_start_deamon');
+  late final _wire_start_deamon = _wire_start_deamonPtr.asFunction<void Function(int)>();
+
+  void wire_stop_deamon(
+    int port_,
+  ) {
+    return _wire_stop_deamon(
+      port_,
+    );
+  }
+
+  late final _wire_stop_deamonPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_stop_deamon');
+  late final _wire_stop_deamon = _wire_stop_deamonPtr.asFunction<void Function(int)>();
 
   void wire_create_sink(
     int port_,

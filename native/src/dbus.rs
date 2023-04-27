@@ -51,7 +51,7 @@ const SERVER_INFO: (&str, &str, &str, &str) = (
 //
 // "sound"              The server supports sounds on notifications. If returned, the server must support the "sound-file" and "suppress-sound" hints.
 
-const SERVER_CAPABILITIES: [&str; 2] = ["actions", "body"];
+const SERVER_CAPABILITIES: [&str; 8] = ["actions", "body", "action-icons", "actions", "body-hyperlinks", "body-image", "body-markup", "icon-multi"];
 
 #[derive(Debug)]
 pub enum Action {
@@ -83,8 +83,8 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
         Ok(())
     }
 
-    fn notify(&mut self,app_name:String,id:u32,icon:String,summary:String,body:String,actions:Vec<String>,_hints:dbus::arg::PropMap,timeout:i32) -> Result<u32,dbus::MethodErr> {
-        println!("app_name:{app_name}, icon:{icon}, summary:{summary}, body:{body}, actions:{:?}, timeout: {timeout}", actions);
+    fn notify(&mut self,app_name:String,id:u32,icon:String,summary:String,body:String,actions:Vec<String>,hints:dbus::arg::PropMap,timeout:i32) -> Result<u32,dbus::MethodErr> {
+        println!("app_name:{app_name}, icon:{icon}, summary:{summary}, body:{body}, actions:{:?}, timeout: {timeout}, hints: {:?}", actions, hints.keys());
         Ok(id)
     }
 }

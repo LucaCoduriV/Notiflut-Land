@@ -46,10 +46,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     ticks = api.createSink();
+    api.setup().then((value) => api.startDeamon());
   }
 
   void _incrementCounter() {
-    api.main();
+    api.stopDeamon();
     api.generateNumber();
     setState(() {
       _counter++;
