@@ -7,6 +7,7 @@ use dbus::arg::RefArg;
 
 #[derive(Debug)]
 pub struct Notification{
+    pub id:u32,
     pub app_name:String,
     pub replaces_id:u32,
     pub icon:String,

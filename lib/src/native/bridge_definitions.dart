@@ -88,6 +88,7 @@ class ImageData {
 }
 
 class Notification {
+  final int id;
   final String appName;
   final int replacesId;
   final String icon;
@@ -98,6 +99,7 @@ class Notification {
   final Hints hints;
 
   const Notification({
+    required this.id,
     required this.appName,
     required this.replacesId,
     required this.icon,

@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_acrylic/window.dart';
-import 'package:flutter_acrylic/window_effect.dart';
-import 'package:test_flutter_russt/src/native.dart';
+import './src/native.dart' as nati;
+import './src/native/bridge_definitions.dart' as nati;
 
 import 'package:image/image.dart' as img;
+import 'package:window_manager/window_manager.dart';
 
-Image create_image(int width, int height, Uint8List bytes, int channels, int rowStride){
+Image createImage(int width, int height, Uint8List bytes, int channels, int rowStride){
   final image =  img.Image.fromBytes(
       width: width,
       height: height,
@@ -20,110 +20,136 @@ Image create_image(int width, int height, Uint8List bytes, int channels, int row
   return Image.memory(png, height: 100, width: 100, );
 }
 
+late final Stream<nati.DeamonAction> notificationStream;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Window.initialize();
-  await Window.setEffect(
-    effect: WindowEffect.transparent,
-    color: Colors.transparent,
-  );
-  runApp(const MyApp());
+  await windowManager.ensureInitialized();
+  WindowOptions windowOptions = const WindowOptions(
+      size: Size(500, 600),
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.hidden,
+      alwaysOnTop: true,
+      );
+  await windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+    await windowManager.setPosition(const Offset(0, 0));
+  });
+
+  await nati.api.setup();
+  notificationStream = nati.api.startDeamon();
+
+  runApp(const NotificationCenter());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NotificationCenter extends StatelessWidget {
+  const NotificationCenter({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demmmmmo',
-      theme: ThemeData(
-          primarySwatch: Colors.blue,
-          colorScheme: const ColorScheme.light(background: Colors.transparent)),
-      home: const MyHomePage(title: 'Flutter lol Demo Home Page'),
-    );
+    debugShowCheckedModeBanner: false,
+        title: 'Notification Center',
+        theme: ThemeData(
+          colorScheme: const ColorScheme.light(background: Colors.transparent),
+          ),
+        home: Scaffold(
+          backgroundColor: Color.fromARGB(150, 255, 255, 255),
+          body: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                width: 1,
+                color: Colors.white,
+                ),
+              borderRadius: BorderRadius.circular(20),
+              ),
+            padding: EdgeInsets.all(10),
+            height: double.infinity,
+            width: double.infinity,
+            child: NotificationList(title: "coucou"),
+            ),
+          ),
+        );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class NotificationList extends StatefulWidget {
+  const NotificationList({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<NotificationList> createState() => _NotificationListState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  Stream<DeamonAction>? ticks;
+class _NotificationListState extends State<NotificationList> {
+  List<nati.Notification> notifications = List.empty(growable: true);
 
   @override
   void initState() {
     super.initState();
-  }
-
-  void _incrementCounter() async {
-    await api.setup();
-    ticks = await api.startDeamon();
-    setState(() {
-    });
+    notificationStream.listen((event) {
+        event.whenOrNull(
+            show: (notification) => notifications.add(notification),
+            close: (id) {
+              notifications.removeWhere((element) => element.id == id);
+            },
+            );
+        setState(() {});
+      });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (ticks != null)
-            StreamBuilder<DeamonAction>(
-              stream: ticks,
-              builder: (context, snap) {
-                final style = Theme.of(context).textTheme.headlineMedium;
-                final error = snap.error;
-                if (error != null) {
-                  return Tooltip(
-                      message: error.toString(),
-                      child: Text('Error', style: style));
-                }
+    return ListView.builder(
+    itemCount: notifications.length,
+    itemBuilder: (context, index){
+        final notification = notifications[index];
+        final imageData = notification.hints.imageData!;
+        return NotificationTile(
+            notification.appName,
+            notification.summary,
+            imageProvider: createImage(
+              imageData.width,
+              imageData.height,
+              imageData.data,
+              imageData.channels,
+              imageData.rowstride
+              ).image,
+            );
+      },
+    ); 
+  }
+}
 
-                final data = snap.data;
-                if (data != null) {
-                  return data.whenOrNull(show: (notification){
-                    final imageData = notification.hints.imageData!;
-                    print("${imageData.channels}, ${imageData.onePointTwoBitAlpha}, ${imageData.rowstride}, ${imageData.width}, ${imageData.height}");
-                    return Column(
-                      children: [
-                        Text(notification.summary, style: style),
-                        create_image(
-                          notification.hints.imageData!.width,
-                          notification.hints.imageData!.height,
-                          notification.hints.imageData!.data, 
-                          notification.hints.imageData!.onePointTwoBitAlpha == true ? 4 : 3,
-                          notification.hints.imageData!.rowstride,
-                          ),
-                      ],
-                    );
-                    })!;
-                }
-                return const CircularProgressIndicator();
-              },
-            )
-          ],
+
+class NotificationTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final ImageProvider? imageProvider;
+  const NotificationTile(String title, String subtitle, {super.key, this.imageProvider}):
+  subtitle = subtitle, title = title;
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text(subtitle),
+        leading: CircleAvatar(
+          backgroundImage: imageProvider,
+          ),
+        trailing: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          child: Icon(Icons.close),
+          onTap: (){},
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

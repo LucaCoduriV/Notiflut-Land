@@ -132,6 +132,7 @@ impl support::IntoDartExceptPrimitive for ImageData {}
 impl support::IntoDart for Notification {
     fn into_dart(self) -> support::DartAbi {
         vec![
+            self.id.into_dart(),
             self.app_name.into_dart(),
             self.replaces_id.into_dart(),
             self.icon.into_dart(),

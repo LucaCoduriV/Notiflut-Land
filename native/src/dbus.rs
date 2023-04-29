@@ -101,6 +101,7 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
             replaces_id
         };
         let notification = Notification{
+            id,
             app_name,
             replaces_id,
             icon,
