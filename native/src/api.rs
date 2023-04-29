@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 
+use anyhow::Ok;
 use flutter_rust_bridge::StreamSink;
 use once_cell::sync::OnceCell;
 
@@ -12,12 +13,14 @@ pub fn setup(){
     *DEAMON.lock().unwrap() = Some(NotificationDeamon::new());
 }
 
-pub fn start_deamon()   {
-    DEAMON.lock().unwrap().as_mut().unwrap().run_deamon().ok();
+pub fn start_deamon() -> anyhow::Result<()>   {
+    DEAMON.lock().unwrap().as_mut().unwrap().run_deamon()?;
+    Ok(())
 }
 
-pub fn stop_deamon() {
-    DEAMON.lock().unwrap().as_mut().unwrap().stop_deamon().ok();
+pub fn stop_deamon() -> anyhow::Result<()>{
+    DEAMON.lock().unwrap().as_mut().unwrap().stop_deamon()?;
+    Ok(())
 }
 
 pub fn create_sink(s: StreamSink<i32>) {

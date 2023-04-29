@@ -3,6 +3,8 @@ use std::{error::Error, sync::mpsc::Sender, time::Duration};
 use dbus::{blocking::Connection, message::MatchRule, channel::MatchingReceiver, };
 use dbus_crossroads::Crossroads;
 
+use crate::notification::{Notification, Hints};
+
 mod dbus_server {
     #![allow(clippy::too_many_arguments)]
     include!(concat!(env!("OUT_DIR"), "/introspection.rs"));
@@ -84,7 +86,18 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
     }
 
     fn notify(&mut self,app_name:String,id:u32,icon:String,summary:String,body:String,actions:Vec<String>,hints:dbus::arg::PropMap,timeout:i32) -> Result<u32,dbus::MethodErr> {
-        println!("app_name:{app_name}, icon:{icon}, summary:{summary}, body:{body}, actions:{:?}, timeout: {timeout}, hints: {:?}", actions, hints.keys());
+        let notification = Notification{
+            app_name,
+            id,
+            icon,
+            summary,
+            body,
+            actions,
+            hints: Hints::from(&hints),
+            timeout,
+        };
+        println!("{:?}", hints.keys());
+        println!("{notification:?}\n");
         Ok(id)
     }
 }

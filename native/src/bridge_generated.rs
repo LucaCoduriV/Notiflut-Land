@@ -38,7 +38,7 @@ fn wire_start_deamon_impl(port_: MessagePort) {
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| Ok(start_deamon()),
+        move || move |task_callback| start_deamon(),
     )
 }
 fn wire_stop_deamon_impl(port_: MessagePort) {
@@ -48,7 +48,7 @@ fn wire_stop_deamon_impl(port_: MessagePort) {
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| Ok(stop_deamon()),
+        move || move |task_callback| stop_deamon(),
     )
 }
 fn wire_create_sink_impl(port_: MessagePort) {
