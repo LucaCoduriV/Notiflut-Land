@@ -16,16 +16,6 @@ pub extern "C" fn wire_stop_deamon(port_: i64) {
     wire_stop_deamon_impl(port_)
 }
 
-#[no_mangle]
-pub extern "C" fn wire_create_sink(port_: i64) {
-    wire_create_sink_impl(port_)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_generate_number(port_: i64) {
-    wire_generate_number_impl(port_)
-}
-
 // Section: allocate functions
 
 // Section: related functions

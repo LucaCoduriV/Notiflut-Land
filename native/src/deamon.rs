@@ -1,8 +1,10 @@
 use std::{
-    sync::{Arc, Mutex},
+    sync::{Arc, Mutex, mpsc::Sender},
     time::Duration, thread::JoinHandle,
 };
-use crate::dbus;
+use flutter_rust_bridge::StreamSink;
+
+use crate::dbus::{self, DeamonAction};
 #[derive(thiserror::Error, Debug)]
 pub enum DeamonResult{
     #[error("An error occured")]
@@ -24,11 +26,11 @@ impl NotificationDeamon {
         NotificationDeamon { stop: Arc::new(Mutex::new(false)), join_handle: None }
     } 
 
-    pub fn run_deamon(&mut self) -> Result<(), DeamonResult> {
+    pub fn run_deamon(&mut self, sdr: StreamSink<DeamonAction>) -> Result<(), DeamonResult> {
+        println!("coucou");
         if *self.stop.lock().unwrap(){
             return Err(DeamonResult::AlreadyUp).into();
         }
-        let (sdr, _recv) = std::sync::mpsc::channel();
         let mut dbus_server = dbus::DbusServer::init().map_err(|_|DeamonResult::Error)?;
 
         dbus_server.register_notification_handler(sdr).map_err(|_|DeamonResult::Error)?;
@@ -56,16 +58,5 @@ impl NotificationDeamon {
         };
         print!("{result:?}");
         return Ok(());
-    }
-}
-#[cfg(test)]
-mod test {
-    use super::*;
-    #[test]
-    fn run_deamon() -> anyhow::Result<()>{
-        let mut deamon = NotificationDeamon::new();
-        deamon.run_deamon()?;
-        deamon.join_handle.take().unwrap().join();
-        Ok(())
     }
 }

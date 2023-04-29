@@ -7,29 +7,116 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:uuid/uuid.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 
 import 'dart:ffi' as ffi;
+
+part 'bridge_generated.freezed.dart';
 
 abstract class Native {
   Future<void> setup({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSetupConstMeta;
 
-  Future<void> startDeamon({dynamic hint});
+  Stream<DeamonAction> startDeamon({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartDeamonConstMeta;
 
   Future<void> stopDeamon({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStopDeamonConstMeta;
+}
 
-  Stream<int> createSink({dynamic hint});
+@freezed
+class DeamonAction with _$DeamonAction {
+  const factory DeamonAction.show(
+    Notification field0,
+  ) = DeamonAction_Show;
+  const factory DeamonAction.showLast() = DeamonAction_ShowLast;
+  const factory DeamonAction.close(
+    int field0,
+  ) = DeamonAction_Close;
+  const factory DeamonAction.closeAll() = DeamonAction_CloseAll;
+}
 
-  FlutterRustBridgeTaskConstMeta get kCreateSinkConstMeta;
+class Hints {
+  final bool? actionsIcon;
+  final String? category;
+  final String? desktopEntry;
+  final Image? imageData;
+  final String? imagePath;
+  final bool? resident;
+  final String? soundFile;
+  final String? soundName;
+  final bool? suppressSound;
+  final bool? transient;
+  final int? x;
+  final int? y;
+  final Urgency? urgency;
 
-  Future<void> generateNumber({dynamic hint});
+  const Hints({
+    this.actionsIcon,
+    this.category,
+    this.desktopEntry,
+    this.imageData,
+    this.imagePath,
+    this.resident,
+    this.soundFile,
+    this.soundName,
+    this.suppressSound,
+    this.transient,
+    this.x,
+    this.y,
+    this.urgency,
+  });
+}
 
-  FlutterRustBridgeTaskConstMeta get kGenerateNumberConstMeta;
+class Image {
+  final int width;
+  final int height;
+  final int rowstride;
+  final bool onePointTwoBitAlpha;
+  final int bitsPerSample;
+  final int channels;
+  final Uint8List data;
+
+  const Image({
+    required this.width,
+    required this.height,
+    required this.rowstride,
+    required this.onePointTwoBitAlpha,
+    required this.bitsPerSample,
+    required this.channels,
+    required this.data,
+  });
+}
+
+class Notification {
+  final String appName;
+  final int replacesId;
+  final String icon;
+  final String summary;
+  final String body;
+  final List<String> actions;
+  final int timeout;
+  final Hints hints;
+
+  const Notification({
+    required this.appName,
+    required this.replacesId,
+    required this.icon,
+    required this.summary,
+    required this.body,
+    required this.actions,
+    required this.timeout,
+    required this.hints,
+  });
+}
+
+enum Urgency {
+  Low,
+  Normal,
+  Critical,
 }
 
 class NativeImpl implements Native {
@@ -54,10 +141,10 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
-  Future<void> startDeamon({dynamic hint}) {
-    return _platform.executeNormal(FlutterRustBridgeTask(
+  Stream<DeamonAction> startDeamon({dynamic hint}) {
+    return _platform.executeStream(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner.wire_start_deamon(port_),
-      parseSuccessData: _wire2api_unit,
+      parseSuccessData: _wire2api_deamon_action,
       constMeta: kStartDeamonConstMeta,
       argValues: [],
       hint: hint,
@@ -84,47 +171,153 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
-  Stream<int> createSink({dynamic hint}) {
-    return _platform.executeStream(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_create_sink(port_),
-      parseSuccessData: _wire2api_i32,
-      constMeta: kCreateSinkConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kCreateSinkConstMeta => const FlutterRustBridgeTaskConstMeta(
-        debugName: "create_sink",
-        argNames: [],
-      );
-
-  Future<void> generateNumber({dynamic hint}) {
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_generate_number(port_),
-      parseSuccessData: _wire2api_unit,
-      constMeta: kGenerateNumberConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kGenerateNumberConstMeta => const FlutterRustBridgeTaskConstMeta(
-        debugName: "generate_number",
-        argNames: [],
-      );
-
   void dispose() {
     _platform.dispose();
   }
 // Section: wire2api
 
+  String _wire2api_String(dynamic raw) {
+    return raw as String;
+  }
+
+  List<String> _wire2api_StringList(dynamic raw) {
+    return (raw as List<dynamic>).cast<String>();
+  }
+
+  bool _wire2api_bool(dynamic raw) {
+    return raw as bool;
+  }
+
+  bool _wire2api_box_autoadd_bool(dynamic raw) {
+    return raw as bool;
+  }
+
+  int _wire2api_box_autoadd_i32(dynamic raw) {
+    return raw as int;
+  }
+
+  Image _wire2api_box_autoadd_image(dynamic raw) {
+    return _wire2api_image(raw);
+  }
+
+  Notification _wire2api_box_autoadd_notification(dynamic raw) {
+    return _wire2api_notification(raw);
+  }
+
+  Urgency _wire2api_box_autoadd_urgency(dynamic raw) {
+    return _wire2api_urgency(raw);
+  }
+
+  DeamonAction _wire2api_deamon_action(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return DeamonAction_Show(
+          _wire2api_box_autoadd_notification(raw[1]),
+        );
+      case 1:
+        return DeamonAction_ShowLast();
+      case 2:
+        return DeamonAction_Close(
+          _wire2api_u32(raw[1]),
+        );
+      case 3:
+        return DeamonAction_CloseAll();
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  Hints _wire2api_hints(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 13) throw Exception('unexpected arr length: expect 13 but see ${arr.length}');
+    return Hints(
+      actionsIcon: _wire2api_opt_box_autoadd_bool(arr[0]),
+      category: _wire2api_opt_String(arr[1]),
+      desktopEntry: _wire2api_opt_String(arr[2]),
+      imageData: _wire2api_opt_box_autoadd_image(arr[3]),
+      imagePath: _wire2api_opt_String(arr[4]),
+      resident: _wire2api_opt_box_autoadd_bool(arr[5]),
+      soundFile: _wire2api_opt_String(arr[6]),
+      soundName: _wire2api_opt_String(arr[7]),
+      suppressSound: _wire2api_opt_box_autoadd_bool(arr[8]),
+      transient: _wire2api_opt_box_autoadd_bool(arr[9]),
+      x: _wire2api_opt_box_autoadd_i32(arr[10]),
+      y: _wire2api_opt_box_autoadd_i32(arr[11]),
+      urgency: _wire2api_opt_box_autoadd_urgency(arr[12]),
+    );
+  }
+
   int _wire2api_i32(dynamic raw) {
     return raw as int;
   }
 
+  Image _wire2api_image(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 7) throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    return Image(
+      width: _wire2api_i32(arr[0]),
+      height: _wire2api_i32(arr[1]),
+      rowstride: _wire2api_i32(arr[2]),
+      onePointTwoBitAlpha: _wire2api_bool(arr[3]),
+      bitsPerSample: _wire2api_i32(arr[4]),
+      channels: _wire2api_i32(arr[5]),
+      data: _wire2api_uint_8_list(arr[6]),
+    );
+  }
+
+  Notification _wire2api_notification(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 8) throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    return Notification(
+      appName: _wire2api_String(arr[0]),
+      replacesId: _wire2api_u32(arr[1]),
+      icon: _wire2api_String(arr[2]),
+      summary: _wire2api_String(arr[3]),
+      body: _wire2api_String(arr[4]),
+      actions: _wire2api_StringList(arr[5]),
+      timeout: _wire2api_i32(arr[6]),
+      hints: _wire2api_hints(arr[7]),
+    );
+  }
+
+  String? _wire2api_opt_String(dynamic raw) {
+    return raw == null ? null : _wire2api_String(raw);
+  }
+
+  bool? _wire2api_opt_box_autoadd_bool(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_bool(raw);
+  }
+
+  int? _wire2api_opt_box_autoadd_i32(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_i32(raw);
+  }
+
+  Image? _wire2api_opt_box_autoadd_image(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_image(raw);
+  }
+
+  Urgency? _wire2api_opt_box_autoadd_urgency(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_urgency(raw);
+  }
+
+  int _wire2api_u32(dynamic raw) {
+    return raw as int;
+  }
+
+  int _wire2api_u8(dynamic raw) {
+    return raw as int;
+  }
+
+  Uint8List _wire2api_uint_8_list(dynamic raw) {
+    return raw as Uint8List;
+  }
+
   void _wire2api_unit(dynamic raw) {
     return;
+  }
+
+  Urgency _wire2api_urgency(dynamic raw) {
+    return Urgency.values[raw];
   }
 }
 
@@ -250,28 +443,6 @@ class NativeWire implements FlutterRustBridgeWireBase {
 
   late final _wire_stop_deamonPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_stop_deamon');
   late final _wire_stop_deamon = _wire_stop_deamonPtr.asFunction<void Function(int)>();
-
-  void wire_create_sink(
-    int port_,
-  ) {
-    return _wire_create_sink(
-      port_,
-    );
-  }
-
-  late final _wire_create_sinkPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_create_sink');
-  late final _wire_create_sink = _wire_create_sinkPtr.asFunction<void Function(int)>();
-
-  void wire_generate_number(
-    int port_,
-  ) {
-    return _wire_generate_number(
-      port_,
-    );
-  }
-
-  late final _wire_generate_numberPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_generate_number');
-  late final _wire_generate_number = _wire_generate_numberPtr.asFunction<void Function(int)>();
 
   void free_WireSyncReturn(
     WireSyncReturn ptr,

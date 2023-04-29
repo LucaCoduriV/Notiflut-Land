@@ -8,7 +8,7 @@ use dbus::arg::RefArg;
 #[derive(Debug)]
 pub struct Notification{
     pub app_name:String,
-    pub id:u32,
+    pub replaces_id:u32,
     pub icon:String,
     pub summary:String,
     pub body:String,
@@ -29,57 +29,28 @@ pub struct Hints{
     pub sound_name: Option<String>,
     pub suppress_sound: Option<bool>,
     pub transient: Option<bool>,
-    pub position:(Option<i32>,Option<i32>),
-    pub urgency:Option<u8>,
+    pub x: Option<i32>,
+    pub y: Option<i32>,
+    pub urgency:Option<Urgency>,
 }
 
 impl From<&PropMap> for Hints {
     fn from(map: &PropMap) -> Self {
-        let actions_icon = match prop_cast::<bool>(&map, "action-icons"){
-            Some(v) => Some(*v),
+        let actions_icon = prop_cast::<bool>(&map, "action-icons").copied();
+        let category = prop_cast::<String>(&map, "category").cloned();
+        let desktop_entry = prop_cast::<String>(&map, "desktop-entry").cloned();
+        let image_path = prop_cast::<String>(&map, "image-path").cloned();
+        let resident = prop_cast::<bool>(&map, "resident").copied();
+        let sound_file = prop_cast::<String>(&map, "sound-file").cloned();
+        let sound_name = prop_cast::<String>(&map, "sound-name").cloned();
+        let suppress_sound = prop_cast::<bool>(&map, "suppress-sound").copied();
+        let transient = prop_cast::<bool>(&map, "transient").copied();
+        let pos_x = prop_cast::<i32>(&map, "x").copied();
+        let pos_y = prop_cast::<i32>(&map, "y").copied();
+        let urgency = match prop_cast::<u8>(&map, "urgency").copied(){
+            Some(v) => Urgency::try_from(v).ok(),
             None => None,
         };
-        let category = match prop_cast::<String>(&map, "category"){
-            Some(v) => Some(v.clone()),
-            None => None,
-        };
-        let desktop_entry = match prop_cast::<String>(&map, "desktop-entry"){
-            Some(v) => Some(v.clone()),
-            None => None,
-        };
-        let image_path = match prop_cast::<String>(&map, "image-path"){
-            Some(v) => Some(v.clone()),
-            None => None,
-        };
-        let resident = match prop_cast::<bool>(&map, "resident"){
-            Some(v) => Some(*v),
-            None => None,
-        };
-        let sound_file = match prop_cast::<String>(&map, "sound-file"){
-            Some(v) => Some(v.clone()),
-            None => None,
-        };
-        let sound_name = match prop_cast::<String>(&map, "sound-name"){
-            Some(v) => Some(v.clone()),
-            None => None,
-        };
-        let suppress_sound = match prop_cast::<bool>(&map, "suppress-sound"){
-            Some(v) => Some(*v),
-            None => None,
-        };
-        let transient = match prop_cast::<bool>(&map, "transient"){
-            Some(v) => Some(*v),
-            None => None,
-        };
-        let pos_x = match prop_cast::<i32>(&map, "x"){
-            Some(v) => Some(*v),
-            None => None,
-        };
-        let pos_y = match prop_cast::<i32>(&map, "y"){
-            Some(v) => Some(*v),
-            None => None,
-        };
-        let urgency = prop_cast::<u8>(&map, "urgency").copied();
         let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&map, "image-data"){
             Some(v) => Image::try_from(v).ok(),
             None => None,
@@ -95,8 +66,28 @@ impl From<&PropMap> for Hints {
             sound_name,
             suppress_sound,
             transient,
-            position: (pos_x, pos_y),
+            x: pos_x,
+            y: pos_y,
             urgency,
+        }
+    }
+}
+#[derive(Debug)]
+pub enum Urgency{
+    Low,
+    Normal,
+    Critical,
+}
+
+impl TryFrom<u8> for Urgency {
+    type Error = ();
+
+    fn try_from(value:u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Urgency::Low),
+            1 => Ok(Urgency::Normal),
+            2 => Ok(Urgency::Critical),
+            _ => Err(()),
         }
     }
 }
@@ -116,7 +107,6 @@ impl TryFrom<&VecDeque<Box<dyn RefArg>>> for Image {
     type Error = Box<dyn std::error::Error>;
 
     fn try_from(img: &VecDeque<Box<dyn RefArg>>) -> Result<Self, Self::Error> {
-        println!("{img:?}");
         let width = *cast::<i32>(&img[0]).ok_or("couldn't cast image's width")?;
         let height = *cast::<i32>(&img[1]).ok_or("couldn't cast image's height")?;
         let rowstride = *cast::<i32>(&img[2]).ok_or("couldn't cast image's rowstride")?;

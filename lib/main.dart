@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:flutter_acrylic/window_effect.dart';
@@ -41,19 +43,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  late Stream<int> ticks;
+  Stream<DeamonAction>? ticks;
 
   @override
   void initState() {
-    ticks = api.createSink();
-    api.setup().then((value) => api.startDeamon());
+    super.initState();
   }
 
-  void _incrementCounter() {
-    api.stopDeamon();
-    api.generateNumber();
+  void _incrementCounter() async {
+    await api.setup();
+    ticks = await api.startDeamon();
     setState(() {
-      _counter++;
     });
   }
 
@@ -68,14 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            StreamBuilder<int>(
+            if (ticks != null)
+            StreamBuilder<DeamonAction>(
               stream: ticks,
               builder: (context, snap) {
                 final style = Theme.of(context).textTheme.headlineMedium;
@@ -86,8 +80,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Text('Error', style: style));
 
                 final data = snap.data;
-                if (data != null) return Text('$data second(s)', style: style);
-
+                if (data != null) return data!.whenOrNull(show: (notification){
+                    return Text('${notification.summary}', style: style);
+                    })!;
                 return const CircularProgressIndicator();
               },
             )

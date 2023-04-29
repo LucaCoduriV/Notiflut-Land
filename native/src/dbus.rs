@@ -1,7 +1,8 @@
-use std::{error::Error, sync::mpsc::Sender, time::Duration};
+use std::{error::Error, sync::{mpsc::Sender, atomic::{AtomicU32, Ordering}}, time::Duration};
 
 use dbus::{blocking::Connection, message::MatchRule, channel::MatchingReceiver, };
 use dbus_crossroads::Crossroads;
+use flutter_rust_bridge::StreamSink;
 
 use crate::notification::{Notification, Hints};
 
@@ -24,7 +25,7 @@ const SERVER_INFO: (&str, &str, &str, &str) = (
     "1.2",
 );
 
-
+static ID_COUNT: AtomicU32 = AtomicU32::new(1);
 /// D-Bus server capabilities.
 ///
 // "action-icons"       Supports using icons instead of text for displaying actions. 
@@ -56,15 +57,13 @@ const SERVER_INFO: (&str, &str, &str, &str) = (
 const SERVER_CAPABILITIES: [&str; 8] = ["actions", "body", "action-icons", "actions", "body-hyperlinks", "body-image", "body-markup", "icon-multi"];
 
 #[derive(Debug)]
-pub enum Action {
-    Show,
-    ShowLast,
-    Close,
-    CloseAll,
+pub enum DeamonAction {
+    Show(Notification),
+    Close(u32),
 }
 
 pub struct DbusNotification {
-    sender: Sender<Action>,
+    sender: StreamSink<DeamonAction>,
 }
 
 impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
@@ -82,13 +81,28 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
     }
 
     fn close_notification(&mut self,id:u32) -> Result<(),dbus::MethodErr> {
+        if let false = self.sender.add(DeamonAction::Close(id)){
+            return Err(dbus::MethodErr::failed("Error with channel, couldn't send the action."));
+        }
         Ok(())
     }
 
-    fn notify(&mut self,app_name:String,id:u32,icon:String,summary:String,body:String,actions:Vec<String>,hints:dbus::arg::PropMap,timeout:i32) -> Result<u32,dbus::MethodErr> {
+    fn notify(
+            &mut self,app_name:String,
+            replaces_id:u32,icon:String,
+            summary:String,body:String,
+            actions:Vec<String>,
+            hints:dbus::arg::PropMap,
+            timeout:i32
+    ) -> Result<u32,dbus::MethodErr> {
+        let id = if replaces_id == 0 {
+            ID_COUNT.fetch_add(1, Ordering::Relaxed)
+        } else {
+            replaces_id
+        };
         let notification = Notification{
             app_name,
-            id,
+            replaces_id,
             icon,
             summary,
             body,
@@ -96,8 +110,11 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
             hints: Hints::from(&hints),
             timeout,
         };
-        println!("{:?}", hints.keys());
-        println!("{notification:?}\n");
+        println!("{}, {}", notification.app_name, notification.summary);
+        if let false = self.sender.add(DeamonAction::Show(notification)){
+            return Err(dbus::MethodErr::failed("Error with channel, couldn't send the action."));
+        };
+        
         Ok(id)
     }
 }
@@ -114,14 +131,14 @@ impl DbusServer {
         })
     }
 
-    pub fn register_notification_handler(&mut self, sender: Sender<Action>) -> Result<(), Box<dyn Error>> {
+    pub fn register_notification_handler(&mut self, sender: StreamSink<DeamonAction>) -> Result<(), Box<dyn Error>> {
         let mut crossroad = Crossroads::new();
 
         // register our notification server to dbus
         self.connection.request_name(NOTIFICATION_INTERFACE, false, true, false)?;
         let token = dbus_server::register_org_freedesktop_notifications(&mut crossroad);
         crossroad.insert(NOTIFICATION_PATH, &[token], DbusNotification{
-            sender: sender.clone(),
+            sender,
         }); 
         self.connection.start_receive(
             MatchRule::new_method_call(),

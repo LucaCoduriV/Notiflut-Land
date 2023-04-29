@@ -19,6 +19,12 @@ use std::sync::Arc;
 
 // Section: imports
 
+use crate::dbus::DeamonAction;
+use crate::notification::Hints;
+use crate::notification::Image;
+use crate::notification::Notification;
+use crate::notification::Urgency;
+
 // Section: wire functions
 
 fn wire_setup_impl(port_: MessagePort) {
@@ -36,9 +42,9 @@ fn wire_start_deamon_impl(port_: MessagePort) {
         WrapInfo {
             debug_name: "start_deamon",
             port: Some(port_),
-            mode: FfiCallMode::Normal,
+            mode: FfiCallMode::Stream,
         },
-        move || move |task_callback| start_deamon(),
+        move || move |task_callback| start_deamon(task_callback.stream_sink()),
     )
 }
 fn wire_stop_deamon_impl(port_: MessagePort) {
@@ -49,26 +55,6 @@ fn wire_stop_deamon_impl(port_: MessagePort) {
             mode: FfiCallMode::Normal,
         },
         move || move |task_callback| stop_deamon(),
-    )
-}
-fn wire_create_sink_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "create_sink",
-            port: Some(port_),
-            mode: FfiCallMode::Stream,
-        },
-        move || move |task_callback| Ok(create_sink(task_callback.stream_sink())),
-    )
-}
-fn wire_generate_number_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "generate_number",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || move |task_callback| Ok(generate_number()),
     )
 }
 // Section: wrapper structs
@@ -95,6 +81,83 @@ where
 }
 // Section: impl IntoDart
 
+impl support::IntoDart for DeamonAction {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Show(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::Close(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for DeamonAction {}
+
+impl support::IntoDart for Hints {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.actions_icon.into_dart(),
+            self.category.into_dart(),
+            self.desktop_entry.into_dart(),
+            self.image_data.into_dart(),
+            self.image_path.into_dart(),
+            self.resident.into_dart(),
+            self.sound_file.into_dart(),
+            self.sound_name.into_dart(),
+            self.suppress_sound.into_dart(),
+            self.transient.into_dart(),
+            self.x.into_dart(),
+            self.y.into_dart(),
+            self.urgency.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Hints {}
+
+impl support::IntoDart for Image {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.width.into_dart(),
+            self.height.into_dart(),
+            self.rowstride.into_dart(),
+            self.one_point_two_bit_alpha.into_dart(),
+            self.bits_per_sample.into_dart(),
+            self.channels.into_dart(),
+            self.data.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Image {}
+
+impl support::IntoDart for Notification {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.app_name.into_dart(),
+            self.replaces_id.into_dart(),
+            self.icon.into_dart(),
+            self.summary.into_dart(),
+            self.body.into_dart(),
+            self.actions.into_dart(),
+            self.timeout.into_dart(),
+            self.hints.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Notification {}
+
+impl support::IntoDart for Urgency {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Low => 0,
+            Self::Normal => 1,
+            Self::Critical => 2,
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Urgency {}
 // Section: executor
 
 support::lazy_static! {
