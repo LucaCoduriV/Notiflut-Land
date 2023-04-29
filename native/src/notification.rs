@@ -22,7 +22,7 @@ pub struct Hints{
     pub actions_icon: Option<bool>,
     pub category: Option<String>,
     pub desktop_entry: Option<String>,
-    pub image_data: Option<Image>,
+    pub image_data: Option<ImageData>,
     pub image_path: Option<String>,
     pub resident: Option<bool>,
     pub sound_file: Option<String>,
@@ -52,7 +52,7 @@ impl From<&PropMap> for Hints {
             None => None,
         };
         let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&map, "image-data"){
-            Some(v) => Image::try_from(v).ok(),
+            Some(v) => ImageData::try_from(v).ok(),
             None => None,
         };
         Hints { 
@@ -93,7 +93,7 @@ impl TryFrom<u8> for Urgency {
 }
 
 #[derive(Debug)]
-pub struct Image {
+pub struct ImageData {
     pub width: i32,
     pub height: i32,
     pub rowstride: i32,
@@ -103,7 +103,7 @@ pub struct Image {
     pub data: Vec<u8>,
 }
 
-impl TryFrom<&VecDeque<Box<dyn RefArg>>> for Image {
+impl TryFrom<&VecDeque<Box<dyn RefArg>>> for ImageData {
     type Error = Box<dyn std::error::Error>;
 
     fn try_from(img: &VecDeque<Box<dyn RefArg>>) -> Result<Self, Self::Error> {
@@ -115,7 +115,7 @@ impl TryFrom<&VecDeque<Box<dyn RefArg>>> for Image {
         let channels = *cast::<i32>(&img[5]).ok_or("couldn't cast image's channels")?;
         let data = cast::<Vec<u8>>(&img[6]).ok_or("couldn't cast image's data")?.clone();
 
-        Ok(Image{
+        Ok(ImageData{
             width,
             height,
             rowstride,

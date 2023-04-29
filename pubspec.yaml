@@ -39,6 +39,7 @@ dependencies:
   ffi: ^2.0.1
   flutter_acrylic: ^1.1.2
   freezed_annotation: ^2.2.0
+  image: ^4.0.16
 
 dev_dependencies:
   flutter_test:

@@ -21,7 +21,7 @@ use std::sync::Arc;
 
 use crate::dbus::DeamonAction;
 use crate::notification::Hints;
-use crate::notification::Image;
+use crate::notification::ImageData;
 use crate::notification::Notification;
 use crate::notification::Urgency;
 
@@ -91,7 +91,6 @@ impl support::IntoDart for DeamonAction {
     }
 }
 impl support::IntoDartExceptPrimitive for DeamonAction {}
-
 impl support::IntoDart for Hints {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -114,7 +113,7 @@ impl support::IntoDart for Hints {
 }
 impl support::IntoDartExceptPrimitive for Hints {}
 
-impl support::IntoDart for Image {
+impl support::IntoDart for ImageData {
     fn into_dart(self) -> support::DartAbi {
         vec![
             self.width.into_dart(),
@@ -128,7 +127,7 @@ impl support::IntoDart for Image {
         .into_dart()
     }
 }
-impl support::IntoDartExceptPrimitive for Image {}
+impl support::IntoDartExceptPrimitive for ImageData {}
 
 impl support::IntoDart for Notification {
     fn into_dart(self) -> support::DartAbi {

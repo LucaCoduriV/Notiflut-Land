@@ -32,18 +32,16 @@ class DeamonAction with _$DeamonAction {
   const factory DeamonAction.show(
     Notification field0,
   ) = DeamonAction_Show;
-  const factory DeamonAction.showLast() = DeamonAction_ShowLast;
   const factory DeamonAction.close(
     int field0,
   ) = DeamonAction_Close;
-  const factory DeamonAction.closeAll() = DeamonAction_CloseAll;
 }
 
 class Hints {
   final bool? actionsIcon;
   final String? category;
   final String? desktopEntry;
-  final Image? imageData;
+  final ImageData? imageData;
   final String? imagePath;
   final bool? resident;
   final String? soundFile;
@@ -71,7 +69,7 @@ class Hints {
   });
 }
 
-class Image {
+class ImageData {
   final int width;
   final int height;
   final int rowstride;
@@ -80,7 +78,7 @@ class Image {
   final int channels;
   final Uint8List data;
 
-  const Image({
+  const ImageData({
     required this.width,
     required this.height,
     required this.rowstride,
@@ -196,8 +194,8 @@ class NativeImpl implements Native {
     return raw as int;
   }
 
-  Image _wire2api_box_autoadd_image(dynamic raw) {
-    return _wire2api_image(raw);
+  ImageData _wire2api_box_autoadd_image_data(dynamic raw) {
+    return _wire2api_image_data(raw);
   }
 
   Notification _wire2api_box_autoadd_notification(dynamic raw) {
@@ -215,13 +213,9 @@ class NativeImpl implements Native {
           _wire2api_box_autoadd_notification(raw[1]),
         );
       case 1:
-        return DeamonAction_ShowLast();
-      case 2:
         return DeamonAction_Close(
           _wire2api_u32(raw[1]),
         );
-      case 3:
-        return DeamonAction_CloseAll();
       default:
         throw Exception("unreachable");
     }
@@ -234,7 +228,7 @@ class NativeImpl implements Native {
       actionsIcon: _wire2api_opt_box_autoadd_bool(arr[0]),
       category: _wire2api_opt_String(arr[1]),
       desktopEntry: _wire2api_opt_String(arr[2]),
-      imageData: _wire2api_opt_box_autoadd_image(arr[3]),
+      imageData: _wire2api_opt_box_autoadd_image_data(arr[3]),
       imagePath: _wire2api_opt_String(arr[4]),
       resident: _wire2api_opt_box_autoadd_bool(arr[5]),
       soundFile: _wire2api_opt_String(arr[6]),
@@ -251,10 +245,10 @@ class NativeImpl implements Native {
     return raw as int;
   }
 
-  Image _wire2api_image(dynamic raw) {
+  ImageData _wire2api_image_data(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 7) throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
-    return Image(
+    return ImageData(
       width: _wire2api_i32(arr[0]),
       height: _wire2api_i32(arr[1]),
       rowstride: _wire2api_i32(arr[2]),
@@ -292,8 +286,8 @@ class NativeImpl implements Native {
     return raw == null ? null : _wire2api_box_autoadd_i32(raw);
   }
 
-  Image? _wire2api_opt_box_autoadd_image(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_image(raw);
+  ImageData? _wire2api_opt_box_autoadd_image_data(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_image_data(raw);
   }
 
   Urgency? _wire2api_opt_box_autoadd_urgency(dynamic raw) {

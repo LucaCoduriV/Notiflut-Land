@@ -1,9 +1,24 @@
-import 'dart:ui';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/window.dart';
 import 'package:flutter_acrylic/window_effect.dart';
 import 'package:test_flutter_russt/src/native.dart';
+
+import 'package:image/image.dart' as img;
+
+Image create_image(int width, int height, Uint8List bytes, int channels, int rowStride){
+  final image =  img.Image.fromBytes(
+      width: width,
+      height: height,
+      bytes: bytes.buffer,
+      numChannels: channels,
+      rowStride: rowStride,
+      order: img.ChannelOrder.rgb
+      );
+  final png = img.encodePng(image); 
+  return Image.memory(png, height: 100, width: 100, );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,7 +27,6 @@ void main() async {
     effect: WindowEffect.transparent,
     color: Colors.transparent,
   );
-  // await Window.hideWindowControls();
   runApp(const MyApp());
 }
 
@@ -74,15 +88,31 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context, snap) {
                 final style = Theme.of(context).textTheme.headlineMedium;
                 final error = snap.error;
-                if (error != null)
+                if (error != null) {
                   return Tooltip(
                       message: error.toString(),
                       child: Text('Error', style: style));
+                }
 
                 final data = snap.data;
-                if (data != null) return data!.whenOrNull(show: (notification){
-                    return Text('${notification.summary}', style: style);
+                if (data != null) {
+                  return data.whenOrNull(show: (notification){
+                    final imageData = notification.hints.imageData!;
+                    print("${imageData.channels}, ${imageData.onePointTwoBitAlpha}, ${imageData.rowstride}, ${imageData.width}, ${imageData.height}");
+                    return Column(
+                      children: [
+                        Text(notification.summary, style: style),
+                        create_image(
+                          notification.hints.imageData!.width,
+                          notification.hints.imageData!.height,
+                          notification.hints.imageData!.data, 
+                          notification.hints.imageData!.onePointTwoBitAlpha == true ? 4 : 3,
+                          notification.hints.imageData!.rowstride,
+                          ),
+                      ],
+                    );
                     })!;
+                }
                 return const CircularProgressIndicator();
               },
             )
