@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import './src/native.dart' as nati;
+import './src/native/bridge_definitions.dart' as nati;
 
 import 'package:image/image.dart' as img;
 import 'package:window_manager/window_manager.dart';
@@ -91,12 +92,8 @@ class _NotificationListState extends State<NotificationList> {
     super.initState();
     notificationStream.listen((event) {
       event.whenOrNull(
-        show: (notification) {
-          notifications.removeWhere((element) => element.id == notification.id);
-          notifications.add(notification);
-        },
-        close: (id) {
-          notifications.removeWhere((element) => element.id == id);
+        update: (notificationsNew) {
+          notifications = notificationsNew;
         },
       );
       setState(() {});

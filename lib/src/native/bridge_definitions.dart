@@ -37,6 +37,9 @@ class DeamonAction with _$DeamonAction {
   const factory DeamonAction.close(
     int field0,
   ) = DeamonAction_Close;
+  const factory DeamonAction.update(
+    List<Notification> field0,
+  ) = DeamonAction_Update;
   const factory DeamonAction.clientClose(
     int field0,
   ) = DeamonAction_ClientClose;
@@ -103,6 +106,7 @@ class Notification {
   final String body;
   final List<String> actions;
   final int timeout;
+  final int timeSinceDisplay;
   final Hints hints;
 
   const Notification({
@@ -114,6 +118,7 @@ class Notification {
     required this.body,
     required this.actions,
     required this.timeout,
+    required this.timeSinceDisplay,
     required this.hints,
   });
 }

@@ -51,6 +51,10 @@ impl NotificationDeamon {
         Ok(())
     }
 
+    fn cron_job(notifications: &mut Vec<Notification>) {
+
+    }
+
     fn handle_actions(sender:StreamSink<DeamonAction>, recv:Receiver<DeamonAction>) -> JoinHandle<Result<(), DeamonError>> {
         let join_handle = std::thread::spawn(move ||{
             let mut notifications: Vec<Notification> = Vec::new();
@@ -59,22 +63,25 @@ impl NotificationDeamon {
                     DeamonAction::Show(notification) => {
                        notifications.retain(|v|v.id != notification.id);
                        notifications.push(notification.clone()); 
-                       if let false = sender.add(DeamonAction::Show(notification)){
+                       if let false = sender.add(DeamonAction::Update(notifications.clone())){
                            return Err(DeamonError::Error)
                        }
                     },
                     DeamonAction::Close(id) => {
                        notifications.retain(|v|v.id != id);
-                       if let false = sender.add(DeamonAction::Close(id)){
+                       if let false = sender.add(DeamonAction::Update(notifications.clone())){
                            return Err(DeamonError::Error)
                        }
                     },
                     DeamonAction::ClientClose(id) => {
                        notifications.retain(|v|v.id != id);
-                       if let false = sender.add(DeamonAction::Close(id)){
+                       if let false = sender.add(DeamonAction::Update(notifications.clone())){
                            return Err(DeamonError::Error)
                        }
                     },
+                    _ => {
+                    },
+
                 }
             }
             Ok(())

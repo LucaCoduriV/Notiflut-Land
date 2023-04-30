@@ -1,4 +1,4 @@
-use std::{error::Error, sync::{mpsc::Sender, atomic::{AtomicU32, Ordering}}, time::Duration};
+use std::{error::Error, sync::{mpsc::Sender, atomic::{AtomicU32, Ordering}}, time::{Duration, SystemTime, UNIX_EPOCH}};
 
 use dbus::{blocking::Connection, message::MatchRule, channel::MatchingReceiver, };
 use dbus_crossroads::Crossroads;
@@ -60,6 +60,7 @@ const SERVER_CAPABILITIES: [&str; 8] = ["actions", "body", "action-icons", "acti
 pub enum DeamonAction {
     Show(Notification),
     Close(u32),
+    Update(Vec<Notification>),
     ClientClose(u32),
 }
 
@@ -111,6 +112,7 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
             actions,
             hints: Hints::from(&hints),
             timeout,
+            time_since_display: 0,
         };
         println!("{}, {}", notification.app_name, notification.summary);
         if let Err(_) = self.sender.send(DeamonAction::Show(notification)){

@@ -63,6 +63,15 @@ pub extern "C" fn new_box_autoadd_urgency_0(value: i32) -> *mut i32 {
 }
 
 #[no_mangle]
+pub extern "C" fn new_list_notification_0(len: i32) -> *mut wire_list_notification {
+    let wrap = wire_list_notification {
+        ptr: support::new_leak_vec_ptr(<wire_Notification>::new_with_null_ptr(), len),
+        len,
+    };
+    support::new_leak_box_ptr(wrap)
+}
+
+#[no_mangle]
 pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
     let ans = wire_uint_8_list {
         ptr: support::new_leak_vec_ptr(Default::default(), len),
@@ -140,6 +149,11 @@ impl Wire2Api<DeamonAction> for wire_DeamonAction {
             },
             2 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.Update);
+                DeamonAction::Update(ans.field0.wire2api())
+            },
+            3 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.ClientClose);
                 DeamonAction::ClientClose(ans.field0.wire2api())
             },
@@ -180,6 +194,15 @@ impl Wire2Api<ImageData> for wire_ImageData {
         }
     }
 }
+impl Wire2Api<Vec<Notification>> for *mut wire_list_notification {
+    fn wire2api(self) -> Vec<Notification> {
+        let vec = unsafe {
+            let wrap = support::box_from_leak_ptr(self);
+            support::vec_from_leak_ptr(wrap.ptr, wrap.len)
+        };
+        vec.into_iter().map(Wire2Api::wire2api).collect()
+    }
+}
 impl Wire2Api<Notification> for wire_Notification {
     fn wire2api(self) -> Notification {
         Notification {
@@ -191,6 +214,7 @@ impl Wire2Api<Notification> for wire_Notification {
             body: self.body.wire2api(),
             actions: self.actions.wire2api(),
             timeout: self.timeout.wire2api(),
+            time_since_display: self.time_since_display.wire2api(),
             hints: self.hints.wire2api(),
         }
     }
@@ -246,6 +270,13 @@ pub struct wire_ImageData {
 
 #[repr(C)]
 #[derive(Clone)]
+pub struct wire_list_notification {
+    ptr: *mut wire_Notification,
+    len: i32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
 pub struct wire_Notification {
     id: u32,
     app_name: *mut wire_uint_8_list,
@@ -255,6 +286,7 @@ pub struct wire_Notification {
     body: *mut wire_uint_8_list,
     actions: *mut wire_StringList,
     timeout: i32,
+    time_since_display: u32,
     hints: wire_Hints,
 }
 
@@ -276,6 +308,7 @@ pub struct wire_DeamonAction {
 pub union DeamonActionKind {
     Show: *mut wire_DeamonAction_Show,
     Close: *mut wire_DeamonAction_Close,
+    Update: *mut wire_DeamonAction_Update,
     ClientClose: *mut wire_DeamonAction_ClientClose,
 }
 
@@ -289,6 +322,12 @@ pub struct wire_DeamonAction_Show {
 #[derive(Clone)]
 pub struct wire_DeamonAction_Close {
     field0: u32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_DeamonAction_Update {
+    field0: *mut wire_list_notification,
 }
 
 #[repr(C)]
@@ -332,6 +371,15 @@ pub extern "C" fn inflate_DeamonAction_Close() -> *mut DeamonActionKind {
     support::new_leak_box_ptr(DeamonActionKind {
         Close: support::new_leak_box_ptr(wire_DeamonAction_Close {
             field0: Default::default(),
+        }),
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_DeamonAction_Update() -> *mut DeamonActionKind {
+    support::new_leak_box_ptr(DeamonActionKind {
+        Update: support::new_leak_box_ptr(wire_DeamonAction_Update {
+            field0: core::ptr::null_mut(),
         }),
     })
 }
@@ -402,6 +450,7 @@ impl NewWithNullPtr for wire_Notification {
             body: core::ptr::null_mut(),
             actions: core::ptr::null_mut(),
             timeout: Default::default(),
+            time_since_display: Default::default(),
             hints: Default::default(),
         }
     }

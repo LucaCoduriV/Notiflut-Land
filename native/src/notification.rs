@@ -15,6 +15,7 @@ pub struct Notification{
     pub body:String,
     pub actions:Vec<String>,
     pub timeout:i32,
+    pub time_since_display:u32,
     pub hints:Hints,
 }
 

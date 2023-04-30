@@ -21,6 +21,7 @@ mixin _$DeamonAction {
   TResult when<TResult extends Object?>({
     required TResult Function(Notification field0) show,
     required TResult Function(int field0) close,
+    required TResult Function(List<Notification> field0) update,
     required TResult Function(int field0) clientClose,
   }) =>
       throw _privateConstructorUsedError;
@@ -28,6 +29,7 @@ mixin _$DeamonAction {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(Notification field0)? show,
     TResult? Function(int field0)? close,
+    TResult? Function(List<Notification> field0)? update,
     TResult? Function(int field0)? clientClose,
   }) =>
       throw _privateConstructorUsedError;
@@ -35,6 +37,7 @@ mixin _$DeamonAction {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(Notification field0)? show,
     TResult Function(int field0)? close,
+    TResult Function(List<Notification> field0)? update,
     TResult Function(int field0)? clientClose,
     required TResult orElse(),
   }) =>
@@ -43,6 +46,7 @@ mixin _$DeamonAction {
   TResult map<TResult extends Object?>({
     required TResult Function(DeamonAction_Show value) show,
     required TResult Function(DeamonAction_Close value) close,
+    required TResult Function(DeamonAction_Update value) update,
     required TResult Function(DeamonAction_ClientClose value) clientClose,
   }) =>
       throw _privateConstructorUsedError;
@@ -50,6 +54,7 @@ mixin _$DeamonAction {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DeamonAction_Show value)? show,
     TResult? Function(DeamonAction_Close value)? close,
+    TResult? Function(DeamonAction_Update value)? update,
     TResult? Function(DeamonAction_ClientClose value)? clientClose,
   }) =>
       throw _privateConstructorUsedError;
@@ -57,6 +62,7 @@ mixin _$DeamonAction {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DeamonAction_Show value)? show,
     TResult Function(DeamonAction_Close value)? close,
+    TResult Function(DeamonAction_Update value)? update,
     TResult Function(DeamonAction_ClientClose value)? clientClose,
     required TResult orElse(),
   }) =>
@@ -147,6 +153,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
   TResult when<TResult extends Object?>({
     required TResult Function(Notification field0) show,
     required TResult Function(int field0) close,
+    required TResult Function(List<Notification> field0) update,
     required TResult Function(int field0) clientClose,
   }) {
     return show(field0);
@@ -157,6 +164,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(Notification field0)? show,
     TResult? Function(int field0)? close,
+    TResult? Function(List<Notification> field0)? update,
     TResult? Function(int field0)? clientClose,
   }) {
     return show?.call(field0);
@@ -167,6 +175,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(Notification field0)? show,
     TResult Function(int field0)? close,
+    TResult Function(List<Notification> field0)? update,
     TResult Function(int field0)? clientClose,
     required TResult orElse(),
   }) {
@@ -181,6 +190,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
   TResult map<TResult extends Object?>({
     required TResult Function(DeamonAction_Show value) show,
     required TResult Function(DeamonAction_Close value) close,
+    required TResult Function(DeamonAction_Update value) update,
     required TResult Function(DeamonAction_ClientClose value) clientClose,
   }) {
     return show(this);
@@ -191,6 +201,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DeamonAction_Show value)? show,
     TResult? Function(DeamonAction_Close value)? close,
+    TResult? Function(DeamonAction_Update value)? update,
     TResult? Function(DeamonAction_ClientClose value)? clientClose,
   }) {
     return show?.call(this);
@@ -201,6 +212,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DeamonAction_Show value)? show,
     TResult Function(DeamonAction_Close value)? close,
+    TResult Function(DeamonAction_Update value)? update,
     TResult Function(DeamonAction_ClientClose value)? clientClose,
     required TResult orElse(),
   }) {
@@ -289,6 +301,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
   TResult when<TResult extends Object?>({
     required TResult Function(Notification field0) show,
     required TResult Function(int field0) close,
+    required TResult Function(List<Notification> field0) update,
     required TResult Function(int field0) clientClose,
   }) {
     return close(field0);
@@ -299,6 +312,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(Notification field0)? show,
     TResult? Function(int field0)? close,
+    TResult? Function(List<Notification> field0)? update,
     TResult? Function(int field0)? clientClose,
   }) {
     return close?.call(field0);
@@ -309,6 +323,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(Notification field0)? show,
     TResult Function(int field0)? close,
+    TResult Function(List<Notification> field0)? update,
     TResult Function(int field0)? clientClose,
     required TResult orElse(),
   }) {
@@ -323,6 +338,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
   TResult map<TResult extends Object?>({
     required TResult Function(DeamonAction_Show value) show,
     required TResult Function(DeamonAction_Close value) close,
+    required TResult Function(DeamonAction_Update value) update,
     required TResult Function(DeamonAction_ClientClose value) clientClose,
   }) {
     return close(this);
@@ -333,6 +349,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DeamonAction_Show value)? show,
     TResult? Function(DeamonAction_Close value)? close,
+    TResult? Function(DeamonAction_Update value)? update,
     TResult? Function(DeamonAction_ClientClose value)? clientClose,
   }) {
     return close?.call(this);
@@ -343,6 +360,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DeamonAction_Show value)? show,
     TResult Function(DeamonAction_Close value)? close,
+    TResult Function(DeamonAction_Update value)? update,
     TResult Function(DeamonAction_ClientClose value)? clientClose,
     required TResult orElse(),
   }) {
@@ -360,6 +378,161 @@ abstract class DeamonAction_Close implements DeamonAction {
   int get field0;
   @JsonKey(ignore: true)
   _$$DeamonAction_CloseCopyWith<_$DeamonAction_Close> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$DeamonAction_UpdateCopyWith<$Res> {
+  factory _$$DeamonAction_UpdateCopyWith(_$DeamonAction_Update value,
+          $Res Function(_$DeamonAction_Update) then) =
+      __$$DeamonAction_UpdateCopyWithImpl<$Res>;
+  @useResult
+  $Res call({List<Notification> field0});
+}
+
+/// @nodoc
+class __$$DeamonAction_UpdateCopyWithImpl<$Res>
+    extends _$DeamonActionCopyWithImpl<$Res, _$DeamonAction_Update>
+    implements _$$DeamonAction_UpdateCopyWith<$Res> {
+  __$$DeamonAction_UpdateCopyWithImpl(
+      _$DeamonAction_Update _value, $Res Function(_$DeamonAction_Update) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$DeamonAction_Update(
+      null == field0
+          ? _value._field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as List<Notification>,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$DeamonAction_Update implements DeamonAction_Update {
+  const _$DeamonAction_Update(final List<Notification> field0)
+      : _field0 = field0;
+
+  final List<Notification> _field0;
+  @override
+  List<Notification> get field0 {
+    if (_field0 is EqualUnmodifiableListView) return _field0;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_field0);
+  }
+
+  @override
+  String toString() {
+    return 'DeamonAction.update(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DeamonAction_Update &&
+            const DeepCollectionEquality().equals(other._field0, _field0));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_field0));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DeamonAction_UpdateCopyWith<_$DeamonAction_Update> get copyWith =>
+      __$$DeamonAction_UpdateCopyWithImpl<_$DeamonAction_Update>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Notification field0) show,
+    required TResult Function(int field0) close,
+    required TResult Function(List<Notification> field0) update,
+    required TResult Function(int field0) clientClose,
+  }) {
+    return update(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(Notification field0)? show,
+    TResult? Function(int field0)? close,
+    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(int field0)? clientClose,
+  }) {
+    return update?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Notification field0)? show,
+    TResult Function(int field0)? close,
+    TResult Function(List<Notification> field0)? update,
+    TResult Function(int field0)? clientClose,
+    required TResult orElse(),
+  }) {
+    if (update != null) {
+      return update(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(DeamonAction_Show value) show,
+    required TResult Function(DeamonAction_Close value) close,
+    required TResult Function(DeamonAction_Update value) update,
+    required TResult Function(DeamonAction_ClientClose value) clientClose,
+  }) {
+    return update(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(DeamonAction_Show value)? show,
+    TResult? Function(DeamonAction_Close value)? close,
+    TResult? Function(DeamonAction_Update value)? update,
+    TResult? Function(DeamonAction_ClientClose value)? clientClose,
+  }) {
+    return update?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(DeamonAction_Show value)? show,
+    TResult Function(DeamonAction_Close value)? close,
+    TResult Function(DeamonAction_Update value)? update,
+    TResult Function(DeamonAction_ClientClose value)? clientClose,
+    required TResult orElse(),
+  }) {
+    if (update != null) {
+      return update(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class DeamonAction_Update implements DeamonAction {
+  const factory DeamonAction_Update(final List<Notification> field0) =
+      _$DeamonAction_Update;
+
+  @override
+  List<Notification> get field0;
+  @JsonKey(ignore: true)
+  _$$DeamonAction_UpdateCopyWith<_$DeamonAction_Update> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -431,6 +604,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
   TResult when<TResult extends Object?>({
     required TResult Function(Notification field0) show,
     required TResult Function(int field0) close,
+    required TResult Function(List<Notification> field0) update,
     required TResult Function(int field0) clientClose,
   }) {
     return clientClose(field0);
@@ -441,6 +615,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(Notification field0)? show,
     TResult? Function(int field0)? close,
+    TResult? Function(List<Notification> field0)? update,
     TResult? Function(int field0)? clientClose,
   }) {
     return clientClose?.call(field0);
@@ -451,6 +626,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(Notification field0)? show,
     TResult Function(int field0)? close,
+    TResult Function(List<Notification> field0)? update,
     TResult Function(int field0)? clientClose,
     required TResult orElse(),
   }) {
@@ -465,6 +641,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
   TResult map<TResult extends Object?>({
     required TResult Function(DeamonAction_Show value) show,
     required TResult Function(DeamonAction_Close value) close,
+    required TResult Function(DeamonAction_Update value) update,
     required TResult Function(DeamonAction_ClientClose value) clientClose,
   }) {
     return clientClose(this);
@@ -475,6 +652,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DeamonAction_Show value)? show,
     TResult? Function(DeamonAction_Close value)? close,
+    TResult? Function(DeamonAction_Update value)? update,
     TResult? Function(DeamonAction_ClientClose value)? clientClose,
   }) {
     return clientClose?.call(this);
@@ -485,6 +663,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DeamonAction_Show value)? show,
     TResult Function(DeamonAction_Close value)? close,
+    TResult Function(DeamonAction_Update value)? update,
     TResult Function(DeamonAction_ClientClose value)? clientClose,
     required TResult orElse(),
   }) {

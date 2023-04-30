@@ -136,7 +136,8 @@ impl support::IntoDart for DeamonAction {
         match self {
             Self::Show(field0) => vec![0.into_dart(), field0.into_dart()],
             Self::Close(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::ClientClose(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::Update(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::ClientClose(field0) => vec![3.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }
@@ -191,6 +192,7 @@ impl support::IntoDart for Notification {
             self.body.into_dart(),
             self.actions.into_dart(),
             self.timeout.into_dart(),
+            self.time_since_display.into_dart(),
             self.hints.into_dart(),
         ]
         .into_dart()
