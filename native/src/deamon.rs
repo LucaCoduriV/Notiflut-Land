@@ -1,5 +1,5 @@
 use std::{
-    sync::{Arc, Mutex, mpsc::Receiver},
+    sync::{Arc, Mutex, mpsc::Receiver, RwLock},
     time::Duration, thread::JoinHandle,
 };
 use flutter_rust_bridge::StreamSink;
@@ -51,31 +51,45 @@ impl NotificationDeamon {
         Ok(())
     }
 
-    fn cron_job(notifications: &mut Vec<Notification>) {
-
+    fn cron_job(notifications: Arc<RwLock<Vec<Notification>>>)-> JoinHandle<Result<(), DeamonError>> {
+        std::thread::spawn(move ||{
+            loop {
+                std::thread::sleep(Duration::from_secs(1));
+                if let Ok(mut notifications) = notifications.write() {
+                    for notif in notifications.iter_mut() {
+                        notif.time_since_display += 1000;
+                    }
+                } else {
+                    return Err(DeamonError::Error);
+                }
+            }
+            // Ok(())
+        })
     }
 
     fn handle_actions(sender:StreamSink<DeamonAction>, recv:Receiver<DeamonAction>) -> JoinHandle<Result<(), DeamonError>> {
         let join_handle = std::thread::spawn(move ||{
-            let mut notifications: Vec<Notification> = Vec::new();
+            // let mut notifications: Vec<Notification> = Vec::new();
+            let notifications:Arc<RwLock<Vec<Notification>>> = Arc::new(RwLock::new(Vec::new()));
+            let cron_handle = NotificationDeamon::cron_job(Arc::clone(&notifications));
             for action in recv {
                 match action {
                     DeamonAction::Show(notification) => {
-                       notifications.retain(|v|v.id != notification.id);
-                       notifications.push(notification.clone()); 
-                       if let false = sender.add(DeamonAction::Update(notifications.clone())){
-                           return Err(DeamonError::Error)
-                       }
+                        notifications.write().unwrap().retain(|v|v.id != notification.id); 
+                        notifications.write().unwrap().push(notification.clone());
+                        if let false = sender.add(DeamonAction::Update(notifications.read().unwrap().clone())){
+                            return Err(DeamonError::Error)
+                        }
                     },
                     DeamonAction::Close(id) => {
-                       notifications.retain(|v|v.id != id);
-                       if let false = sender.add(DeamonAction::Update(notifications.clone())){
+                       notifications.write().unwrap().retain(|v|v.id != id);
+                        if let false = sender.add(DeamonAction::Update(notifications.read().unwrap().clone())){
                            return Err(DeamonError::Error)
                        }
                     },
                     DeamonAction::ClientClose(id) => {
-                       notifications.retain(|v|v.id != id);
-                       if let false = sender.add(DeamonAction::Update(notifications.clone())){
+                       notifications.write().unwrap().retain(|v|v.id != id);
+                        if let false = sender.add(DeamonAction::Update(notifications.read().unwrap().clone())){
                            return Err(DeamonError::Error)
                        }
                     },
