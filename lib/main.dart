@@ -106,7 +106,7 @@ class _NotificationListState extends State<NotificationList> {
     itemCount: notifications.length,
     itemBuilder: (context, index){
         final notification = notifications[index];
-        final imageData = notification.hints.imageData!;
+        final imageData = notification.hints.imageData;
         return NotificationTile(
             notification.id,
             notification.appName,
@@ -116,13 +116,13 @@ class _NotificationListState extends State<NotificationList> {
               notifications.removeWhere((element) => element.id == notification.id);
               setState(() {});
             },
-            imageProvider: createImage(
-              imageData.width,
-              imageData.height,
-              imageData.data,
-              imageData.channels,
-              imageData.rowstride
-              ).image,
+            imageProvider: (imageData != null) ? createImage(
+              imageData!.width,
+              imageData!.height,
+              imageData!.data,
+              imageData!.channels,
+              imageData!.rowstride
+              ).image : null,
             );
       },
     ); 
