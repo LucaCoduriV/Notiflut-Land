@@ -25,6 +25,14 @@
       <annotation name="org.qtproject.QtDBus.QtTypeName.In6" value="QVariantMap"/>
       <arg name="timeout" type="i" direction="in"/>
       <arg name="return_id" type="u" direction="out"/>
-    </method>
+    </method> 
+    <signal name="NotificationClosed">
+      <arg name="id" type="u" direction="out"/>
+      <arg name="reason" type="u" direction="out"/>
+    </signal>
+    <signal name="ActionInvoked">
+      <arg name="id" type="u" direction="out"/>
+      <arg name="action_key" type="s" direction="out"/>
+    </signal>
   </interface>
 </node>
