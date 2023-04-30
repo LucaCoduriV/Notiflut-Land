@@ -111,9 +111,8 @@ class _NotificationListState extends State<NotificationList> {
             notification.id,
             notification.appName,
             notification.summary,
-            action: (){
-              nati.api.sendDeamonAction(action: nati.DeamonAction.clientClose(notification.id));
-              notifications.removeWhere((element) => element.id == notification.id);
+            action: () async {
+              await nati.api.sendDeamonAction(action: nati.DeamonAction.clientClose(notification.id));
               setState(() {});
             },
             imageProvider: (imageData != null) ? createImage(
