@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import './src/native.dart' as nati;
-import './src/native/bridge_definitions.dart' as nati;
 
 import 'package:image/image.dart' as img;
 import 'package:window_manager/window_manager.dart';
@@ -57,7 +56,7 @@ class NotificationCenter extends StatelessWidget {
           colorScheme: const ColorScheme.light(background: Colors.transparent),
           ),
         home: Scaffold(
-          backgroundColor: Color.fromARGB(150, 255, 255, 255),
+          backgroundColor: const Color.fromARGB(150, 255, 255, 255),
           body: Container(
             decoration: BoxDecoration(
               color: Colors.transparent,
@@ -70,7 +69,7 @@ class NotificationCenter extends StatelessWidget {
             padding: EdgeInsets.all(10),
             height: double.infinity,
             width: double.infinity,
-            child: NotificationList(title: "coucou"),
+            child: NotificationList(),
             ),
           ),
         );
@@ -78,9 +77,7 @@ class NotificationCenter extends StatelessWidget {
 }
 
 class NotificationList extends StatefulWidget {
-  const NotificationList({super.key, required this.title});
-
-  final String title;
+  const NotificationList({super.key});
 
   @override
   State<NotificationList> createState() => _NotificationListState();
@@ -93,13 +90,16 @@ class _NotificationListState extends State<NotificationList> {
   void initState() {
     super.initState();
     notificationStream.listen((event) {
-        event.whenOrNull(
-            show: (notification) => notifications.add(notification),
-            close: (id) {
-              notifications.removeWhere((element) => element.id == id);
-            },
-            );
-        setState(() {});
+      event.whenOrNull(
+        show: (notification) {
+          notifications.removeWhere((element) => element.id == notification.id);
+          notifications.add(notification);
+        },
+        close: (id) {
+          notifications.removeWhere((element) => element.id == id);
+        },
+      );
+      setState(() {});
       });
   }
 
@@ -111,8 +111,14 @@ class _NotificationListState extends State<NotificationList> {
         final notification = notifications[index];
         final imageData = notification.hints.imageData!;
         return NotificationTile(
+            notification.id,
             notification.appName,
             notification.summary,
+            action: (){
+              nati.api.sendDeamonAction(action: nati.DeamonAction.clientClose(notification.id));
+              notifications.removeWhere((element) => element.id == notification.id);
+              setState(() {});
+            },
             imageProvider: createImage(
               imageData.width,
               imageData.height,
@@ -128,11 +134,12 @@ class _NotificationListState extends State<NotificationList> {
 
 
 class NotificationTile extends StatelessWidget {
+  final int id;
   final String title;
   final String subtitle;
   final ImageProvider? imageProvider;
-  const NotificationTile(String title, String subtitle, {super.key, this.imageProvider}):
-  subtitle = subtitle, title = title;
+  final Function()? action;
+  const NotificationTile(this.id, this.title, this.subtitle, {super.key, this.imageProvider, this.action});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -146,9 +153,9 @@ class NotificationTile extends StatelessWidget {
           ),
         trailing: InkWell(
           borderRadius: BorderRadius.circular(20),
-          child: Icon(Icons.close),
-          onTap: (){},
-        ),
+          child: const Icon(Icons.close),
+          onTap:  action
+          ),
       ),
     );
   }

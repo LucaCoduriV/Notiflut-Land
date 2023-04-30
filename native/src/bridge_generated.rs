@@ -57,6 +57,22 @@ fn wire_stop_deamon_impl(port_: MessagePort) {
         move || move |task_callback| stop_deamon(),
     )
 }
+fn wire_send_deamon_action_impl(
+    port_: MessagePort,
+    action: impl Wire2Api<DeamonAction> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "send_deamon_action",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_action = action.wire2api();
+            move |task_callback| send_deamon_action(api_action)
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -79,6 +95,40 @@ where
         (!self.is_null()).then(|| self.wire2api())
     }
 }
+
+impl Wire2Api<bool> for bool {
+    fn wire2api(self) -> bool {
+        self
+    }
+}
+
+impl Wire2Api<i32> for i32 {
+    fn wire2api(self) -> i32 {
+        self
+    }
+}
+
+impl Wire2Api<u32> for u32 {
+    fn wire2api(self) -> u32 {
+        self
+    }
+}
+impl Wire2Api<u8> for u8 {
+    fn wire2api(self) -> u8 {
+        self
+    }
+}
+
+impl Wire2Api<Urgency> for i32 {
+    fn wire2api(self) -> Urgency {
+        match self {
+            0 => Urgency::Low,
+            1 => Urgency::Normal,
+            2 => Urgency::Critical,
+            _ => unreachable!("Invalid variant for Urgency: {}", self),
+        }
+    }
+}
 // Section: impl IntoDart
 
 impl support::IntoDart for DeamonAction {
@@ -86,6 +136,7 @@ impl support::IntoDart for DeamonAction {
         match self {
             Self::Show(field0) => vec![0.into_dart(), field0.into_dart()],
             Self::Close(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::ClientClose(field0) => vec![2.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }

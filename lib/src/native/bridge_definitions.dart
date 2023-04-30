@@ -23,6 +23,10 @@ abstract class Native {
   Future<void> stopDeamon({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStopDeamonConstMeta;
+
+  Future<void> sendDeamonAction({required DeamonAction action, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSendDeamonActionConstMeta;
 }
 
 @freezed
@@ -33,6 +37,9 @@ class DeamonAction with _$DeamonAction {
   const factory DeamonAction.close(
     int field0,
   ) = DeamonAction_Close;
+  const factory DeamonAction.clientClose(
+    int field0,
+  ) = DeamonAction_ClientClose;
 }
 
 class Hints {

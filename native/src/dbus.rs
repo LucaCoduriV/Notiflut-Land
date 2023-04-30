@@ -60,10 +60,11 @@ const SERVER_CAPABILITIES: [&str; 8] = ["actions", "body", "action-icons", "acti
 pub enum DeamonAction {
     Show(Notification),
     Close(u32),
+    ClientClose(u32),
 }
 
 pub struct DbusNotification {
-    sender: StreamSink<DeamonAction>,
+    sender: Sender<DeamonAction>,
 }
 
 impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
@@ -81,7 +82,7 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
     }
 
     fn close_notification(&mut self,id:u32) -> Result<(),dbus::MethodErr> {
-        if let false = self.sender.add(DeamonAction::Close(id)){
+        if let Err(_) = self.sender.send(DeamonAction::Close(id)){
             return Err(dbus::MethodErr::failed("Error with channel, couldn't send the action."));
         }
         Ok(())
@@ -112,7 +113,7 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
             timeout,
         };
         println!("{}, {}", notification.app_name, notification.summary);
-        if let false = self.sender.add(DeamonAction::Show(notification)){
+        if let Err(_) = self.sender.send(DeamonAction::Show(notification)){
             return Err(dbus::MethodErr::failed("Error with channel, couldn't send the action."));
         };
         
@@ -132,7 +133,7 @@ impl DbusServer {
         })
     }
 
-    pub fn register_notification_handler(&mut self, sender: StreamSink<DeamonAction>) -> Result<(), Box<dyn Error>> {
+    pub fn register_notification_handler(&mut self, sender: Sender<DeamonAction>) -> Result<(), Box<dyn Error>> {
         let mut crossroad = Crossroads::new();
 
         // register our notification server to dbus

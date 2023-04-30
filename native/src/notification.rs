@@ -5,7 +5,7 @@ use dbus::arg::cast;
 use dbus::arg::PropMap;
 use dbus::arg::RefArg;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Notification{
     pub id:u32,
     pub app_name:String,
@@ -18,7 +18,7 @@ pub struct Notification{
     pub hints:Hints,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Hints{
     pub actions_icon: Option<bool>,
     pub category: Option<String>,
@@ -73,7 +73,7 @@ impl From<&PropMap> for Hints {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Urgency{
     Low,
     Normal,
@@ -93,7 +93,7 @@ impl TryFrom<u8> for Urgency {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ImageData {
     pub width: i32,
     pub height: i32,
