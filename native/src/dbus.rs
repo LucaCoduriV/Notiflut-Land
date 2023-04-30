@@ -90,7 +90,8 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
     }
 
     fn notify(
-            &mut self,app_name:String,
+            &mut self,
+            app_name:String,
             replaces_id:u32,icon:String,
             summary:String,body:String,
             actions:Vec<String>,
@@ -112,9 +113,18 @@ impl dbus_server::OrgFreedesktopNotifications for DbusNotification {
             actions,
             hints: Hints::from(&hints),
             timeout,
-            time_since_display: 0,
+            time_since_display:     0,
         };
-        println!("{}, {}", notification.app_name, notification.summary);
+        println!(
+            "id: {}, app_name: {}, summary: {}, icon: {}, body: {}, actions: {:?}, timeout: {}", 
+            notification.id, 
+            notification.app_name,
+            notification.summary,
+            notification.icon,
+            notification.body,
+            notification.actions,
+            timeout,
+        );
         if let Err(_) = self.sender.send(DeamonAction::Show(notification)){
             return Err(dbus::MethodErr::failed("Error with channel, couldn't send the action."));
         };
