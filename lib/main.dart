@@ -68,7 +68,7 @@ class NotificationCenter extends StatelessWidget {
                 ),
               borderRadius: BorderRadius.circular(20),
               ),
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             height: double.infinity,
             width: double.infinity,
             child: NotificationList(),
@@ -119,12 +119,13 @@ class _NotificationListState extends State<NotificationList> {
               await nati.api.sendDeamonAction(action: nati.DeamonAction.clientClose(notification.id));
               setState(() {});
             },
+            actions: buildFromActionList(notification.id, notification.actions),
             imageProvider: (imageData != null) ? createImage(
-              imageData!.width,
-              imageData!.height,
-              imageData!.data,
-              imageData!.channels,
-              imageData!.rowstride
+              imageData.width,
+              imageData.height,
+              imageData.data,
+              imageData.channels,
+              imageData.rowstride
               ).image : null,
             );
       },
@@ -132,6 +133,25 @@ class _NotificationListState extends State<NotificationList> {
   }
 }
 
+class NotificationAction{
+  final Function() action;
+  final String label;
+    const NotificationAction(this.label, this.action);
+  }
+
+  
+    List<NotificationAction> buildFromActionList(int id, List<String> actions){
+      List<NotificationAction> result = [];
+        for (int i = 0; i < actions.length; i += 2){
+            result.add(NotificationAction(
+                  actions[i + 1],
+                  () async {
+                  await nati.api.sendDeamonAction(action: DeamonAction.clientActionInvoked(id, actions[i]));
+                  }
+            ));
+          }
+        return result;
+      }
 
 class NotificationTile extends StatelessWidget {
   final int id;
@@ -140,26 +160,35 @@ class NotificationTile extends StatelessWidget {
   final ImageProvider? imageProvider;
   final Function()? onTileTap;
   final Function()? closeAction;
-  const NotificationTile(this.id, this.title, this.subtitle, {super.key, this.imageProvider, this.closeAction, this.onTileTap});
+  final List<NotificationAction>? actions;
+  const NotificationTile(this.id, this.title, this.subtitle, {super.key, this.imageProvider, this.closeAction, this.onTileTap, this.actions});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final buttons = actions?.map((v)=> ElevatedButton(onPressed: v.action, child: Text(v.label))).toList();
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: ListTile(
-        title: Text(title),
-        onTap: (){
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(title),
+            onTap: (){
 
-          },
-        subtitle: Text(subtitle),
-        leading: CircleAvatar(
-          backgroundImage: imageProvider,
+              },
+            subtitle: Text(subtitle),
+            leading: CircleAvatar(
+              backgroundImage: imageProvider,
+              ),
+            trailing: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              child: const Icon(Icons.close),
+              onTap:  closeAction
+              ),
           ),
-        trailing: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          child: const Icon(Icons.close),
-          onTap:  closeAction
+          Row(
+            children: buttons ?? [],
           ),
+        ],
       ),
     );
   }
