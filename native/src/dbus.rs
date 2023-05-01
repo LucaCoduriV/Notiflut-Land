@@ -3,7 +3,7 @@ use std::{error::Error, sync::{mpsc::Sender, atomic::{AtomicU32, Ordering}}, tim
 use dbus::{blocking::Connection, message::MatchRule, channel::MatchingReceiver, };
 use dbus_crossroads::Crossroads;
 
-use crate::{notification::{Notification, Hints}, dbus_definition};
+use crate::{notification::{Notification, Hints}, dbus_definition, deamon::ChannelMessage};
 /// D-Bus interface for desktop notifications.
 pub const NOTIFICATION_INTERFACE: &str = "org.freedesktop.Notifications";
 
@@ -59,7 +59,7 @@ pub enum DeamonAction {
 }
 
 pub struct DbusNotification {
-    sender: Sender<DeamonAction>,
+    sender: Sender<ChannelMessage<DeamonAction>>,
 }
 
 impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
@@ -77,7 +77,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
     }
 
     fn close_notification(&mut self,id:u32) -> Result<(),dbus::MethodErr> {
-        if let Err(_) = self.sender.send(DeamonAction::Close(id)){
+        if let Err(_) = self.sender.send(ChannelMessage::Message(DeamonAction::Close(id))){
             return Err(dbus::MethodErr::failed("Error with channel, couldn't send the action."));
         }
         Ok(())
@@ -110,8 +110,9 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
             time_since_display:     0,
         };
         println!(
-            "id: {}, app_name: {}, summary: {}, icon: {}, body: {}, actions: {:?}, timeout: {}", 
+            "id: {}, replace_id: {}, app_name: {}, summary: {}, icon: {}, body: {}, actions: {:?}, timeout: {}", 
             notification.id, 
+            notification.replaces_id,
             notification.app_name,
             notification.summary,
             notification.icon,
@@ -119,7 +120,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
             notification.actions,
             timeout,
         );
-        if let Err(_) = self.sender.send(DeamonAction::Show(notification)){
+        if let Err(_) = self.sender.send(ChannelMessage::Message(DeamonAction::Show(notification))){
             return Err(dbus::MethodErr::failed("Error with channel, couldn't send the action."));
         };
          
@@ -139,7 +140,7 @@ impl DbusServer {
         })
     }
 
-    pub fn register_notification_handler(&mut self, sender: Sender<DeamonAction>) -> Result<(), Box<dyn Error>> {
+    pub fn register_notification_handler(&mut self, sender: Sender<ChannelMessage<DeamonAction>>) -> Result<(), Box<dyn Error>> {
         let mut crossroad = Crossroads::new();
 
         // register our notification server to dbus
@@ -162,6 +163,7 @@ impl DbusServer {
 
     pub fn wait_and_process(&mut self, timeout: Duration) -> Result<bool, Box<dyn Error>> {
             let result = self.connection.process(timeout)?;
+            self.connection.channel().flush();
             Ok(result)
     }
 }

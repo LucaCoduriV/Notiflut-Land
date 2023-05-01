@@ -16,17 +16,32 @@ pub enum DeamonError{
     AlreadyUp 
 }
 
+pub enum ChannelMessage<T>{
+    Message(T),
+    Stop,
+}
+
 pub struct NotificationDeamon{
+    pub sender: Option<std::sync::mpsc::Sender<ChannelMessage<DeamonAction>>>,
+
     stop: Arc<Mutex<bool>>,
-    join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
-    pub sender: Option<std::sync::mpsc::Sender<DeamonAction>>,
+    notification_join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
+    signal_join_handle: Option<JoinHandle<()>>,
+    cron_join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
     dbus_server: Option<Arc<Mutex<DbusServer>>>,
 }
 
 impl NotificationDeamon {
 
     pub fn new() -> Self {
-        NotificationDeamon { stop: Arc::new(Mutex::new(false)), join_handle: None, sender: None, dbus_server: None,}
+        NotificationDeamon { 
+            stop: Arc::new(Mutex::new(false)),
+            notification_join_handle: None,
+            sender: None,
+            dbus_server: None,
+            signal_join_handle:None,
+            cron_join_handle: None,
+        }
     } 
 
     pub fn run_deamon(&mut self, flutter_stream_sink: StreamSink<DeamonAction>) -> Result<(), DeamonError> {
@@ -34,7 +49,7 @@ impl NotificationDeamon {
             return Err(DeamonError::AlreadyUp).into();
         }
         let mut dbus_server = dbus::DbusServer::init().map_err(|_|DeamonError::Error)?;
-        let (sender, recv) = std::sync::mpsc::channel::<DeamonAction>();
+        let (sender, recv) = std::sync::mpsc::channel::<ChannelMessage<DeamonAction>>();
         self.sender = Some(sender.clone());
         dbus_server.register_notification_handler(sender).map_err(|_|DeamonError::Error)?;
         self.dbus_server = Some(Arc::new(Mutex::new(dbus_server)));
@@ -45,19 +60,24 @@ impl NotificationDeamon {
         // start listening for notification
         let thread_handle = std::thread::spawn(move ||{
             while !*stop.lock().unwrap() {
-                match dbus_server.lock().unwrap().wait_and_process(Duration::from_secs(1)).map_err(|_|DeamonError::Error) {
-                    Ok(it) => it,
-                    Err(err) => return Err(err),
-                };
+                // std::thread::sleep(Duration::from_millis(800));
+                {
+                    match dbus_server.lock().unwrap()
+                        .wait_and_process(Duration::from_millis(200)).map_err(|_|DeamonError::Error) {
+                            Ok(it) => it,
+                            Err(err) => return Err(err),
+                        };
+                }
             }
 
             Ok(())
         });
-        self.join_handle = Some(thread_handle);
+        self.notification_join_handle = Some(thread_handle);
         Ok(())
     }
 
-    fn cron_job(stop: Arc<Mutex<bool>>, notifications: Arc<RwLock<Vec<Notification>>>)-> JoinHandle<Result<(), DeamonError>> {
+    fn cron_job(stop: Arc<Mutex<bool>>, notifications: Arc<RwLock<Vec<Notification>>>)
+        -> JoinHandle<Result<(), DeamonError>> {
         std::thread::spawn(move ||{
             loop {
                 std::thread::sleep(Duration::from_secs(1));
@@ -77,16 +97,26 @@ impl NotificationDeamon {
         })
     }
 
-    fn handle_actions(&mut self, sender:StreamSink<DeamonAction>, recv:Receiver<DeamonAction>) -> JoinHandle<Result<(), DeamonError>> {
-        let dbus_server = Arc::clone(self.dbus_server.as_ref().unwrap());
+    fn handle_actions(&mut self, sender:StreamSink<DeamonAction>, recv:Receiver<ChannelMessage<DeamonAction>>) 
+        -> JoinHandle<Result<(), DeamonError>> {
+
         let stop_cron_job = Arc::clone(&self.stop);
-        let stop_action_handling = Arc::clone(&self.stop);
-        let stop_action_join_handler = std::thread::spawn(move ||{
+        let (signal_sender, signal_recv) = std::sync::mpsc::channel();
+        self.signal_join_handle = Some(self.signal_thread(signal_recv));
+
+        let notifications:Arc<RwLock<Vec<Notification>>> = Arc::new(RwLock::new(Vec::new()));
+        self.cron_join_handle = Some(NotificationDeamon::cron_job(stop_cron_job, Arc::clone(&notifications)));
+
+        let action_join_handler = std::thread::spawn(move ||{
             // let mut notifications: Vec<Notification> = Vec::new();
-            let notifications:Arc<RwLock<Vec<Notification>>> = Arc::new(RwLock::new(Vec::new()));
-            let cron_handle = NotificationDeamon::cron_job(stop_cron_job, Arc::clone(&notifications));
             loop {
-                let action = recv.recv().unwrap();
+                let action = match recv.recv().unwrap() {
+                    ChannelMessage::Message(m) => m,
+                    ChannelMessage::Stop => {
+                        return Ok(());
+                    },
+                };
+
                 match action {
                     DeamonAction::Show(notification) => {
                         notifications.write().unwrap().retain(|v|v.id != notification.id); 
@@ -99,61 +129,73 @@ impl NotificationDeamon {
                        notifications.write().unwrap().retain(|v|v.id != id);
                         if let false = sender.add(DeamonAction::Update(notifications.read().unwrap().clone())){
                            return Err(DeamonError::Error);
-                       }
+                        }
                     },
                     DeamonAction::ClientClose(id) => {
-                       notifications.write().unwrap().retain(|v|v.id != id);
+                        notifications.write().unwrap().retain(|v|v.id != id);
                         let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed{
                             id,
                             reason : 2, // 2 means dismissed by user
                         };
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
-                        let result = dbus_server.lock().unwrap()
-                            .connection.channel().send(message.to_emit_message(&path));
-                        match result {
-                            Ok(_) => {},
-                            Err(_) => {
-                                dbus_server.lock().unwrap().connection.channel().flush();
-                            },
-                        };
+                        let _result = signal_sender.send(ChannelMessage::Message(message.to_emit_message(&path)));
+
                         if let false = sender.add(DeamonAction::Update(notifications.read().unwrap().clone())){
                            return Err(DeamonError::Error);
-                       }
+                        }
                     },
                     DeamonAction::ClientActionInvoked(id, action_key) => {
+                        notifications.write().unwrap().retain(|v|v.id != id);
                         let message = dbus_definition::OrgFreedesktopNotificationsActionInvoked{
                             id,
                             action_key,
                         };
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
-                        let result = dbus_server.lock().unwrap().connection.channel().send(message.to_emit_message(&path));
-                        match result {
-                            Ok(_) => {},
-                            Err(_) => {
-                                dbus_server.lock().unwrap().connection.channel().flush();
-                            },
-                        };
+                        let _result = signal_sender.send(ChannelMessage::Message(message.to_emit_message(&path)));
+
+                        if let false = sender.add(DeamonAction::Update(notifications.read().unwrap().clone())){
+                           return Err(DeamonError::Error);
+                        }
                     },
                     _ => {},
                 };
-
-                if *stop_action_handling.lock().unwrap(){
-                    let _cron_job_result = cron_handle.join().unwrap();
-                    return Ok(());
-                }
             }
         });
-        stop_action_join_handler 
+        action_join_handler 
     }
 
     pub fn stop_deamon(&mut self) -> Result<(), DeamonError> {
         *self.stop.lock().unwrap() = true;
-        let handle = self.join_handle.take();
+        let handle = self.notification_join_handle.take();
         let result = match handle {
             Some(h) => h.join(),
             None => {return Err(DeamonError::AlreadyDown);},
         };
-        print!("{result:?}");
+        print!("Stop result: {result:?}");
+        // TODO join every thread
         return Ok(());
+    }
+
+    pub fn signal_thread(&self, recv:Receiver<ChannelMessage<::dbus::message::Message>>) -> JoinHandle<()> {
+        let dbus_server = Arc::clone(self.dbus_server.as_ref().unwrap());
+        let thread_handle = std::thread::spawn(move ||{
+            for message in recv {
+                match message {
+                    ChannelMessage::Message(m) => {
+                        println!("sending signal: {:?}", m);
+                        let channel = dbus_server.lock().unwrap();
+                        println!("JE VEUX PLEURER !!!");
+
+                        let result = channel.connection.channel().send_with_reply_and_block(m, Duration::from_secs(1));
+                        println!("Signal result: {:?}", result);
+                    },
+                    ChannelMessage::Stop => {
+                        return;
+                    },
+                };
+            }
+        });
+
+        thread_handle
     }
 }

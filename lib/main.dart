@@ -71,7 +71,7 @@ class NotificationCenter extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             height: double.infinity,
             width: double.infinity,
-            child: NotificationList(),
+            child: const NotificationList(),
             ),
           ),
         );
@@ -86,7 +86,7 @@ class NotificationList extends StatefulWidget {
 }
 
 class _NotificationListState extends State<NotificationList> {
-  List<nati.Notification> notifications = List.empty(growable: true);
+  List<nati.Notification> notifications = [];
 
   @override
   void initState() {
@@ -140,18 +140,18 @@ class NotificationAction{
   }
 
   
-    List<NotificationAction> buildFromActionList(int id, List<String> actions){
-      List<NotificationAction> result = [];
-        for (int i = 0; i < actions.length; i += 2){
-            result.add(NotificationAction(
-                  actions[i + 1],
-                  () async {
-                  await nati.api.sendDeamonAction(action: DeamonAction.clientActionInvoked(id, actions[i]));
-                  }
-            ));
+List<NotificationAction> buildFromActionList(int id, List<String> actions){
+  List<NotificationAction> result = [];
+  for (int i = 0; i < actions.length; i += 2){
+    result.add(NotificationAction(
+          actions[i + 1],
+          () async {
+          await nati.api.sendDeamonAction(action: DeamonAction.clientActionInvoked(id, actions[i]));
           }
-        return result;
-      }
+          ));
+  }
+  return result;
+}
 
 class NotificationTile extends StatelessWidget {
   final int id;
@@ -172,17 +172,15 @@ class NotificationTile extends StatelessWidget {
         children: [
           ListTile(
             title: Text(title),
-            onTap: (){
-
-              },
+            onTap: onTileTap,
             subtitle: Text(subtitle),
             leading: CircleAvatar(
               backgroundImage: imageProvider,
               ),
             trailing: InkWell(
               borderRadius: BorderRadius.circular(20),
+              onTap:  closeAction,
               child: const Icon(Icons.close),
-              onTap:  closeAction
               ),
           ),
           Row(

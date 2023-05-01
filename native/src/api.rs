@@ -3,7 +3,7 @@ use std::sync::Mutex;
 use anyhow::Ok;
 use flutter_rust_bridge::StreamSink;
 
-use crate::{deamon::NotificationDeamon, dbus::DeamonAction};
+use crate::{deamon::{NotificationDeamon, ChannelMessage}, dbus::DeamonAction};
 
 static DEAMON:Mutex<Option<NotificationDeamon>> = Mutex::new(None);
 
@@ -22,6 +22,6 @@ pub fn stop_deamon() -> anyhow::Result<()>{
 }
 
 pub fn send_deamon_action(action: DeamonAction) -> anyhow::Result<()> {
-    DEAMON.lock().unwrap().as_mut().unwrap().sender.as_mut().unwrap().send(action)?;
+    DEAMON.lock().unwrap().as_mut().unwrap().sender.as_mut().unwrap().send(ChannelMessage::Message(action))?;
     Ok(())
 }
