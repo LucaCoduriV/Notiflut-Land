@@ -43,6 +43,10 @@ class DeamonAction with _$DeamonAction {
   const factory DeamonAction.clientClose(
     int field0,
   ) = DeamonAction_ClientClose;
+  const factory DeamonAction.clientActionInvoked(
+    int field0,
+    String field1,
+  ) = DeamonAction_ClientActionInvoked;
 }
 
 class Hints {

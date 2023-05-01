@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:test_flutter_russt/src/native/bridge_definitions.dart';
 import './src/native.dart' as nati;
 import './src/native/bridge_definitions.dart' as nati;
 
@@ -111,7 +112,10 @@ class _NotificationListState extends State<NotificationList> {
             notification.id,
             notification.appName,
             notification.summary,
-            action: () async {
+            onTileTap: ()async {
+              await nati.api.sendDeamonAction(action: DeamonAction.clientActionInvoked(notification.id, "default"));
+              },
+            closeAction: () async {
               await nati.api.sendDeamonAction(action: nati.DeamonAction.clientClose(notification.id));
               setState(() {});
             },
@@ -134,8 +138,9 @@ class NotificationTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final ImageProvider? imageProvider;
-  final Function()? action;
-  const NotificationTile(this.id, this.title, this.subtitle, {super.key, this.imageProvider, this.action});
+  final Function()? onTileTap;
+  final Function()? closeAction;
+  const NotificationTile(this.id, this.title, this.subtitle, {super.key, this.imageProvider, this.closeAction, this.onTileTap});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -143,6 +148,9 @@ class NotificationTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: ListTile(
         title: Text(title),
+        onTap: (){
+
+          },
         subtitle: Text(subtitle),
         leading: CircleAvatar(
           backgroundImage: imageProvider,
@@ -150,7 +158,7 @@ class NotificationTile extends StatelessWidget {
         trailing: InkWell(
           borderRadius: BorderRadius.circular(20),
           child: const Icon(Icons.close),
-          onTap:  action
+          onTap:  closeAction
           ),
       ),
     );

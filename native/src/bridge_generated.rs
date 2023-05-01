@@ -138,6 +138,9 @@ impl support::IntoDart for DeamonAction {
             Self::Close(field0) => vec![1.into_dart(), field0.into_dart()],
             Self::Update(field0) => vec![2.into_dart(), field0.into_dart()],
             Self::ClientClose(field0) => vec![3.into_dart(), field0.into_dart()],
+            Self::ClientActionInvoked(field0, field1) => {
+                vec![4.into_dart(), field0.into_dart(), field1.into_dart()]
+            }
         }
         .into_dart()
     }

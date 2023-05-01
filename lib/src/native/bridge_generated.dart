@@ -146,6 +146,11 @@ class NativeImpl implements Native {
         return DeamonAction_ClientClose(
           _wire2api_u32(raw[1]),
         );
+      case 4:
+        return DeamonAction_ClientActionInvoked(
+          _wire2api_u32(raw[1]),
+          _wire2api_String(raw[2]),
+        );
       default:
         throw Exception("unreachable");
     }
@@ -429,6 +434,15 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       wireObj.tag = 3;
       wireObj.kind = inner.inflate_DeamonAction_ClientClose();
       wireObj.kind.ref.ClientClose.ref.field0 = pre_field0;
+      return;
+    }
+    if (apiObj is DeamonAction_ClientActionInvoked) {
+      var pre_field0 = api2wire_u32(apiObj.field0);
+      var pre_field1 = api2wire_String(apiObj.field1);
+      wireObj.tag = 4;
+      wireObj.kind = inner.inflate_DeamonAction_ClientActionInvoked();
+      wireObj.kind.ref.ClientActionInvoked.ref.field0 = pre_field0;
+      wireObj.kind.ref.ClientActionInvoked.ref.field1 = pre_field1;
       return;
     }
   }
@@ -793,6 +807,17 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _inflate_DeamonAction_ClientClosePtr
           .asFunction<ffi.Pointer<DeamonActionKind> Function()>();
 
+  ffi.Pointer<DeamonActionKind> inflate_DeamonAction_ClientActionInvoked() {
+    return _inflate_DeamonAction_ClientActionInvoked();
+  }
+
+  late final _inflate_DeamonAction_ClientActionInvokedPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<DeamonActionKind> Function()>>(
+          'inflate_DeamonAction_ClientActionInvoked');
+  late final _inflate_DeamonAction_ClientActionInvoked =
+      _inflate_DeamonAction_ClientActionInvokedPtr
+          .asFunction<ffi.Pointer<DeamonActionKind> Function()>();
+
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {
@@ -925,6 +950,13 @@ class wire_DeamonAction_ClientClose extends ffi.Struct {
   external int field0;
 }
 
+class wire_DeamonAction_ClientActionInvoked extends ffi.Struct {
+  @ffi.Uint32()
+  external int field0;
+
+  external ffi.Pointer<wire_uint_8_list> field1;
+}
+
 class DeamonActionKind extends ffi.Union {
   external ffi.Pointer<wire_DeamonAction_Show> Show;
 
@@ -933,6 +965,9 @@ class DeamonActionKind extends ffi.Union {
   external ffi.Pointer<wire_DeamonAction_Update> Update;
 
   external ffi.Pointer<wire_DeamonAction_ClientClose> ClientClose;
+
+  external ffi.Pointer<wire_DeamonAction_ClientActionInvoked>
+      ClientActionInvoked;
 }
 
 class wire_DeamonAction extends ffi.Struct {

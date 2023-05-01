@@ -157,6 +157,11 @@ impl Wire2Api<DeamonAction> for wire_DeamonAction {
                 let ans = support::box_from_leak_ptr(ans.ClientClose);
                 DeamonAction::ClientClose(ans.field0.wire2api())
             },
+            4 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.ClientActionInvoked);
+                DeamonAction::ClientActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
+            },
             _ => unreachable!(),
         }
     }
@@ -310,6 +315,7 @@ pub union DeamonActionKind {
     Close: *mut wire_DeamonAction_Close,
     Update: *mut wire_DeamonAction_Update,
     ClientClose: *mut wire_DeamonAction_ClientClose,
+    ClientActionInvoked: *mut wire_DeamonAction_ClientActionInvoked,
 }
 
 #[repr(C)]
@@ -334,6 +340,13 @@ pub struct wire_DeamonAction_Update {
 #[derive(Clone)]
 pub struct wire_DeamonAction_ClientClose {
     field0: u32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_DeamonAction_ClientActionInvoked {
+    field0: u32,
+    field1: *mut wire_uint_8_list,
 }
 
 // Section: impl NewWithNullPtr
@@ -389,6 +402,16 @@ pub extern "C" fn inflate_DeamonAction_ClientClose() -> *mut DeamonActionKind {
     support::new_leak_box_ptr(DeamonActionKind {
         ClientClose: support::new_leak_box_ptr(wire_DeamonAction_ClientClose {
             field0: Default::default(),
+        }),
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_DeamonAction_ClientActionInvoked() -> *mut DeamonActionKind {
+    support::new_leak_box_ptr(DeamonActionKind {
+        ClientActionInvoked: support::new_leak_box_ptr(wire_DeamonAction_ClientActionInvoked {
+            field0: Default::default(),
+            field1: core::ptr::null_mut(),
         }),
     })
 }
