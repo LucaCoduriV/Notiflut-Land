@@ -1,26 +1,26 @@
 use std::collections::VecDeque;
 
-use dbus::arg::prop_cast;
 use dbus::arg::cast;
+use dbus::arg::prop_cast;
 use dbus::arg::PropMap;
 use dbus::arg::RefArg;
 
 #[derive(Debug, Clone)]
-pub struct Notification{
-    pub id:u32,
-    pub app_name:String,
-    pub replaces_id:u32,
-    pub icon:String,
-    pub summary:String,
-    pub body:String,
-    pub actions:Vec<String>,
-    pub timeout:i32,
-    pub time_since_display:u32,
-    pub hints:Hints,
+pub struct Notification {
+    pub id: u32,
+    pub app_name: String,
+    pub replaces_id: u32,
+    pub icon: String,
+    pub summary: String,
+    pub body: String,
+    pub actions: Vec<String>,
+    pub timeout: i32,
+    pub time_since_display: u32,
+    pub hints: Hints,
 }
 
 #[derive(Debug, Clone)]
-pub struct Hints{
+pub struct Hints {
     pub actions_icon: Option<bool>,
     pub category: Option<String>,
     pub desktop_entry: Option<String>,
@@ -33,7 +33,7 @@ pub struct Hints{
     pub transient: Option<bool>,
     pub x: Option<i32>,
     pub y: Option<i32>,
-    pub urgency:Option<Urgency>,
+    pub urgency: Option<Urgency>,
 }
 
 impl From<&PropMap> for Hints {
@@ -49,15 +49,15 @@ impl From<&PropMap> for Hints {
         let transient = prop_cast::<bool>(&map, "transient").copied();
         let pos_x = prop_cast::<i32>(&map, "x").copied();
         let pos_y = prop_cast::<i32>(&map, "y").copied();
-        let urgency = match prop_cast::<u8>(&map, "urgency").copied(){
+        let urgency = match prop_cast::<u8>(&map, "urgency").copied() {
             Some(v) => Urgency::try_from(v).ok(),
             None => None,
         };
-        let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&map, "image-data"){
+        let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&map, "image-data") {
             Some(v) => ImageData::try_from(v).ok(),
             None => None,
         };
-        Hints { 
+        Hints {
             actions_icon,
             category,
             desktop_entry,
@@ -75,7 +75,7 @@ impl From<&PropMap> for Hints {
     }
 }
 #[derive(Debug, Clone)]
-pub enum Urgency{
+pub enum Urgency {
     Low,
     Normal,
     Critical,
@@ -84,7 +84,7 @@ pub enum Urgency{
 impl TryFrom<u8> for Urgency {
     type Error = ();
 
-    fn try_from(value:u8) -> Result<Self, Self::Error> {
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(Urgency::Low),
             1 => Ok(Urgency::Normal),
@@ -112,12 +112,16 @@ impl TryFrom<&VecDeque<Box<dyn RefArg>>> for ImageData {
         let width = *cast::<i32>(&img[0]).ok_or("couldn't cast image's width")?;
         let height = *cast::<i32>(&img[1]).ok_or("couldn't cast image's height")?;
         let rowstride = *cast::<i32>(&img[2]).ok_or("couldn't cast image's rowstride")?;
-        let one_point_two_bit_alpha = *cast::<bool>(&img[3]).ok_or("couldn't cast image's one_point_two_bit_alpha")?;
-        let bits_per_sample = *cast::<i32>(&img[4]).ok_or("couldn't cast image's bits_per_sample")?;
+        let one_point_two_bit_alpha =
+            *cast::<bool>(&img[3]).ok_or("couldn't cast image's one_point_two_bit_alpha")?;
+        let bits_per_sample =
+            *cast::<i32>(&img[4]).ok_or("couldn't cast image's bits_per_sample")?;
         let channels = *cast::<i32>(&img[5]).ok_or("couldn't cast image's channels")?;
-        let data = cast::<Vec<u8>>(&img[6]).ok_or("couldn't cast image's data")?.clone();
+        let data = cast::<Vec<u8>>(&img[6])
+            .ok_or("couldn't cast image's data")?
+            .clone();
 
-        Ok(ImageData{
+        Ok(ImageData {
             width,
             height,
             rowstride,
