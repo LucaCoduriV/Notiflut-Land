@@ -26,7 +26,7 @@ pub struct NotificationDeamon{
 
     stop: Arc<Mutex<bool>>,
     notification_join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
-    signal_join_handle: Option<JoinHandle<()>>,
+    signal_recv: Arc<Mutex<Option<Receiver<::dbus::message::Message>>>>,
     cron_join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
     dbus_server: Option<Arc<Mutex<DbusServer>>>,
 }
@@ -39,7 +39,7 @@ impl NotificationDeamon {
             notification_join_handle: None,
             sender: None,
             dbus_server: None,
-            signal_join_handle:None,
+            signal_recv: Arc::new(Mutex::new(None)),
             cron_join_handle: None,
         }
     } 
@@ -56,18 +56,33 @@ impl NotificationDeamon {
         self.handle_actions(flutter_stream_sink, recv);
         let dbus_server = Arc::clone(self.dbus_server.as_ref().unwrap());
         let stop = Arc::clone(&self.stop);
-
+        let arc_signal_recv = Arc::clone(&self.signal_recv);
         // start listening for notification
         let thread_handle = std::thread::spawn(move ||{
+            let mut recv: Option<Receiver<::dbus::message::Message>>= None;
             while !*stop.lock().unwrap() {
-                // std::thread::sleep(Duration::from_millis(800));
-                {
-                    match dbus_server.lock().unwrap()
-                        .wait_and_process(Duration::from_millis(200)).map_err(|_|DeamonError::Error) {
-                            Ok(it) => it,
-                            Err(err) => return Err(err),
-                        };
+                // TODO this code is bit messy and really need a refactor
+                // recv could still not be initialized by the handle_action thread
+                if recv.is_some() {
+                  if let Ok(message) = recv.as_mut().unwrap().try_recv() {
+                      println!("sending signal: {:?}", message);
+                      let channel = dbus_server.lock().unwrap();
+
+                      let result = channel.connection.channel().send(message);
+                      println!("Signal result: {:?}", result);
+                  } 
+                }else {
+                    let mut lock = arc_signal_recv.lock().unwrap();
+                    if lock.is_some(){
+                        recv = lock.take();
+                    }
                 }
+                match dbus_server.lock().unwrap()
+                    .wait_and_process(Duration::from_millis(200)).map_err(|_|DeamonError::Error) {
+                        Ok(it) => it,
+                        Err(err) => return Err(err),
+                    };
+                
             }
 
             Ok(())
@@ -101,8 +116,12 @@ impl NotificationDeamon {
         -> JoinHandle<Result<(), DeamonError>> {
 
         let stop_cron_job = Arc::clone(&self.stop);
-        let (signal_sender, signal_recv) = std::sync::mpsc::channel();
-        self.signal_join_handle = Some(self.signal_thread(signal_recv));
+        let (signal_sender, signal_recv) = std::sync::mpsc::channel::<::dbus::message::Message>();
+        {
+            let mut sr = self.signal_recv.lock().unwrap();
+            *sr = Some(signal_recv);
+        }
+        // self.signal_join_handle = Some(self.signal_thread(signal_recv));
 
         let notifications:Arc<RwLock<Vec<Notification>>> = Arc::new(RwLock::new(Vec::new()));
         self.cron_join_handle = Some(NotificationDeamon::cron_job(stop_cron_job, Arc::clone(&notifications)));
@@ -138,7 +157,7 @@ impl NotificationDeamon {
                             reason : 2, // 2 means dismissed by user
                         };
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
-                        let _result = signal_sender.send(ChannelMessage::Message(message.to_emit_message(&path)));
+                        let _result = signal_sender.send(message.to_emit_message(&path));
 
                         if let false = sender.add(DeamonAction::Update(notifications.read().unwrap().clone())){
                            return Err(DeamonError::Error);
@@ -151,7 +170,7 @@ impl NotificationDeamon {
                             action_key,
                         };
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
-                        let _result = signal_sender.send(ChannelMessage::Message(message.to_emit_message(&path)));
+                        let _result = signal_sender.send(message.to_emit_message(&path));
 
                         if let false = sender.add(DeamonAction::Update(notifications.read().unwrap().clone())){
                            return Err(DeamonError::Error);
