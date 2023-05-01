@@ -54,6 +54,7 @@ impl NotificationDeamon {
         dbus_server.register_notification_handler(sender).map_err(|_|DeamonError::Error)?;
         self.dbus_server = Some(Arc::new(Mutex::new(dbus_server)));
         self.handle_actions(flutter_stream_sink, recv);
+        
         let dbus_server = Arc::clone(self.dbus_server.as_ref().unwrap());
         let stop = Arc::clone(&self.stop);
         let arc_signal_recv = Arc::clone(&self.signal_recv);
@@ -66,9 +67,8 @@ impl NotificationDeamon {
                 if recv.is_some() {
                   if let Ok(message) = recv.as_mut().unwrap().try_recv() {
                       println!("sending signal: {:?}", message);
-                      let channel = dbus_server.lock().unwrap();
-
-                      let result = channel.connection.channel().send(message);
+                      let dbus_server_guard = dbus_server.lock().unwrap();
+                      let result = dbus_server_guard.connection.channel().send(message);
                       println!("Signal result: {:?}", result);
                   } 
                 }else {
@@ -82,7 +82,6 @@ impl NotificationDeamon {
                         Ok(it) => it,
                         Err(err) => return Err(err),
                     };
-                
             }
 
             Ok(())
@@ -193,28 +192,5 @@ impl NotificationDeamon {
         print!("Stop result: {result:?}");
         // TODO join every thread
         return Ok(());
-    }
-
-    pub fn signal_thread(&self, recv:Receiver<ChannelMessage<::dbus::message::Message>>) -> JoinHandle<()> {
-        let dbus_server = Arc::clone(self.dbus_server.as_ref().unwrap());
-        let thread_handle = std::thread::spawn(move ||{
-            for message in recv {
-                match message {
-                    ChannelMessage::Message(m) => {
-                        println!("sending signal: {:?}", m);
-                        let channel = dbus_server.lock().unwrap();
-                        println!("JE VEUX PLEURER !!!");
-
-                        let result = channel.connection.channel().send_with_reply_and_block(m, Duration::from_secs(1));
-                        println!("Signal result: {:?}", result);
-                    },
-                    ChannelMessage::Stop => {
-                        return;
-                    },
-                };
-            }
-        });
-
-        thread_handle
     }
 }

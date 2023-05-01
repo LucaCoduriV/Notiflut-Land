@@ -47,7 +47,17 @@ static ID_COUNT: AtomicU32 = AtomicU32::new(1);
 ///
 /// "sound"              The server supports sounds on notifications. If returned, the server must support the "sound-file" and "suppress-sound" hints.
 
-const SERVER_CAPABILITIES: [&str; 8] = ["actions", "body", "action-icons", "actions", "body-hyperlinks", "body-image", "body-markup", "icon-multi"];
+const SERVER_CAPABILITIES: [&str; 6] = [
+    "actions",
+    "body",
+    // "action-icons",
+    "actions",
+    "body-hyperlinks",
+    // "body-image",
+    // "body-markup",
+    "icon-multi",
+    "persistence",
+];
 
 #[derive(Debug)]
 pub enum DeamonAction {
