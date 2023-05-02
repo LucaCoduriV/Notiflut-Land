@@ -40,6 +40,7 @@ dependencies:
   freezed_annotation: ^2.2.0
   image: ^4.0.16
   window_manager: ^0.3.2
+  desktop_multi_window: ^0.2.0
 
 dev_dependencies:
   flutter_test:

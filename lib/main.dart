@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:test_flutter_russt/src/native/bridge_definitions.dart';
 import './src/native.dart' as nati;
-import './src/native/bridge_definitions.dart' as nati;
+// import './src/native/bridge_definitions.dart' as nati;
 
 import 'package:image/image.dart' as img;
 import 'package:window_manager/window_manager.dart';
@@ -113,7 +113,7 @@ class _NotificationListState extends State<NotificationList> {
             notification.appName,
             notification.summary,
             onTileTap: ()async {
-              await nati.api.sendDeamonAction(action: DeamonAction.clientActionInvoked(notification.id, "default"));
+              await nati.api.sendDeamonAction(action: nati.DeamonAction.clientActionInvoked(notification.id, "default"));
               },
             closeAction: () async {
               await nati.api.sendDeamonAction(action: nati.DeamonAction.clientClose(notification.id));
@@ -146,7 +146,7 @@ List<NotificationAction> buildFromActionList(int id, List<String> actions){
     result.add(NotificationAction(
           actions[i + 1],
           () async {
-          await nati.api.sendDeamonAction(action: DeamonAction.clientActionInvoked(id, actions[i]));
+          await nati.api.sendDeamonAction(action: nati.DeamonAction.clientActionInvoked(id, actions[i]));
           }
           ));
   }
