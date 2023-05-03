@@ -1,4 +1,6 @@
 #include "my_application.h"
+// #include <window_manager/window_manager_plugin.h>
+// #include "desktop_multi_window/desktop_multi_window_plugin.h"
 
 #include <flutter_linux/flutter_linux.h>
 #ifdef GDK_WINDOWING_X11
@@ -65,7 +67,11 @@ static void my_application_activate(GApplication *application)
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
-
+  // desktop_multi_window_plugin_set_window_created_callback([](FlPluginRegistry* registry){
+  //     g_autoptr(FlPluginRegistrar) window_manager_registrar =
+  //     fl_plugin_registry_get_registrar_for_plugin(registry, "WindowManagerPlugin");
+  //     window_manager_plugin_register_with_registrar(window_manager_registrar);
+  //     });
   gtk_widget_grab_focus(GTK_WIDGET(view));
 }
 
