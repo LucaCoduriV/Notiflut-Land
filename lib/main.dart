@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:test_flutter_russt/src/popup.dart';
 import 'package:test_flutter_russt/src/window_manager.dart';
 import './src/native.dart' as nati;
 // import './src/native/bridge_definitions.dart' as nati;
@@ -40,10 +41,11 @@ void main(List<String> args) async {
     final argument = args[2].isEmpty
         ? const {}
         : jsonDecode(args[2]) as Map<String, dynamic>;
-    runApp(_ExampleSubWindow(
+    runApp(ExampleSubWindow(
       windowController: windowController,
       args: argument,
     ));
+
   } else {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
@@ -66,42 +68,6 @@ void main(List<String> args) async {
   }
 }
 
-class _ExampleSubWindow extends StatelessWidget {
-  const _ExampleSubWindow({
-    Key? key,
-    required this.windowController,
-    required this.args,
-  }) : super(key: key);
-
-  final WindowController windowController;
-  final Map? args;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: const Color.fromARGB(150, 255, 255, 255),
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Column(
-          children: [
-            if (args != null)
-              Text(
-                'Arguments: ${args.toString()}',
-                style: const TextStyle(fontSize: 20),
-              ),
-            OutlinedButton(
-                onPressed: () {
-                  windowController.hide();
-                },
-                child: Text("CLOSE !"))
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 WindowController? testWindowManager;
 
@@ -119,8 +85,7 @@ class NotificationCenter extends StatelessWidget {
       ),
       home: Scaffold(
         floatingActionButton: FloatingActionButton(onPressed: () async {
-          final first = await PopUpWindowManager().firstAvailableWindow;
-          log(first.windowId.toString());
+          PopUpWindowManager().ShowPopUp("hello");
         }),
         backgroundColor: const Color.fromARGB(150, 255, 255, 255),
         body: Container(

@@ -28,12 +28,7 @@ class PopUpWindowManager {
   Future<void> init() async {
     DesktopMultiWindow.setMethodHandler(_handleMethodCallback);
     for (int i = 0; i < nbWindow; i++) {
-      final window = await DesktopMultiWindow.createWindow(jsonEncode({
-        'args1': 'Sub window',
-        'args2': 100,
-        'args3': true,
-        'business': 'business_test',
-      }));
+      final window = await DesktopMultiWindow.createWindow(jsonEncode({}));
       window
         ..setFrame(const Offset(100, 0) & const Size(500, 150))
         ..center()
@@ -61,6 +56,12 @@ class PopUpWindowManager {
     return controller;
   }
 
+  Future<void> ShowPopUp(String message) async {
+    final windowController = await firstAvailableWindow;
+
+    DesktopMultiWindow.invokeMethod(windowController.windowId, "Show", message);
+  }
+
   Future<dynamic> invokemethod(int windowId, String method,
       [dynamic args]) async {
     DesktopMultiWindow.invokeMethod(windowId, method, args);
@@ -76,7 +77,7 @@ class PopUpWindowManager {
           log("pong !");
         }
         break;
-      case "closed":
+      case "hided":
         {
           status
               .firstWhere((element) => element.popUpWindowId == fromWindowId)
