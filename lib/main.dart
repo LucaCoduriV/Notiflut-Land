@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:test_flutter_russt/src/window_manager.dart';
 import './src/native.dart' as nati;
 // import './src/native/bridge_definitions.dart' as nati;
 
@@ -29,27 +31,17 @@ Image createImage(
 late final Stream<nati.DeamonAction> notificationStream;
 
 void main(List<String> args) async {
+  log("App Starting...");
   WidgetsFlutterBinding.ensureInitialized();
 
   if (args.isNotEmpty && args.first == 'multi_window') {
-    // WindowOptions windowOptions = const WindowOptions(
-    //     size: Size(500, 600),
-    //     backgroundColor: Colors.red,
-    //     skipTaskbar: false,
-    //     titleBarStyle: TitleBarStyle.hidden,
-    //     fullScreen: false,
-    //     );
-    // await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    //     await windowManager.show();
-    //     await windowManager.focus();
-    //     });
-
     final windowId = int.parse(args[1]);
+    final windowController = WindowController.fromWindowId(windowId);
     final argument = args[2].isEmpty
         ? const {}
         : jsonDecode(args[2]) as Map<String, dynamic>;
     runApp(_ExampleSubWindow(
-      windowController: WindowController.fromWindowId(windowId),
+      windowController: windowController,
       args: argument,
     ));
   } else {
@@ -66,10 +58,10 @@ void main(List<String> args) async {
       await windowManager.focus();
       await windowManager.setPosition(const Offset(0, 0));
     });
-
     await nati.api.setup();
     notificationStream = nati.api.startDeamon();
-
+    final popUpWindowsManager = PopUpWindowManager();
+    await popUpWindowsManager.init();
     runApp(const NotificationCenter());
   }
 }
@@ -99,12 +91,19 @@ class _ExampleSubWindow extends StatelessWidget {
                 'Arguments: ${args.toString()}',
                 style: const TextStyle(fontSize: 20),
               ),
+            OutlinedButton(
+                onPressed: () {
+                  windowController.hide();
+                },
+                child: Text("CLOSE !"))
           ],
         ),
       ),
     );
   }
 }
+
+WindowController? testWindowManager;
 
 class NotificationCenter extends StatelessWidget {
   const NotificationCenter({super.key});
@@ -120,18 +119,8 @@ class NotificationCenter extends StatelessWidget {
       ),
       home: Scaffold(
         floatingActionButton: FloatingActionButton(onPressed: () async {
-          final window = await DesktopMultiWindow.createWindow(jsonEncode({
-            'args1': 'Sub window',
-            'args2': 100,
-            'args3': true,
-            'business': 'business_test',
-          }));
-          window
-            ..setFrame(const Offset(100, 0) & const Size(500, 150))
-            ..center()
-            ..setTitle('test_flutter_russt')
-            // ..resizable(false)
-            ..show();
+          final first = await PopUpWindowManager().firstAvailableWindow;
+          log(first.windowId.toString());
         }),
         backgroundColor: const Color.fromARGB(150, 255, 255, 255),
         body: Container(
