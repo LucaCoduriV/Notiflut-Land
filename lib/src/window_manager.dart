@@ -13,11 +13,12 @@ class _PopUpWindowStatus {
 }
 
 class PopUpWindowManager {
-  static final PopUpWindowManager _singleton =
-      PopUpWindowManager._internal(nbWindow: 3);
   int nbWindow;
 
-  final List<_PopUpWindowStatus> status = [];
+  static final PopUpWindowManager _singleton =
+      PopUpWindowManager._internal(nbWindow: 3);
+
+  final List<_PopUpWindowStatus> _status = [];
 
   PopUpWindowManager._internal({required this.nbWindow});
 
@@ -31,11 +32,9 @@ class PopUpWindowManager {
       final window = await DesktopMultiWindow.createWindow(jsonEncode({}));
       window
         ..setFrame(const Offset(100, 0) & const Size(500, 150))
-        ..center()
-        ..setTitle('test_flutter_russt')
-        ..show();
+        ..setTitle('notification-$i');
       final status = _PopUpWindowStatus(window.windowId);
-      this.status.add(status);
+      this._status.add(status);
     }
   }
 
@@ -43,7 +42,7 @@ class PopUpWindowManager {
     int? windowId;
     while (true) {
       try {
-        final popupStatus = status.firstWhere((element) => element.isAvailable);
+        final popupStatus = _status.firstWhere((element) => element.isAvailable);
         popupStatus.isAvailable = false;
         windowId = popupStatus.popUpWindowId;
         break;
@@ -56,7 +55,7 @@ class PopUpWindowManager {
     return controller;
   }
 
-  Future<void> ShowPopUp(String message) async {
+  Future<void> showPopUp(dynamic message) async {
     final windowController = await firstAvailableWindow;
 
     DesktopMultiWindow.invokeMethod(windowController.windowId, "Show", message);
@@ -72,17 +71,10 @@ class PopUpWindowManager {
     int fromWindowId,
   ) async {
     switch (call.method) {
-      case "ping":
-        {
-          log("pong !");
-        }
-        break;
       case "hided":
-        {
-          status
-              .firstWhere((element) => element.popUpWindowId == fromWindowId)
-              .isAvailable = true;
-        }
+        _status
+            .firstWhere((element) => element.popUpWindowId == fromWindowId)
+            .isAvailable = true;
         break;
       default:
         {}

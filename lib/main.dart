@@ -45,7 +45,6 @@ void main(List<String> args) async {
       windowController: windowController,
       args: argument,
     ));
-
   } else {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
@@ -54,11 +53,12 @@ void main(List<String> args) async {
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.hidden,
       alwaysOnTop: true,
+      center: false,
     );
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
-      await windowManager.setPosition(const Offset(0, 0));
+      await windowManager.setPosition(const Offset(500, 0));
     });
     await nati.api.setup();
     notificationStream = nati.api.startDeamon();
@@ -67,7 +67,6 @@ void main(List<String> args) async {
     runApp(const NotificationCenter());
   }
 }
-
 
 WindowController? testWindowManager;
 
@@ -85,7 +84,7 @@ class NotificationCenter extends StatelessWidget {
       ),
       home: Scaffold(
         floatingActionButton: FloatingActionButton(onPressed: () async {
-          PopUpWindowManager().ShowPopUp("hello");
+          PopUpWindowManager().showPopUp("hello");
         }),
         backgroundColor: const Color.fromARGB(150, 255, 255, 255),
         body: Container(
@@ -124,6 +123,23 @@ class _NotificationListState extends State<NotificationList> {
       event.whenOrNull(
         update: (notificationsNew) {
           notifications = notificationsNew;
+          final imageData = notifications.last.hints.imageData;
+          try {
+            final args = MethodsArgument(
+              positionx: 500.0,
+              positiony: 800.0,
+              summary: notifications.last.summary,
+              appName: notifications.last.appName,
+              body: notifications.last.body,
+              iconData: imageData?.data,
+              iconAlpha: imageData?.onePointTwoBitAlpha,
+              iconRowstride: imageData?.rowstride,
+              iconHeight: imageData?.height,
+              iconWidth: imageData?.width,
+              timeout: 5,
+            );
+            PopUpWindowManager().showPopUp(args.toJson());
+          } catch (e) {}
         },
       );
       setState(() {});
