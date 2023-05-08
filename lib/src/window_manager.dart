@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:ui';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/services.dart';
@@ -31,10 +29,10 @@ class PopUpWindowManager {
     for (int i = 0; i < nbWindow; i++) {
       final window = await DesktopMultiWindow.createWindow(jsonEncode({}));
       window
-        ..setFrame(const Offset(100, 0) & const Size(500, 150))
+        ..setFrame(const Offset(100, 0) & const Size(500, 80))
         ..setTitle('notification-$i');
       final status = _PopUpWindowStatus(window.windowId);
-      this._status.add(status);
+      _status.add(status);
     }
   }
 

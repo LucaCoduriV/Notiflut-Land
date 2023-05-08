@@ -10,6 +10,8 @@ import 'package:test_flutter_russt/main.dart';
 class MethodsArgument {
   double positionx;
   double positiony;
+  double height;
+  double width;
 
   String summary;
   String appName;
@@ -26,6 +28,8 @@ class MethodsArgument {
   MethodsArgument({
     required this.positionx,
     required this.positiony,
+    required this.height,
+    required this.width,
     required this.summary,
     required this.appName,
     required this.body,
@@ -41,6 +45,8 @@ class MethodsArgument {
     return jsonEncode({
       "positionx": positionx,
       "positiony": positiony,
+      "height": height,
+      "width": width,
       "summary": summary,
       "appName": appName,
       "body": body,
@@ -58,6 +64,8 @@ class MethodsArgument {
 
     final offset =
         Offset(args['positionx'] as double, args['positiony'] as double);
+    final double height = args['height'];
+    final double width = args['width'];
     String title = args['summary'];
     String body = args['body'];
     String appName = args['appName'];
@@ -77,6 +85,8 @@ class MethodsArgument {
       timeout: timeOut,
       positiony: offset.dy,
       positionx: offset.dx,
+      height: height,
+      width: width,
       summary: title,
       appName: appName,
       body: body,
@@ -122,7 +132,25 @@ class _ExampleSubWindowState extends State<ExampleSubWindow> {
     switch (call.method) {
       case "Show":
         final args = MethodsArgument.fromJson(call.arguments);
+        title = args.summary;
+        body = args.body;
+        appName = args.appName;
 
+        if (args.iconWidth != null &&
+            args.iconHeight != null &&
+            args.iconRowstride != null &&
+            args.iconData != null &&
+            args.iconAlpha != null) {
+          image = createImage(
+            args.iconWidth!,
+            args.iconHeight!,
+            args.iconData!,
+            args.iconAlpha! ? 4 : 3,
+            args.iconRowstride!,
+          ).image;
+        }
+        widget.windowController.setFrame(Offset(args.positionx, args.positiony) & Size(args.height, args.width));
+        widget.windowController.show();
         Future.delayed(Duration(seconds: args.timeout)).then((value) {
           DesktopMultiWindow.invokeMethod(0, "hided");
           widget.windowController.hide();
@@ -131,15 +159,6 @@ class _ExampleSubWindowState extends State<ExampleSubWindow> {
           title = "";
           image = null;
         });
-
-        if (args.iconWidth != null &&
-            args.iconHeight != null &&
-            args.iconRowstride != null &&
-            args.iconData != null &&
-            args.iconAlpha != null) {
-          image = createImage(args.iconWidth!, args.iconHeight!, args.iconData!, args.iconAlpha! ? 4 : 3, args.iconRowstride!)
-              .image;
-        }
         setState(() {});
         break;
       default:
@@ -150,25 +169,10 @@ class _ExampleSubWindowState extends State<ExampleSubWindow> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: const Color.fromARGB(150, 255, 255, 255),
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: Column(
-          children: [
-            if (widget.args != null)
-              Text(
-                'Arguments: ${widget.args.toString()}',
-                style: const TextStyle(fontSize: 20),
-              ),
-            OutlinedButton(
-                onPressed: () {
-                  widget.windowController.hide();
-                },
-                child: Text("CLOSE !"))
-          ],
-        ),
+        body: NotificationTile(0, title, body, imageProvider: image),
       ),
     );
   }

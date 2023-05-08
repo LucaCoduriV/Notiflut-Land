@@ -58,7 +58,7 @@ void main(List<String> args) async {
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
-      await windowManager.setPosition(const Offset(500, 0));
+      await windowManager.setPosition(const Offset(100, 100));
     });
     await nati.api.setup();
     notificationStream = nati.api.startDeamon();
@@ -76,6 +76,8 @@ class NotificationCenter extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+    windowManager.setPosition(const Offset(500, 300));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Notification Center',
@@ -126,8 +128,10 @@ class _NotificationListState extends State<NotificationList> {
           final imageData = notifications.last.hints.imageData;
           try {
             final args = MethodsArgument(
-              positionx: 500.0,
-              positiony: 800.0,
+              positionx: 100.0,
+              positiony: 100.0,
+              height: 200.0,
+              width: 200.0,
               summary: notifications.last.summary,
               appName: notifications.last.appName,
               body: notifications.last.body,
