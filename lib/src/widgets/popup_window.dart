@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:window_manager/window_manager.dart';
 
 import '../utils.dart';
 import 'notification.dart';
@@ -118,10 +116,7 @@ class _PopupWindowState extends State<PopupWindow> {
 }
 
 class NotificationPopupData {
-  double positionx;
-  double positiony;
-  double height;
-  double width;
+  int id;
 
   String summary;
   String appName;
@@ -136,10 +131,7 @@ class NotificationPopupData {
   int timeout;
 
   NotificationPopupData({
-    required this.positionx,
-    required this.positiony,
-    required this.height,
-    required this.width,
+    required this.id,
     required this.summary,
     required this.appName,
     required this.body,
@@ -153,10 +145,7 @@ class NotificationPopupData {
 
   String toJson() {
     return jsonEncode({
-      "positionx": positionx,
-      "positiony": positiony,
-      "height": height,
-      "width": width,
+      "id": id,
       "summary": summary,
       "appName": appName,
       "body": body,
@@ -172,10 +161,7 @@ class NotificationPopupData {
   factory NotificationPopupData.fromJson(String json) {
     final args = jsonDecode(json) as Map<String, dynamic>;
 
-    final offset =
-        Offset(args['positionx'] as double, args['positiony'] as double);
-    final double height = args['height'];
-    final double width = args['width'];
+    int id = args['id'];
     String title = args['summary'];
     String body = args['body'];
     String appName = args['appName'];
@@ -192,11 +178,8 @@ class NotificationPopupData {
     bool? iconAlpha = args['icon-alpha'] as bool?;
 
     return NotificationPopupData(
+      id: id,
       timeout: timeOut,
-      positiony: offset.dy,
-      positionx: offset.dx,
-      height: height,
-      width: width,
       summary: title,
       appName: appName,
       body: body,

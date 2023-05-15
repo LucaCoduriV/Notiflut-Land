@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../native.dart' as nati;
 
@@ -8,15 +7,15 @@ class NotificationAction {
   const NotificationAction(this.label, this.action);
 }
 
-List<NotificationAction> buildFromActionList(int id, List<String> actions) {
-  List<NotificationAction> result = [];
-  for (int i = 0; i < actions.length; i += 2) {
-    result.add(NotificationAction(actions[i + 1], () async {
-      await nati.api.sendDeamonAction(
-          action: nati.DeamonAction.clientActionInvoked(id, actions[i]));
-    }));
-  }
-  return result;
+List<NotificationAction> buildFromActionList(
+    int id, Map<String, String> actions) {
+  return actions.entries
+  .where((element) => element.key != "default")
+      .map((entry) => NotificationAction(entry.value, () async {
+            await nati.api.sendDeamonAction(
+                action: nati.DeamonAction.clientActionInvoked(id, entry.key));
+          }))
+      .toList();
 }
 
 class NotificationTile extends StatelessWidget {

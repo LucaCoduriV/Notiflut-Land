@@ -1,3 +1,6 @@
+import 'dart:collection';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -56,6 +59,16 @@ class NotificationList extends StatefulWidget {
 class _NotificationListState extends State<NotificationList> {
   List<nati.Notification> notifications = [];
 
+  Map<String, String> actions(int id) {
+    final Map<String, String> map = HashMap();
+    for (int i = 0; i < notifications[id].actions.length; i+=2){
+        final actions = notifications[id].actions;
+        map[actions[i]] = actions[i + 1];
+      }
+
+      return map;
+    }
+
   @override
   void initState() {
     super.initState();
@@ -66,10 +79,7 @@ class _NotificationListState extends State<NotificationList> {
           final imageData = notifications.last.hints.imageData;
           try {
             final args = NotificationPopupData(
-              positionx: 100.0,
-              positiony: 100.0,
-              height: 150.0,
-              width: 500.0,
+              id: notifications.last.id,
               summary: notifications.last.summary,
               appName: notifications.last.appName,
               body: notifications.last.body,
@@ -81,7 +91,9 @@ class _NotificationListState extends State<NotificationList> {
               timeout: 5,
             );
             PopUpWindowManager().showPopUp(args.toJson());
-          } catch (e) {}
+          } catch (e) {
+            log("error while parsing notification: $e");
+          }
         },
       );
       setState(() {});
@@ -109,7 +121,7 @@ class _NotificationListState extends State<NotificationList> {
                 action: nati.DeamonAction.clientClose(notification.id));
             setState(() {});
           },
-          actions: buildFromActionList(notification.id, notification.actions),
+          actions: buildFromActionList(notification.id, actions(index)),
           imageProvider: (imageData != null)
               ? createImage(imageData.width, imageData.height, imageData.data,
                       imageData.channels, imageData.rowstride)

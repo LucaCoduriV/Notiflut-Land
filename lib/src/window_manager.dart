@@ -4,12 +4,6 @@ import 'dart:convert';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/services.dart';
 
-class _PopUpWindowStatus {
-  bool isAvailable = true;
-  int popUpWindowId;
-  _PopUpWindowStatus(this.popUpWindowId);
-}
-
 class PopUpWindowManager {
   late LayerShellController window;
 
@@ -30,8 +24,7 @@ class PopUpWindowManager {
       ..setAnchor(LayerEdge.right, true)
       ..setAnchor(LayerEdge.top, true)
       ..setTitle('notification-popup')
-      ..setLayerSize(Size(500.0, 150.0));
-      // ..show();
+      ..setLayerSize(const Size(0.0, 0.0));
   }
 
   Future<void> showPopUp(dynamic message) async {
