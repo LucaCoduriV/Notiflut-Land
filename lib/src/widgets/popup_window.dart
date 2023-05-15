@@ -56,7 +56,8 @@ class _PopupWindowState extends State<PopupWindow> {
     }
   }
 
-  Widget _createNotificationPopup(NotificationPopupData data) {
+  Future<Widget> _createNotificationPopup(
+      NotificationPopupData data, BuildContext context) async {
     final title = data.summary;
     final body = data.body;
     final appName = data.appName;
@@ -73,30 +74,47 @@ class _PopupWindowState extends State<PopupWindow> {
         data.iconAlpha! ? 4 : 3,
         data.iconRowstride!,
       ).image;
+      await precacheImage(image, context);
     }
-
     return NotificationTile(0, title, body, imageProvider: image);
   }
 
   @override
   Widget build(BuildContext context) {
-    executeAfterBuild();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.transparent,
-        body: ListView(
-            shrinkWrap: true,
-            controller: controller,
-            children: datas.map((e) => _createNotificationPopup(e)).toList()),
+        body: FutureBuilder(
+          future: Future.wait(
+              datas.map((e) => _createNotificationPopup(e, context)).toList()),
+          builder: (context, snap) {
+            executeAfterBuild();
+            if (snap.data != null) {
+              return ListView(
+                shrinkWrap: true,
+                controller: controller,
+                children: snap.data!,
+              );
+            }
+            return ListView(
+              shrinkWrap: true,
+              controller: controller,
+            );
+          },
+        ),
       ),
     );
   }
-Future<void> executeAfterBuild() async {
-  await Future.delayed(Duration.zero);
-  final size = controller.position.extentAfter + controller.position.extentInside;
-  widget.layerController.setLayerSize(Size(500, size));
-}
+
+  Future<void> executeAfterBuild() async {
+    await Future.delayed(Duration.zero);
+    if (controller.hasClients) {
+      final size =
+          controller.position.extentAfter + controller.position.extentInside;
+      widget.layerController.setLayerSize(Size(500, size));
+    }
+  }
 }
 
 class NotificationPopupData {
