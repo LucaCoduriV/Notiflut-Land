@@ -11,14 +11,12 @@ class _PopUpWindowStatus {
 }
 
 class PopUpWindowManager {
-  int nbWindow;
+  late LayerShellController window;
 
   static final PopUpWindowManager _singleton =
-      PopUpWindowManager._internal(nbWindow: 3);
+      PopUpWindowManager._internal();
 
-  final List<_PopUpWindowStatus> _status = [];
-
-  PopUpWindowManager._internal({required this.nbWindow});
+  PopUpWindowManager._internal();
 
   factory PopUpWindowManager() {
     return _singleton;
@@ -26,37 +24,18 @@ class PopUpWindowManager {
 
   Future<void> init() async {
     DesktopMultiWindow.setMethodHandler(_handleMethodCallback);
-    for (int i = 0; i < nbWindow; i++) {
-      final window = await DesktopMultiWindow.createWindow(jsonEncode({}));
-      window
-        ..setFrame(const Offset(100, 0) & const Size(500, 80))
-        ..setTitle('notification-$i');
-      final status = _PopUpWindowStatus(window.windowId);
-      _status.add(status);
-    }
-  }
 
-  Future<WindowController> get firstAvailableWindow async {
-    int? windowId;
-    while (true) {
-      try {
-        final popupStatus = _status.firstWhere((element) => element.isAvailable);
-        popupStatus.isAvailable = false;
-        windowId = popupStatus.popUpWindowId;
-        break;
-      } catch (e) {
-        await Future.delayed(const Duration(seconds: 1));
-      }
-    }
-    WindowController controller = WindowController.fromWindowId(windowId);
-
-    return controller;
+    window = await DesktopMultiWindow.createLayerShell(jsonEncode({}));
+    window
+      ..setAnchor(LayerEdge.right, true)
+      ..setAnchor(LayerEdge.top, true)
+      ..setTitle('notification-popup')
+      ..setLayerSize(Size(500.0, 150.0));
+      // ..show();
   }
 
   Future<void> showPopUp(dynamic message) async {
-    final windowController = await firstAvailableWindow;
-
-    DesktopMultiWindow.invokeMethod(windowController.windowId, "Show", message);
+    DesktopMultiWindow.invokeMethod(window.windowId, "Show", message);
   }
 
   Future<dynamic> invokemethod(int windowId, String method,
@@ -70,9 +49,6 @@ class PopUpWindowManager {
   ) async {
     switch (call.method) {
       case "hided":
-        _status
-            .firstWhere((element) => element.popUpWindowId == fromWindowId)
-            .isAvailable = true;
         break;
       default:
         {}
