@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:test_flutter_russt/src/widgets/notification_center.dart';
-import 'package:test_flutter_russt/src/widgets/popup_window.dart';
-import 'package:test_flutter_russt/src/window_manager.dart';
+import './src/widgets/notification_center.dart';
+import './src/widgets/popup_window.dart';
+import './src/window_manager.dart';
 import './src/native.dart' as nati;
 // import './src/native/bridge_definitions.dart' as nati;
 
