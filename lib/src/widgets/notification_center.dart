@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:developer';
 
@@ -59,24 +60,37 @@ class NotificationList extends StatefulWidget {
 
 class _NotificationListState extends State<NotificationList> {
   List<nati.Notification> notifications = [];
+  Timer? timer;
 
   Map<String, String> actions(int id) {
     final Map<String, String> map = HashMap();
-    for (int i = 0; i < notifications[id].actions.length; i+=2){
-        final actions = notifications[id].actions;
-        map[actions[i]] = actions[i + 1];
-      }
+    for (int i = 0; i < notifications[id].actions.length; i += 2) {
+      final actions = notifications[id].actions;
+      map[actions[i]] = actions[i + 1];
+    }
 
-      return map;
+    return map;
+  }
+
+  @override
+    void dispose() {
+      timer?.cancel();
+      super.dispose();
     }
 
   @override
   void initState() {
     super.initState();
+    timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      setState(() {});
+    });
+
     widget.notificationStream.listen((event) {
       event.whenOrNull(
         update: (notificationsNew) {
           notifications = notificationsNew;
+
+          // Send notification to popup manager
           final imageData = notifications.last.hints.imageData;
           try {
             final args = NotificationPopupData(
@@ -112,6 +126,7 @@ class _NotificationListState extends State<NotificationList> {
           notification.id,
           notification.appName,
           notification.summary,
+          createdAt: notification.createdAt,
           onTileTap: () async {
             await nati.api.sendDeamonAction(
                 action: nati.DeamonAction.clientActionInvoked(

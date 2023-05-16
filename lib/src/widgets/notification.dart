@@ -27,18 +27,38 @@ class NotificationTile extends StatelessWidget {
   final Function()? onTileTap;
   final Function()? closeAction;
   final List<NotificationAction>? actions;
-  const NotificationTile(this.id, this.title, this.subtitle,
-      {super.key,
-      this.imageProvider,
-      this.closeAction,
-      this.onTileTap,
-      this.actions});
+  final DateTime? createdAt;
+
+  const NotificationTile(
+    this.id,
+    this.title,
+    this.subtitle, {
+    super.key,
+    this.imageProvider,
+    this.closeAction,
+    this.onTileTap,
+    this.actions,
+    this.createdAt,
+  });
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final buttons = actions
         ?.map((v) => TextButton(onPressed: v.action, child: Text(v.label)))
         .toList();
+    String time = "";
+    if (createdAt != null) {
+      final Duration duration = DateTime.now().difference(createdAt!);
+      if (duration.inSeconds < 60) {
+        time = "Now";
+      } else if (duration.inHours < 1) {
+        time = "${duration.inMinutes} min. ago";
+      } else if (duration.inDays < 1) {
+        time = "${duration.inHours} hours ago";
+      } else {
+        time = "${createdAt!.day}/${createdAt!.month}";
+      }
+    }
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Column(
@@ -50,10 +70,19 @@ class NotificationTile extends StatelessWidget {
             leading: CircleAvatar(
               backgroundImage: imageProvider,
             ),
-            trailing: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: closeAction,
-              child: const Icon(Icons.close),
+            trailing: SizedBox(
+              width: 100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(time),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: closeAction,
+                    child: const Icon(Icons.close),
+                  ),
+                ],
+              ),
             ),
           ),
           Row(
