@@ -139,18 +139,22 @@ class NativeImpl implements Native {
           _wire2api_box_autoadd_notification(raw[1]),
         );
       case 1:
+        return DeamonAction_ShowNc();
+      case 2:
+        return DeamonAction_CloseNc();
+      case 3:
         return DeamonAction_Close(
           _wire2api_u32(raw[1]),
         );
-      case 2:
+      case 4:
         return DeamonAction_Update(
           _wire2api_list_notification(raw[1]),
         );
-      case 3:
+      case 5:
         return DeamonAction_ClientClose(
           _wire2api_u32(raw[1]),
         );
-      case 4:
+      case 6:
         return DeamonAction_ClientActionInvoked(
           _wire2api_u32(raw[1]),
           _wire2api_String(raw[2]),
@@ -434,23 +438,31 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       wireObj.kind.ref.Show.ref.field0 = pre_field0;
       return;
     }
+    if (apiObj is DeamonAction_ShowNc) {
+      wireObj.tag = 1;
+      return;
+    }
+    if (apiObj is DeamonAction_CloseNc) {
+      wireObj.tag = 2;
+      return;
+    }
     if (apiObj is DeamonAction_Close) {
       var pre_field0 = api2wire_u32(apiObj.field0);
-      wireObj.tag = 1;
+      wireObj.tag = 3;
       wireObj.kind = inner.inflate_DeamonAction_Close();
       wireObj.kind.ref.Close.ref.field0 = pre_field0;
       return;
     }
     if (apiObj is DeamonAction_Update) {
       var pre_field0 = api2wire_list_notification(apiObj.field0);
-      wireObj.tag = 2;
+      wireObj.tag = 4;
       wireObj.kind = inner.inflate_DeamonAction_Update();
       wireObj.kind.ref.Update.ref.field0 = pre_field0;
       return;
     }
     if (apiObj is DeamonAction_ClientClose) {
       var pre_field0 = api2wire_u32(apiObj.field0);
-      wireObj.tag = 3;
+      wireObj.tag = 5;
       wireObj.kind = inner.inflate_DeamonAction_ClientClose();
       wireObj.kind.ref.ClientClose.ref.field0 = pre_field0;
       return;
@@ -458,7 +470,7 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     if (apiObj is DeamonAction_ClientActionInvoked) {
       var pre_field0 = api2wire_u32(apiObj.field0);
       var pre_field1 = api2wire_String(apiObj.field1);
-      wireObj.tag = 4;
+      wireObj.tag = 6;
       wireObj.kind = inner.inflate_DeamonAction_ClientActionInvoked();
       wireObj.kind.ref.ClientActionInvoked.ref.field0 = pre_field0;
       wireObj.kind.ref.ClientActionInvoked.ref.field1 = pre_field1;
@@ -951,6 +963,10 @@ class wire_DeamonAction_Show extends ffi.Struct {
   external ffi.Pointer<wire_Notification> field0;
 }
 
+class wire_DeamonAction_ShowNc extends ffi.Opaque {}
+
+class wire_DeamonAction_CloseNc extends ffi.Opaque {}
+
 class wire_DeamonAction_Close extends ffi.Struct {
   @ffi.Uint32()
   external int field0;
@@ -981,6 +997,10 @@ class wire_DeamonAction_ClientActionInvoked extends ffi.Struct {
 
 class DeamonActionKind extends ffi.Union {
   external ffi.Pointer<wire_DeamonAction_Show> Show;
+
+  external ffi.Pointer<wire_DeamonAction_ShowNc> ShowNc;
+
+  external ffi.Pointer<wire_DeamonAction_CloseNc> CloseNc;
 
   external ffi.Pointer<wire_DeamonAction_Close> Close;
 

@@ -142,22 +142,24 @@ impl Wire2Api<DeamonAction> for wire_DeamonAction {
                 let ans = support::box_from_leak_ptr(ans.Show);
                 DeamonAction::Show(ans.field0.wire2api())
             },
-            1 => unsafe {
+            1 => DeamonAction::ShowNc,
+            2 => DeamonAction::CloseNc,
+            3 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.Close);
                 DeamonAction::Close(ans.field0.wire2api())
             },
-            2 => unsafe {
+            4 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.Update);
                 DeamonAction::Update(ans.field0.wire2api())
             },
-            3 => unsafe {
+            5 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.ClientClose);
                 DeamonAction::ClientClose(ans.field0.wire2api())
             },
-            4 => unsafe {
+            6 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.ClientActionInvoked);
                 DeamonAction::ClientActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
@@ -314,6 +316,8 @@ pub struct wire_DeamonAction {
 #[repr(C)]
 pub union DeamonActionKind {
     Show: *mut wire_DeamonAction_Show,
+    ShowNc: *mut wire_DeamonAction_ShowNc,
+    CloseNc: *mut wire_DeamonAction_CloseNc,
     Close: *mut wire_DeamonAction_Close,
     Update: *mut wire_DeamonAction_Update,
     ClientClose: *mut wire_DeamonAction_ClientClose,
@@ -325,6 +329,14 @@ pub union DeamonActionKind {
 pub struct wire_DeamonAction_Show {
     field0: *mut wire_Notification,
 }
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_DeamonAction_ShowNc {}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_DeamonAction_CloseNc {}
 
 #[repr(C)]
 #[derive(Clone)]

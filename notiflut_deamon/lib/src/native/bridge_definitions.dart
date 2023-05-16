@@ -34,6 +34,8 @@ class DeamonAction with _$DeamonAction {
   const factory DeamonAction.show(
     Notification field0,
   ) = DeamonAction_Show;
+  const factory DeamonAction.showNc() = DeamonAction_ShowNc;
+  const factory DeamonAction.closeNc() = DeamonAction_CloseNc;
   const factory DeamonAction.close(
     int field0,
   ) = DeamonAction_Close;

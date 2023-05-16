@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -88,6 +89,16 @@ class _NotificationListState extends State<NotificationList> {
 
     widget.notificationStream.listen((event) {
       event.whenOrNull(
+        showNc: () {
+          print("show window");
+          final layerController = LayerShellController.fromWindowId(0);
+          layerController.show();
+        },
+        closeNc: () {
+          print("hide window");
+          final layerController = LayerShellController.fromWindowId(0);
+          layerController.hide();
+        },
         update: (notificationsNew) {
           notifications = notificationsNew;
 

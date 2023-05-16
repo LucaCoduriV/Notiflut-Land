@@ -177,6 +177,12 @@ impl NotificationDeamon {
                             return Err(DeamonError::Error);
                         }
                     }
+                    DeamonAction::ShowNc => {
+                        sender.add(DeamonAction::ShowNc);
+                    }
+                    DeamonAction::CloseNc => {
+                        sender.add(DeamonAction::CloseNc);
+                    }
                     _ => {}
                 };
             }

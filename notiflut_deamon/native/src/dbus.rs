@@ -1,6 +1,6 @@
 use std::{error::Error, sync::{mpsc::Sender, atomic::{AtomicU32, Ordering}}, time::{Duration}};
 
-use dbus::{blocking::Connection, message::MatchRule, channel::MatchingReceiver, };
+use dbus::{blocking::Connection, message::MatchRule, channel::MatchingReceiver, MethodErr, };
 use dbus_crossroads::Crossroads;
 
 use crate::{notification::{Notification, Hints}, dbus_definition, deamon::ChannelMessage};
@@ -62,6 +62,8 @@ const SERVER_CAPABILITIES: [&str; 6] = [
 #[derive(Debug)]
 pub enum DeamonAction {
     Show(Notification),
+    ShowNc,
+    CloseNc,
     Close(u32),
     Update(Vec<Notification>),
     ClientClose(u32),
@@ -188,8 +190,32 @@ impl DbusServer {
         self.connection.request_name(NOTIFICATION_INTERFACE, false, true, false)?;
         let token = dbus_definition::register_org_freedesktop_notifications(&mut crossroad);
         crossroad.insert(NOTIFICATION_PATH, &[token], DbusNotification{
-            sender,
+            sender: sender.clone(),
         }); 
+
+        // register our custom methods
+        let token = crossroad.register(NOTIFICATION_INTERFACE, |builder|{
+            let sender_clonded = sender.clone();
+            builder.method("OpenNC", (), ("reply",), move |_,_,()|{
+                sender_clonded 
+                    .send(ChannelMessage::Message(DeamonAction::ShowNc))
+                    .map_err(|e| MethodErr::failed(&e))?;
+                println!("OPENING !");
+                Ok((String::from("Notification center open"),))
+            });
+
+            let sender_clonded = sender.clone();
+            builder.method("CloseNC", (), ("reply",), move |_,_,()|{
+                sender_clonded 
+                    .send(ChannelMessage::Message(DeamonAction::CloseNc))
+                    .map_err(|e| MethodErr::failed(&e))?;
+                println!("CLOSING !");
+                Ok((String::from("Notification center closed"),))
+            });
+        });
+
+        crossroad.insert(format!("{NOTIFICATION_PATH}/ctl"), &[token], ());
+
         self.connection.start_receive(
             MatchRule::new_method_call(),
             Box::new(move |message, connection| {
