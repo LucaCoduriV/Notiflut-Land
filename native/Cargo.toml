@@ -16,6 +16,7 @@ dbus-crossroads = "0.5.2"
 anyhow = "1"
 thiserror = "1.0.40"
 chrono = "^0.4.24"
+freedesktop-icons = "0.2.3"
 
 [build-dependencies]
 flutter_rust_bridge_codegen = "1"

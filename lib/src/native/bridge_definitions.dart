@@ -55,6 +55,7 @@ class Hints {
   final String? desktopEntry;
   final ImageData? imageData;
   final String? imagePath;
+  final ImageData? iconData;
   final bool? resident;
   final String? soundFile;
   final String? soundName;
@@ -70,6 +71,7 @@ class Hints {
     this.desktopEntry,
     this.imageData,
     this.imagePath,
+    this.iconData,
     this.resident,
     this.soundFile,
     this.soundName,

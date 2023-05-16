@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
@@ -73,10 +74,10 @@ class _NotificationListState extends State<NotificationList> {
   }
 
   @override
-    void dispose() {
-      timer?.cancel();
-      super.dispose();
-    }
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -92,18 +93,24 @@ class _NotificationListState extends State<NotificationList> {
 
           // Send notification to popup manager
           final imageData = notifications.last.hints.imageData;
+          final iconData = notifications.last.hints.iconData;
           try {
             final args = NotificationPopupData(
               id: notifications.last.id,
               summary: notifications.last.summary,
               appName: notifications.last.appName,
               body: notifications.last.body,
-              iconData: imageData?.data,
-              iconAlpha: imageData?.onePointTwoBitAlpha,
-              iconRowstride: imageData?.rowstride,
-              iconHeight: imageData?.height,
-              iconWidth: imageData?.width,
+              iconData: imageData?.data ?? iconData?.data,
+              iconAlpha: imageData?.onePointTwoBitAlpha ??
+                  iconData?.onePointTwoBitAlpha,
+              iconRowstride: imageData?.rowstride ?? iconData?.rowstride,
+              iconHeight: imageData?.height ?? iconData?.height,
+              iconWidth: imageData?.width ?? iconData?.width,
               timeout: 5,
+              iconPath: notifications.last.hints.imagePath ??
+                  (notifications.last.icon.isNotEmpty
+                      ? notifications.last.icon
+                      : null),
             );
             PopUpWindowManager().showPopUp(args.toJson());
           } catch (e) {
@@ -121,7 +128,18 @@ class _NotificationListState extends State<NotificationList> {
       itemCount: notifications.length,
       itemBuilder: (context, index) {
         final notification = notifications[index];
-        final imageData = notification.hints.imageData;
+        final imageData =
+            notification.hints.imageData ?? notification.hints.iconData;
+        final path = notification.hints.imagePath ?? notification.icon;
+
+        ImageProvider<Object>? imageProvider;
+        if (imageData != null) {
+          imageProvider = createImageIiibiiay(imageData.width, imageData.height,
+                  imageData.data, imageData.channels, imageData.rowstride)
+              .image;
+        } else if (path.isNotEmpty) {
+          imageProvider = Image.file(File(path)).image;
+        }
         return NotificationTile(
           notification.id,
           notification.appName,
@@ -138,11 +156,7 @@ class _NotificationListState extends State<NotificationList> {
             setState(() {});
           },
           actions: buildFromActionList(notification.id, actions(index)),
-          imageProvider: (imageData != null)
-              ? createImage(imageData.width, imageData.height, imageData.data,
-                      imageData.channels, imageData.rowstride)
-                  .image
-              : null,
+          imageProvider: imageProvider,
         );
       },
     );

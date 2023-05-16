@@ -162,22 +162,23 @@ class NativeImpl implements Native {
 
   Hints _wire2api_hints(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 13)
-      throw Exception('unexpected arr length: expect 13 but see ${arr.length}');
+    if (arr.length != 14)
+      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
     return Hints(
       actionsIcon: _wire2api_opt_box_autoadd_bool(arr[0]),
       category: _wire2api_opt_String(arr[1]),
       desktopEntry: _wire2api_opt_String(arr[2]),
       imageData: _wire2api_opt_box_autoadd_image_data(arr[3]),
       imagePath: _wire2api_opt_String(arr[4]),
-      resident: _wire2api_opt_box_autoadd_bool(arr[5]),
-      soundFile: _wire2api_opt_String(arr[6]),
-      soundName: _wire2api_opt_String(arr[7]),
-      suppressSound: _wire2api_opt_box_autoadd_bool(arr[8]),
-      transient: _wire2api_opt_box_autoadd_bool(arr[9]),
-      x: _wire2api_opt_box_autoadd_i32(arr[10]),
-      y: _wire2api_opt_box_autoadd_i32(arr[11]),
-      urgency: _wire2api_opt_box_autoadd_urgency(arr[12]),
+      iconData: _wire2api_opt_box_autoadd_image_data(arr[5]),
+      resident: _wire2api_opt_box_autoadd_bool(arr[6]),
+      soundFile: _wire2api_opt_String(arr[7]),
+      soundName: _wire2api_opt_String(arr[8]),
+      suppressSound: _wire2api_opt_box_autoadd_bool(arr[9]),
+      transient: _wire2api_opt_box_autoadd_bool(arr[10]),
+      x: _wire2api_opt_box_autoadd_i32(arr[11]),
+      y: _wire2api_opt_box_autoadd_i32(arr[12]),
+      urgency: _wire2api_opt_box_autoadd_urgency(arr[13]),
     );
   }
 
@@ -471,6 +472,7 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     wireObj.desktop_entry = api2wire_opt_String(apiObj.desktopEntry);
     wireObj.image_data = api2wire_opt_box_autoadd_image_data(apiObj.imageData);
     wireObj.image_path = api2wire_opt_String(apiObj.imagePath);
+    wireObj.icon_data = api2wire_opt_box_autoadd_image_data(apiObj.iconData);
     wireObj.resident = api2wire_opt_box_autoadd_bool(apiObj.resident);
     wireObj.sound_file = api2wire_opt_String(apiObj.soundFile);
     wireObj.sound_name = api2wire_opt_String(apiObj.soundName);
@@ -899,6 +901,8 @@ class wire_Hints extends ffi.Struct {
   external ffi.Pointer<wire_ImageData> image_data;
 
   external ffi.Pointer<wire_uint_8_list> image_path;
+
+  external ffi.Pointer<wire_ImageData> icon_data;
 
   external ffi.Pointer<ffi.Bool> resident;
 

@@ -169,6 +169,7 @@ impl support::IntoDart for Hints {
             self.desktop_entry.into_dart(),
             self.image_data.into_dart(),
             self.image_path.into_dart(),
+            self.icon_data.into_dart(),
             self.resident.into_dart(),
             self.sound_file.into_dart(),
             self.sound_name.into_dart(),

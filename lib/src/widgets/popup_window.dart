@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
@@ -59,22 +60,20 @@ class _PopupWindowState extends State<PopupWindow> {
     final title = data.summary;
     final body = data.body;
     final appName = data.appName;
-    ImageProvider? image;
-    if (data.iconWidth != null &&
-        data.iconHeight != null &&
-        data.iconRowstride != null &&
-        data.iconData != null &&
-        data.iconAlpha != null) {
-      image = createImage(
-        data.iconWidth!,
-        data.iconHeight!,
-        data.iconData!,
-        data.iconAlpha! ? 4 : 3,
-        data.iconRowstride!,
-      ).image;
-      await precacheImage(image, context);
+
+    ImageProvider<Object>? imageProvider;
+    if (data.iconData != null) {
+      imageProvider = createImageIiibiiay(data.iconWidth!, data.iconHeight!,
+              data.iconData!, data.iconAlpha! ? 4 : 3, data.iconRowstride!)
+          .image;
+    } else if (data.iconPath != null && data.iconPath!.isNotEmpty) {
+      imageProvider = Image.file(File(data.iconPath!)).image;
     }
-    return NotificationTile(0, title, body, imageProvider: image);
+    if (imageProvider != null) {
+      await precacheImage(imageProvider, context);
+    }
+
+    return NotificationTile(0, appName + " | " + title, body, imageProvider: imageProvider);
   }
 
   @override
@@ -121,6 +120,7 @@ class NotificationPopupData {
   String summary;
   String appName;
   String body;
+  String? iconPath;
 
   Uint8List? iconData;
   int? iconHeight;
@@ -141,6 +141,7 @@ class NotificationPopupData {
     this.iconWidth,
     this.iconRowstride,
     this.iconAlpha,
+    this.iconPath,
   });
 
   String toJson() {
@@ -155,6 +156,7 @@ class NotificationPopupData {
       "icon-rowstride": iconRowstride,
       "icon-alpha": iconAlpha,
       "timeout": timeout,
+      "iconPath": iconPath,
     });
   }
 
@@ -167,6 +169,7 @@ class NotificationPopupData {
     String appName = args['appName'];
     int timeOut = args['timeout'];
     List<dynamic>? iconDataDyn = (args['icon-data'] as List<dynamic>?);
+    String? iconPath = args['iconPath'];
 
     Uint8List? iconData;
     if (iconDataDyn != null) {
@@ -188,6 +191,7 @@ class NotificationPopupData {
       iconHeight: iconHeight,
       iconRowstride: iconRowstride,
       iconAlpha: iconAlpha,
+      iconPath: iconPath,
     );
   }
 }

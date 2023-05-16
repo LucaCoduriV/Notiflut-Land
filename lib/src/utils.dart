@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 
-Image createImage(
+Image createImageIiibiiay(
     int width, int height, Uint8List bytes, int channels, int rowStride) {
   final image = img.Image.fromBytes(
       width: width,
