@@ -53,9 +53,9 @@ const SERVER_CAPABILITIES: [&str; 6] = [
     // "action-icons",
     "actions",
     "body-hyperlinks",
-    // "body-image",
+    // "body-images",
     // "body-markup",
-    "icon-multi",
+    "icon-static",
     "persistence",
 ];
 
@@ -96,8 +96,10 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
     fn notify(
             &mut self,
             app_name:String,
-            replaces_id:u32,icon:String,
-            summary:String,body:String,
+            replaces_id:u32,
+            app_icon:String,
+            summary:String,
+            body:String,
             actions:Vec<String>,
             hints:dbus::arg::PropMap,
             timeout:i32
@@ -107,6 +109,32 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
         } else {
             replaces_id
         };
+        let mut icon = String::from("");
+        if !app_icon.is_empty() {
+            if app_icon.starts_with("file://"){
+                icon = app_icon;
+            } else {
+                if let Some(path) = freedesktop_icons::lookup(&app_icon).find() {
+                    if let Some(str_path) = path.to_str(){
+                        icon = String::from(str_path);
+                    }
+                }
+            }
+        }
+
+        let mut hints = Hints::from(&hints);
+        if let Some(path) = hints.image_path.take() {
+            if !path.starts_with("file://"){
+                if let Some(path) = freedesktop_icons::lookup(&path).find() {
+                    if let Some(str_path) = path.to_str(){
+                        hints.image_path = Some(String::from(str_path));
+                    }
+                }
+            }else{
+                hints.image_path = Some(path);
+            }
+        }
+
         let notification = Notification{
             id,
             app_name,
@@ -115,16 +143,19 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
             summary,
             body,
             actions,
-            hints: Hints::from(&hints),
+            hints,
             timeout,
-            time_since_display:     0,
+            created_at: chrono::Utc::now(),
         };
         println!(
-            "id: {}, replace_id: {}, app_name: {}, summary: {}, icon: {}, body: {}, actions: {:?}, timeout: {}", 
+            "id: {}, replace_id: {}, app_name: {}, summary: {}, icon: {:?} | {:?} | {:?} | {:?}, body: {}, actions: {:?}, timeout: {}", 
             notification.id, 
             notification.replaces_id,
             notification.app_name,
             notification.summary,
+            notification.hints.image_data.is_some(),
+            notification.hints.image_path,
+            notification.hints.icon_data.is_some(),
             notification.icon,
             notification.body,
             notification.actions,

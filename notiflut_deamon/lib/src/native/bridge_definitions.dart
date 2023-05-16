@@ -55,6 +55,7 @@ class Hints {
   final String? desktopEntry;
   final ImageData? imageData;
   final String? imagePath;
+  final ImageData? iconData;
   final bool? resident;
   final String? soundFile;
   final String? soundName;
@@ -70,6 +71,7 @@ class Hints {
     this.desktopEntry,
     this.imageData,
     this.imagePath,
+    this.iconData,
     this.resident,
     this.soundFile,
     this.soundName,
@@ -110,7 +112,7 @@ class Notification {
   final String body;
   final List<String> actions;
   final int timeout;
-  final int timeSinceDisplay;
+  final DateTime createdAt;
   final Hints hints;
 
   const Notification({
@@ -122,7 +124,7 @@ class Notification {
     required this.body,
     required this.actions,
     required this.timeout,
-    required this.timeSinceDisplay,
+    required this.createdAt,
     required this.hints,
   });
 }

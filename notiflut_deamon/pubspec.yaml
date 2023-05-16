@@ -1,4 +1,4 @@
-name: test_flutter_russt
+name: notiflut_land
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -40,7 +40,10 @@ dependencies:
   freezed_annotation: ^2.2.0
   image: ^4.0.16
   window_manager: ^0.3.2
-  desktop_multi_window: ^0.2.0
+  desktop_multi_window:
+    git:
+      url: https://github.com/LucaCoduriV/flutter_gtk_layer_shell.git
+
 
 dev_dependencies:
   flutter_test:

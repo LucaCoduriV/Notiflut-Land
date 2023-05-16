@@ -174,6 +174,7 @@ impl Wire2Api<Hints> for wire_Hints {
             desktop_entry: self.desktop_entry.wire2api(),
             image_data: self.image_data.wire2api(),
             image_path: self.image_path.wire2api(),
+            icon_data: self.icon_data.wire2api(),
             resident: self.resident.wire2api(),
             sound_file: self.sound_file.wire2api(),
             sound_name: self.sound_name.wire2api(),
@@ -219,7 +220,7 @@ impl Wire2Api<Notification> for wire_Notification {
             body: self.body.wire2api(),
             actions: self.actions.wire2api(),
             timeout: self.timeout.wire2api(),
-            time_since_display: self.time_since_display.wire2api(),
+            created_at: self.created_at.wire2api(),
             hints: self.hints.wire2api(),
         }
     }
@@ -251,6 +252,7 @@ pub struct wire_Hints {
     desktop_entry: *mut wire_uint_8_list,
     image_data: *mut wire_ImageData,
     image_path: *mut wire_uint_8_list,
+    icon_data: *mut wire_ImageData,
     resident: *mut bool,
     sound_file: *mut wire_uint_8_list,
     sound_name: *mut wire_uint_8_list,
@@ -291,7 +293,7 @@ pub struct wire_Notification {
     body: *mut wire_uint_8_list,
     actions: *mut wire_StringList,
     timeout: i32,
-    time_since_display: u32,
+    created_at: i64,
     hints: wire_Hints,
 }
 
@@ -424,6 +426,7 @@ impl NewWithNullPtr for wire_Hints {
             desktop_entry: core::ptr::null_mut(),
             image_data: core::ptr::null_mut(),
             image_path: core::ptr::null_mut(),
+            icon_data: core::ptr::null_mut(),
             resident: core::ptr::null_mut(),
             sound_file: core::ptr::null_mut(),
             sound_name: core::ptr::null_mut(),
@@ -473,7 +476,7 @@ impl NewWithNullPtr for wire_Notification {
             body: core::ptr::null_mut(),
             actions: core::ptr::null_mut(),
             timeout: Default::default(),
-            time_since_display: Default::default(),
+            created_at: Default::default(),
             hints: Default::default(),
         }
     }

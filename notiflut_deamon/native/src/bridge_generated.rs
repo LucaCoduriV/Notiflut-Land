@@ -95,6 +95,16 @@ where
         (!self.is_null()).then(|| self.wire2api())
     }
 }
+impl Wire2Api<chrono::DateTime<chrono::Utc>> for i64 {
+    fn wire2api(self) -> chrono::DateTime<chrono::Utc> {
+        let Timestamp { s, ns } = wire2api_timestamp(self);
+        chrono::DateTime::<chrono::Utc>::from_utc(
+            chrono::NaiveDateTime::from_timestamp_opt(s, ns)
+                .expect("invalid or out-of-range datetime"),
+            chrono::Utc,
+        )
+    }
+}
 
 impl Wire2Api<bool> for bool {
     fn wire2api(self) -> bool {
@@ -104,6 +114,11 @@ impl Wire2Api<bool> for bool {
 
 impl Wire2Api<i32> for i32 {
     fn wire2api(self) -> i32 {
+        self
+    }
+}
+impl Wire2Api<i64> for i64 {
+    fn wire2api(self) -> i64 {
         self
     }
 }
@@ -154,6 +169,7 @@ impl support::IntoDart for Hints {
             self.desktop_entry.into_dart(),
             self.image_data.into_dart(),
             self.image_path.into_dart(),
+            self.icon_data.into_dart(),
             self.resident.into_dart(),
             self.sound_file.into_dart(),
             self.sound_name.into_dart(),
@@ -195,7 +211,7 @@ impl support::IntoDart for Notification {
             self.body.into_dart(),
             self.actions.into_dart(),
             self.timeout.into_dart(),
-            self.time_since_display.into_dart(),
+            self.created_at.into_dart(),
             self.hints.into_dart(),
         ]
         .into_dart()

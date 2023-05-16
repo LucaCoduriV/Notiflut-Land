@@ -1,6 +1,9 @@
 #include "my_application.h"
+// #include <window_manager/window_manager_plugin.h>
+// #include "desktop_multi_window/desktop_multi_window_plugin.h"
 
 #include <flutter_linux/flutter_linux.h>
+#include <gtk-layer-shell.h>
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif
@@ -21,6 +24,13 @@ static void my_application_activate(GApplication *application)
   MyApplication *self = MY_APPLICATION(application);
   GtkWindow *window =
       GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
+  gtk_layer_init_for_window(window);
+  gtk_layer_set_layer (window, GTK_LAYER_SHELL_LAYER_TOP);
+  gtk_layer_set_namespace(window, "NotiFlut-Land");
+  // gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_TOP, true);
+  // gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_LEFT, true);
+  // gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_RIGHT, true);
+  // gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_BOTTOM, true);
 
   // Use a header bar when running in GNOME as this is the common style used
   // by applications and is the setup most users will be using (e.g. Ubuntu
@@ -45,13 +55,13 @@ static void my_application_activate(GApplication *application)
   {
     GtkHeaderBar *header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
     gtk_widget_show(GTK_WIDGET(header_bar));
-    gtk_header_bar_set_title(header_bar, "test_flutter_russt");
+    gtk_header_bar_set_title(header_bar, "NotiFlut-Land");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
   }
   else
   {
-    gtk_window_set_title(window, "test_flutter_russt");
+    gtk_window_set_title(window, "NotiFlut-Land");
   }
 
   gtk_window_set_default_size(window, 1280, 720);
@@ -65,8 +75,13 @@ static void my_application_activate(GApplication *application)
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
-
+  // desktop_multi_window_plugin_set_window_created_callback([](FlPluginRegistry* registry){
+  //     g_autoptr(FlPluginRegistrar) window_manager_registrar =
+  //     fl_plugin_registry_get_registrar_for_plugin(registry, "WindowManagerPlugin");
+  //     window_manager_plugin_register_with_registrar(window_manager_registrar);
+  //     });
   gtk_widget_grab_focus(GTK_WIDGET(view));
+  gtk_widget_set_size_request (GTK_WIDGET(view), 500, 500);
 }
 
 // Implements GApplication::local_command_line.

@@ -8,13 +8,15 @@ edition = "2021"
 crate-type = ["lib","staticlib","cdylib"]
 
 [dependencies]
-flutter_rust_bridge = "1"
+flutter_rust_bridge = {version = "1", features = ["chrono"]}
 once_cell = "1.17.1"
 ctrlc = "3.2.5"
 dbus = "0.9.7"
 dbus-crossroads = "0.5.2"
 anyhow = "1"
 thiserror = "1.0.40"
+chrono = "^0.4.24"
+freedesktop-icons = "0.2.3"
 
 [build-dependencies]
 flutter_rust_bridge_codegen = "1"

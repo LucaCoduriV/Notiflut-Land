@@ -15,7 +15,7 @@ pub struct Notification {
     pub body: String,
     pub actions: Vec<String>,
     pub timeout: i32,
-    pub time_since_display: u32,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     pub hints: Hints,
 }
 
@@ -26,6 +26,7 @@ pub struct Hints {
     pub desktop_entry: Option<String>,
     pub image_data: Option<ImageData>,
     pub image_path: Option<String>,
+    pub icon_data: Option<ImageData>,
     pub resident: Option<bool>,
     pub sound_file: Option<String>,
     pub sound_name: Option<String>,
@@ -57,12 +58,18 @@ impl From<&PropMap> for Hints {
             Some(v) => ImageData::try_from(v).ok(),
             None => None,
         };
+
+        let icon_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&map, "icon_data") {
+            Some(v) => ImageData::try_from(v).ok(),
+            None => None,
+        };
         Hints {
             actions_icon,
             category,
             desktop_entry,
             image_data,
             image_path,
+            icon_data,
             resident,
             sound_file,
             sound_name,
