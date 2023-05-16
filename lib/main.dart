@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:test_flutter_russt/src/native/bridge_definitions.dart';
+import 'package:test_flutter_rust/src/native/bridge_definitions.dart';
 import './src/native.dart' as nati;
 // import './src/native/bridge_definitions.dart' as nati;
 

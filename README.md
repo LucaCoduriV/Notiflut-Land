@@ -1,4 +1,4 @@
-# test_flutter_russt
+# test_flutter_rust
 
 A new Flutter project.
 
