@@ -15,7 +15,7 @@ pub struct Notification {
     pub body: String,
     pub actions: Vec<String>,
     pub timeout: i32,
-    pub time_since_display: u32,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     pub hints: Hints,
 }
 

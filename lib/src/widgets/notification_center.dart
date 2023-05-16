@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../native.dart' as nati;
+import '../native/bridge_definitions.dart' as nati;
 import '../utils.dart';
 import '../window_manager.dart';
 import 'notification.dart';

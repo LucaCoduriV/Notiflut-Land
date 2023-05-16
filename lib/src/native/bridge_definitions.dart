@@ -110,7 +110,7 @@ class Notification {
   final String body;
   final List<String> actions;
   final int timeout;
-  final int timeSinceDisplay;
+  final DateTime createdAt;
   final Hints hints;
 
   const Notification({
@@ -122,7 +122,7 @@ class Notification {
     required this.body,
     required this.actions,
     required this.timeout,
-    required this.timeSinceDisplay,
+    required this.createdAt,
     required this.hints,
   });
 }

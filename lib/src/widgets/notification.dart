@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../native.dart' as nati;
+import '../native/bridge_definitions.dart' as nati;
 
 class NotificationAction {
   final Function() action;
@@ -10,7 +11,7 @@ class NotificationAction {
 List<NotificationAction> buildFromActionList(
     int id, Map<String, String> actions) {
   return actions.entries
-  .where((element) => element.key != "default")
+      .where((element) => element.key != "default")
       .map((entry) => NotificationAction(entry.value, () async {
             await nati.api.sendDeamonAction(
                 action: nati.DeamonAction.clientActionInvoked(id, entry.key));
@@ -36,7 +37,7 @@ class NotificationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttons = actions
-        ?.map((v) => ElevatedButton(onPressed: v.action, child: Text(v.label)))
+        ?.map((v) => TextButton(onPressed: v.action, child: Text(v.label)))
         .toList();
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -56,6 +57,7 @@ class NotificationTile extends StatelessWidget {
             ),
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: buttons ?? [],
           ),
         ],

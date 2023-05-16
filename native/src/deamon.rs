@@ -32,7 +32,7 @@ pub struct NotificationDeamon {
     stop: Arc<Mutex<bool>>,
     notification_join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
     signal_recv: Arc<Mutex<Option<Receiver<::dbus::message::Message>>>>,
-    cron_join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
+    // cron_join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
     dbus_server: Option<Arc<Mutex<DbusServer>>>,
 }
 
@@ -44,7 +44,7 @@ impl NotificationDeamon {
             sender: None,
             dbus_server: None,
             signal_recv: Arc::new(Mutex::new(None)),
-            cron_join_handle: None,
+            // cron_join_handle: None,
         }
     }
 
@@ -103,6 +103,8 @@ impl NotificationDeamon {
         Ok(())
     }
 
+    /// Counts how long a notification has been showed, but I should just date it.
+    /// The main objectif was to delete old notifications, but I changed my mind.
     fn cron_job(
         stop: Arc<Mutex<bool>>,
         notifications: Arc<RwLock<Vec<Notification>>>,
@@ -113,7 +115,7 @@ impl NotificationDeamon {
                 // add time to each notification
                 if let Ok(mut notifications) = notifications.write() {
                     for notif in notifications.iter_mut() {
-                        notif.time_since_display += 1000;
+                        // notif.time_since_display += 1000;
                     }
                 } else {
                     return Err(DeamonError::Error);
@@ -140,10 +142,10 @@ impl NotificationDeamon {
         // self.signal_join_handle = Some(self.signal_thread(signal_recv));
 
         let notifications: Arc<RwLock<Vec<Notification>>> = Arc::new(RwLock::new(Vec::new()));
-        self.cron_join_handle = Some(NotificationDeamon::cron_job(
-            stop_cron_job,
-            Arc::clone(&notifications),
-        ));
+        // self.cron_join_handle = Some(NotificationDeamon::cron_job(
+        //     stop_cron_job,
+        //     Arc::clone(&notifications),
+        // ));
 
         let action_join_handler = std::thread::spawn(move || {
             // let mut notifications: Vec<Notification> = Vec::new();

@@ -219,7 +219,7 @@ impl Wire2Api<Notification> for wire_Notification {
             body: self.body.wire2api(),
             actions: self.actions.wire2api(),
             timeout: self.timeout.wire2api(),
-            time_since_display: self.time_since_display.wire2api(),
+            created_at: self.created_at.wire2api(),
             hints: self.hints.wire2api(),
         }
     }
@@ -291,7 +291,7 @@ pub struct wire_Notification {
     body: *mut wire_uint_8_list,
     actions: *mut wire_StringList,
     timeout: i32,
-    time_since_display: u32,
+    created_at: i64,
     hints: wire_Hints,
 }
 
@@ -473,7 +473,7 @@ impl NewWithNullPtr for wire_Notification {
             body: core::ptr::null_mut(),
             actions: core::ptr::null_mut(),
             timeout: Default::default(),
-            time_since_display: Default::default(),
+            created_at: Default::default(),
             hints: Default::default(),
         }
     }

@@ -55,7 +55,7 @@ const SERVER_CAPABILITIES: [&str; 6] = [
     "body-hyperlinks",
     // "body-image",
     // "body-markup",
-    "icon-multi",
+    "icon-static",
     "persistence",
 ];
 
@@ -117,7 +117,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
             actions,
             hints: Hints::from(&hints),
             timeout,
-            time_since_display:     0,
+            created_at: chrono::Utc::now(),
         };
         println!(
             "id: {}, replace_id: {}, app_name: {}, summary: {}, icon: {}, body: {}, actions: {:?}, timeout: {}", 
