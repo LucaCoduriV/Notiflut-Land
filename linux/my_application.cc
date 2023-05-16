@@ -27,10 +27,10 @@ static void my_application_activate(GApplication *application)
   gtk_layer_init_for_window(window);
   gtk_layer_set_layer (window, GTK_LAYER_SHELL_LAYER_TOP);
   gtk_layer_set_namespace(window, "NotiFlut-Land");
-  gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_TOP, true);
-  gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_LEFT, true);
-  gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_RIGHT, true);
-  gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_BOTTOM, true);
+  // gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_TOP, true);
+  // gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_LEFT, true);
+  // gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_RIGHT, true);
+  // gtk_layer_set_anchor(window, GtkLayerShellEdge::GTK_LAYER_SHELL_EDGE_BOTTOM, true);
 
   // Use a header bar when running in GNOME as this is the common style used
   // by applications and is the setup most users will be using (e.g. Ubuntu
