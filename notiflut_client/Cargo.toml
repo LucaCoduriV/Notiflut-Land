@@ -10,3 +10,4 @@ dbus = "0.9.7"
 dbus-crossroads = "0.5.2"
 thiserror = "1.0.40"
 anyhow = "1"
+clap = {version = "4.2.1", features=["cargo", "derive"]}

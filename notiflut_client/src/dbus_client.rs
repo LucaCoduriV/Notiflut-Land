@@ -19,7 +19,7 @@ impl DbusClient {
         Ok(Self { connection })
     }
 
-    pub fn open_nc(&self) -> Result<()> {
+    pub fn show_nc(&self) -> Result<String> {
         let proxy = Proxy::new(
             NOTIFICATION_INTERFACE,
             format!("{NOTIFICATION_PATH}/ctl"),
@@ -28,12 +28,11 @@ impl DbusClient {
         );
 
         let result: (String,) = proxy.method_call(NOTIFICATION_INTERFACE, "OpenNC", ())?;
-        println!("{}", result.0);
 
-        Ok(())
+        Ok(result.0)
     }
 
-    pub fn close_nc(&self) -> Result<()> {
+    pub fn hide_nc(&self) -> Result<String> {
         let proxy = Proxy::new(
             NOTIFICATION_INTERFACE,
             format!("{NOTIFICATION_PATH}/ctl"),
@@ -42,8 +41,7 @@ impl DbusClient {
         );
 
         let result: (String,) = proxy.method_call(NOTIFICATION_INTERFACE, "CloseNC", ())?;
-        println!("{}", result.0);
 
-        Ok(())
+        Ok(result.0)
     }
 }

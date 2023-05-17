@@ -200,7 +200,6 @@ impl DbusServer {
                 sender_clonded 
                     .send(ChannelMessage::Message(DeamonAction::ShowNc))
                     .map_err(|e| MethodErr::failed(&e))?;
-                println!("OPENING !");
                 Ok((String::from("Notification center open"),))
             });
 
@@ -209,7 +208,6 @@ impl DbusServer {
                 sender_clonded 
                     .send(ChannelMessage::Message(DeamonAction::CloseNc))
                     .map_err(|e| MethodErr::failed(&e))?;
-                println!("CLOSING !");
                 Ok((String::from("Notification center closed"),))
             });
         });
