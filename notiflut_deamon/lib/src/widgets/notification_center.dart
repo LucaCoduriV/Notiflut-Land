@@ -33,19 +33,32 @@ class NotificationCenter extends StatelessWidget {
         //   PopUpWindowManager().showPopUp("hello");
         // }),
         backgroundColor: Colors.transparent,
-        body: Container(
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            border: Border.all(
-              width: 1,
-              color: Colors.white,
+        body: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            // all the remaning left space hides the Notification center
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  LayerShellController.main().hide();
+                },
+              ),
             ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          padding: const EdgeInsets.all(10),
-          height: double.infinity,
-          width: double.infinity,
-          child: NotificationList(notificationStream),
+            Container(
+              width: 500,
+              decoration: const BoxDecoration(
+                  color: Color(0xAA000000),
+                  border: Border(
+                    left: BorderSide(
+                      width: 1,
+                      color: Colors.white,
+                    ),
+                  )),
+              padding: const EdgeInsets.all(10),
+              height: double.infinity,
+              child: NotificationList(notificationStream),
+            ),
+          ],
         ),
       ),
     );
