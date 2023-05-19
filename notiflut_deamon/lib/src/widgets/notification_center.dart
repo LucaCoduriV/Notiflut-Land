@@ -154,7 +154,7 @@ class _NotificationListState extends State<NotificationList> {
         final notification = notifications[index];
         final imageData =
             notification.hints.imageData ?? notification.hints.iconData;
-        final path = notification.hints.imagePath ?? notification.icon;
+        var path = notification.hints.imagePath ?? notification.icon;
 
         ImageProvider<Object>? imageProvider;
         if (imageData != null) {
@@ -162,6 +162,7 @@ class _NotificationListState extends State<NotificationList> {
                   imageData.data, imageData.channels, imageData.rowstride)
               .image;
         } else if (path.isNotEmpty) {
+          path = path.replaceFirst("file://", "");
           imageProvider = Image.file(File(path)).image;
         }
         return NotificationTile(

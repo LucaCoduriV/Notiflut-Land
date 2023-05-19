@@ -67,7 +67,8 @@ class _PopupWindowState extends State<PopupWindow> {
               data.iconData!, data.iconAlpha! ? 4 : 3, data.iconRowstride!)
           .image;
     } else if (data.iconPath != null && data.iconPath!.isNotEmpty) {
-      imageProvider = Image.file(File(data.iconPath!)).image;
+          final path = data.iconPath!.replaceFirst("file://", "");
+      imageProvider = Image.file(File(path)).image;
     }
     if (imageProvider != null) {
       await precacheImage(imageProvider, context);
