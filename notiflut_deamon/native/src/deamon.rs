@@ -132,17 +132,25 @@ impl NotificationDeamon {
                             .unwrap()
                             .retain(|v| v.id != notification.id);
                         notifications.write().unwrap().push(notification.clone());
-                        if let false =
-                            sender.add(DeamonAction::Update(notifications.read().unwrap().clone()))
-                        {
+                        let last_index = notifications.read().unwrap().len() as i64 - 1;
+                        let last_index = if last_index < 0 {
+                            None
+                        } else {
+                            Some(last_index as usize)
+                        };
+                        if let false = sender.add(DeamonAction::Update(
+                            notifications.read().unwrap().clone(),
+                            last_index,
+                        )) {
                             return Err(DeamonError::Error);
                         }
                     }
                     DeamonAction::Close(id) => {
                         notifications.write().unwrap().retain(|v| v.id != id);
-                        if let false =
-                            sender.add(DeamonAction::Update(notifications.read().unwrap().clone()))
-                        {
+                        if let false = sender.add(DeamonAction::Update(
+                            notifications.read().unwrap().clone(),
+                            None,
+                        )) {
                             return Err(DeamonError::Error);
                         }
                     }
@@ -156,9 +164,10 @@ impl NotificationDeamon {
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
                         let _result = signal_sender.send(message.to_emit_message(&path));
 
-                        if let false =
-                            sender.add(DeamonAction::Update(notifications.read().unwrap().clone()))
-                        {
+                        if let false = sender.add(DeamonAction::Update(
+                            notifications.read().unwrap().clone(),
+                            None,
+                        )) {
                             return Err(DeamonError::Error);
                         }
                     }
@@ -171,9 +180,10 @@ impl NotificationDeamon {
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
                         let _result = signal_sender.send(message.to_emit_message(&path));
 
-                        if let false =
-                            sender.add(DeamonAction::Update(notifications.read().unwrap().clone()))
-                        {
+                        if let false = sender.add(DeamonAction::Update(
+                            notifications.read().unwrap().clone(),
+                            None,
+                        )) {
                             return Err(DeamonError::Error);
                         }
                     }

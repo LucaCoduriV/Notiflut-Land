@@ -76,6 +76,7 @@ class NotificationList extends StatefulWidget {
 class _NotificationListState extends State<NotificationList> {
   List<nati.Notification> notifications = [];
   Timer? timer;
+  StreamSubscription<nati.DeamonAction>? notificationStreamSub;
 
   Map<String, String> actions(int id) {
     final Map<String, String> map = HashMap();
@@ -90,6 +91,7 @@ class _NotificationListState extends State<NotificationList> {
   @override
   void dispose() {
     timer?.cancel();
+    notificationStreamSub?.cancel();
     super.dispose();
   }
 
@@ -100,7 +102,7 @@ class _NotificationListState extends State<NotificationList> {
       setState(() {});
     });
 
-    widget.notificationStream.listen((event) {
+    notificationStreamSub = widget.notificationStream.listen((event) {
       event.whenOrNull(
         showNc: () {
           print("show window");
@@ -112,33 +114,34 @@ class _NotificationListState extends State<NotificationList> {
           final layerController = LayerShellController.fromWindowId(0);
           layerController.hide();
         },
-        update: (notificationsNew) {
+        update: (notificationsNew, index) {
           notifications = notificationsNew;
 
           // Send notification to popup manager
-          final imageData = notifications.last.hints.imageData;
-          final iconData = notifications.last.hints.iconData;
-          try {
-            final args = NotificationPopupData(
-              id: notifications.last.id,
-              summary: notifications.last.summary,
-              appName: notifications.last.appName,
-              body: notifications.last.body,
-              iconData: imageData?.data ?? iconData?.data,
-              iconAlpha: imageData?.onePointTwoBitAlpha ??
-                  iconData?.onePointTwoBitAlpha,
-              iconRowstride: imageData?.rowstride ?? iconData?.rowstride,
-              iconHeight: imageData?.height ?? iconData?.height,
-              iconWidth: imageData?.width ?? iconData?.width,
-              timeout: 5,
-              iconPath: notifications.last.hints.imagePath ??
-                  (notifications.last.icon.isNotEmpty
-                      ? notifications.last.icon
-                      : null),
-            );
-            PopUpWindowManager().showPopUp(args.toJson());
-          } catch (e) {
-            log("error while parsing notification: $e");
+          if (index != null) {
+            final notification = notifications[index];
+            final imageData = notification.hints.imageData;
+            final iconData = notification.hints.iconData;
+            try {
+              final args = NotificationPopupData(
+                id: notification.id,
+                summary: notification.summary,
+                appName: notification.appName,
+                body: notification.body,
+                iconData: imageData?.data ?? iconData?.data,
+                iconAlpha: imageData?.onePointTwoBitAlpha ??
+                    iconData?.onePointTwoBitAlpha,
+                iconRowstride: imageData?.rowstride ?? iconData?.rowstride,
+                iconHeight: imageData?.height ?? iconData?.height,
+                iconWidth: imageData?.width ?? iconData?.width,
+                timeout: 5,
+                iconPath: notification.hints.imagePath ??
+                    (notification.icon.isNotEmpty ? notification.icon : null),
+              );
+              PopUpWindowManager().showPopUp(args.toJson());
+            } catch (e) {
+              log("error while parsing notification: $e");
+            }
           }
         },
       );

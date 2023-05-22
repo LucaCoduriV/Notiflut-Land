@@ -65,7 +65,7 @@ pub enum DeamonAction {
     ShowNc,
     CloseNc,
     Close(u32),
-    Update(Vec<Notification>),
+    Update(Vec<Notification>, Option<usize>),
     ClientClose(u32),
     ClientActionInvoked(u32, String),
 }

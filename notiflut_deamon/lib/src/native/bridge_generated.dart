@@ -132,6 +132,10 @@ class NativeImpl implements Native {
     return _wire2api_urgency(raw);
   }
 
+  int _wire2api_box_autoadd_usize(dynamic raw) {
+    return _wire2api_usize(raw);
+  }
+
   DeamonAction _wire2api_deamon_action(dynamic raw) {
     switch (raw[0]) {
       case 0:
@@ -149,6 +153,7 @@ class NativeImpl implements Native {
       case 4:
         return DeamonAction_Update(
           _wire2api_list_notification(raw[1]),
+          _wire2api_opt_box_autoadd_usize(raw[2]),
         );
       case 5:
         return DeamonAction_ClientClose(
@@ -251,6 +256,10 @@ class NativeImpl implements Native {
     return raw == null ? null : _wire2api_box_autoadd_urgency(raw);
   }
 
+  int? _wire2api_opt_box_autoadd_usize(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_usize(raw);
+  }
+
   int _wire2api_u32(dynamic raw) {
     return raw as int;
   }
@@ -269,6 +278,10 @@ class NativeImpl implements Native {
 
   Urgency _wire2api_urgency(dynamic raw) {
     return Urgency.values[raw];
+  }
+
+  int _wire2api_usize(dynamic raw) {
+    return castInt(raw);
   }
 }
 
@@ -297,6 +310,11 @@ int api2wire_u8(int raw) {
 @protected
 int api2wire_urgency(Urgency raw) {
   return api2wire_i32(raw.index);
+}
+
+@protected
+int api2wire_usize(int raw) {
+  return raw;
 }
 // Section: finalizer
 
@@ -363,6 +381,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.UintPtr> api2wire_box_autoadd_usize(int raw) {
+    return inner.new_box_autoadd_usize_0(api2wire_usize(raw));
+  }
+
+  @protected
   int api2wire_i64(int raw) {
     return raw;
   }
@@ -401,6 +424,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   @protected
   ffi.Pointer<ffi.Int32> api2wire_opt_box_autoadd_urgency(Urgency? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_urgency(raw);
+  }
+
+  @protected
+  ffi.Pointer<ffi.UintPtr> api2wire_opt_box_autoadd_usize(int? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_usize(raw);
   }
 
   @protected
@@ -455,9 +483,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     }
     if (apiObj is DeamonAction_Update) {
       var pre_field0 = api2wire_list_notification(apiObj.field0);
+      var pre_field1 = api2wire_opt_box_autoadd_usize(apiObj.field1);
       wireObj.tag = 4;
       wireObj.kind = inner.inflate_DeamonAction_Update();
       wireObj.kind.ref.Update.ref.field0 = pre_field0;
+      wireObj.kind.ref.Update.ref.field1 = pre_field1;
       return;
     }
     if (apiObj is DeamonAction_ClientClose) {
@@ -768,6 +798,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_urgency_0 = _new_box_autoadd_urgency_0Ptr
       .asFunction<ffi.Pointer<ffi.Int32> Function(int)>();
 
+  ffi.Pointer<ffi.UintPtr> new_box_autoadd_usize_0(
+    int value,
+  ) {
+    return _new_box_autoadd_usize_0(
+      value,
+    );
+  }
+
+  late final _new_box_autoadd_usize_0Ptr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<ffi.UintPtr> Function(ffi.UintPtr)>>(
+      'new_box_autoadd_usize_0');
+  late final _new_box_autoadd_usize_0 = _new_box_autoadd_usize_0Ptr
+      .asFunction<ffi.Pointer<ffi.UintPtr> Function(int)>();
+
   ffi.Pointer<wire_list_notification> new_list_notification_0(
     int len,
   ) {
@@ -981,6 +1025,8 @@ class wire_list_notification extends ffi.Struct {
 
 class wire_DeamonAction_Update extends ffi.Struct {
   external ffi.Pointer<wire_list_notification> field0;
+
+  external ffi.Pointer<ffi.UintPtr> field1;
 }
 
 class wire_DeamonAction_ClientClose extends ffi.Struct {

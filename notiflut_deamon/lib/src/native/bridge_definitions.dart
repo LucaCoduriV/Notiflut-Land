@@ -40,8 +40,9 @@ class DeamonAction with _$DeamonAction {
     int field0,
   ) = DeamonAction_Close;
   const factory DeamonAction.update(
-    List<Notification> field0,
-  ) = DeamonAction_Update;
+    List<Notification> field0, [
+    int? field1,
+  ]) = DeamonAction_Update;
   const factory DeamonAction.clientClose(
     int field0,
   ) = DeamonAction_ClientClose;

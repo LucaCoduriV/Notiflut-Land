@@ -22,7 +22,7 @@ mixin _$DeamonAction {
     required TResult Function() showNc,
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
-    required TResult Function(List<Notification> field0) update,
+    required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) clientClose,
     required TResult Function(int field0, String field1) clientActionInvoked,
   }) =>
@@ -33,7 +33,7 @@ mixin _$DeamonAction {
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
-    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? clientClose,
     TResult? Function(int field0, String field1)? clientActionInvoked,
   }) =>
@@ -44,7 +44,7 @@ mixin _$DeamonAction {
     TResult Function()? showNc,
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
-    TResult Function(List<Notification> field0)? update,
+    TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? clientClose,
     TResult Function(int field0, String field1)? clientActionInvoked,
     required TResult orElse(),
@@ -175,7 +175,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     required TResult Function() showNc,
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
-    required TResult Function(List<Notification> field0) update,
+    required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) clientClose,
     required TResult Function(int field0, String field1) clientActionInvoked,
   }) {
@@ -189,7 +189,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
-    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? clientClose,
     TResult? Function(int field0, String field1)? clientActionInvoked,
   }) {
@@ -203,7 +203,7 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     TResult Function()? showNc,
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
-    TResult Function(List<Notification> field0)? update,
+    TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? clientClose,
     TResult Function(int field0, String field1)? clientActionInvoked,
     required TResult orElse(),
@@ -316,7 +316,7 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     required TResult Function() showNc,
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
-    required TResult Function(List<Notification> field0) update,
+    required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) clientClose,
     required TResult Function(int field0, String field1) clientActionInvoked,
   }) {
@@ -330,7 +330,7 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
-    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? clientClose,
     TResult? Function(int field0, String field1)? clientActionInvoked,
   }) {
@@ -344,7 +344,7 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     TResult Function()? showNc,
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
-    TResult Function(List<Notification> field0)? update,
+    TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? clientClose,
     TResult Function(int field0, String field1)? clientActionInvoked,
     required TResult orElse(),
@@ -451,7 +451,7 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     required TResult Function() showNc,
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
-    required TResult Function(List<Notification> field0) update,
+    required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) clientClose,
     required TResult Function(int field0, String field1) clientActionInvoked,
   }) {
@@ -465,7 +465,7 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
-    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? clientClose,
     TResult? Function(int field0, String field1)? clientActionInvoked,
   }) {
@@ -479,7 +479,7 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     TResult Function()? showNc,
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
-    TResult Function(List<Notification> field0)? update,
+    TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? clientClose,
     TResult Function(int field0, String field1)? clientActionInvoked,
     required TResult orElse(),
@@ -613,7 +613,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     required TResult Function() showNc,
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
-    required TResult Function(List<Notification> field0) update,
+    required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) clientClose,
     required TResult Function(int field0, String field1) clientActionInvoked,
   }) {
@@ -627,7 +627,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
-    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? clientClose,
     TResult? Function(int field0, String field1)? clientActionInvoked,
   }) {
@@ -641,7 +641,7 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     TResult Function()? showNc,
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
-    TResult Function(List<Notification> field0)? update,
+    TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? clientClose,
     TResult Function(int field0, String field1)? clientActionInvoked,
     required TResult orElse(),
@@ -717,7 +717,7 @@ abstract class _$$DeamonAction_UpdateCopyWith<$Res> {
           $Res Function(_$DeamonAction_Update) then) =
       __$$DeamonAction_UpdateCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<Notification> field0});
+  $Res call({List<Notification> field0, int? field1});
 }
 
 /// @nodoc
@@ -732,12 +732,17 @@ class __$$DeamonAction_UpdateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? field0 = null,
+    Object? field1 = freezed,
   }) {
     return _then(_$DeamonAction_Update(
       null == field0
           ? _value._field0
           : field0 // ignore: cast_nullable_to_non_nullable
               as List<Notification>,
+      freezed == field1
+          ? _value.field1
+          : field1 // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -745,7 +750,7 @@ class __$$DeamonAction_UpdateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$DeamonAction_Update implements DeamonAction_Update {
-  const _$DeamonAction_Update(final List<Notification> field0)
+  const _$DeamonAction_Update(final List<Notification> field0, [this.field1])
       : _field0 = field0;
 
   final List<Notification> _field0;
@@ -757,8 +762,11 @@ class _$DeamonAction_Update implements DeamonAction_Update {
   }
 
   @override
+  final int? field1;
+
+  @override
   String toString() {
-    return 'DeamonAction.update(field0: $field0)';
+    return 'DeamonAction.update(field0: $field0, field1: $field1)';
   }
 
   @override
@@ -766,12 +774,13 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DeamonAction_Update &&
-            const DeepCollectionEquality().equals(other._field0, _field0));
+            const DeepCollectionEquality().equals(other._field0, _field0) &&
+            (identical(other.field1, field1) || other.field1 == field1));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_field0));
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(_field0), field1);
 
   @JsonKey(ignore: true)
   @override
@@ -787,11 +796,11 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     required TResult Function() showNc,
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
-    required TResult Function(List<Notification> field0) update,
+    required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) clientClose,
     required TResult Function(int field0, String field1) clientActionInvoked,
   }) {
-    return update(field0);
+    return update(field0, field1);
   }
 
   @override
@@ -801,11 +810,11 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
-    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? clientClose,
     TResult? Function(int field0, String field1)? clientActionInvoked,
   }) {
-    return update?.call(field0);
+    return update?.call(field0, field1);
   }
 
   @override
@@ -815,13 +824,13 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     TResult Function()? showNc,
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
-    TResult Function(List<Notification> field0)? update,
+    TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? clientClose,
     TResult Function(int field0, String field1)? clientActionInvoked,
     required TResult orElse(),
   }) {
     if (update != null) {
-      return update(field0);
+      return update(field0, field1);
     }
     return orElse();
   }
@@ -877,10 +886,11 @@ class _$DeamonAction_Update implements DeamonAction_Update {
 }
 
 abstract class DeamonAction_Update implements DeamonAction {
-  const factory DeamonAction_Update(final List<Notification> field0) =
-      _$DeamonAction_Update;
+  const factory DeamonAction_Update(final List<Notification> field0,
+      [final int? field1]) = _$DeamonAction_Update;
 
   List<Notification> get field0;
+  int? get field1;
   @JsonKey(ignore: true)
   _$$DeamonAction_UpdateCopyWith<_$DeamonAction_Update> get copyWith =>
       throw _privateConstructorUsedError;
@@ -956,7 +966,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     required TResult Function() showNc,
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
-    required TResult Function(List<Notification> field0) update,
+    required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) clientClose,
     required TResult Function(int field0, String field1) clientActionInvoked,
   }) {
@@ -970,7 +980,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
-    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? clientClose,
     TResult? Function(int field0, String field1)? clientActionInvoked,
   }) {
@@ -984,7 +994,7 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     TResult Function()? showNc,
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
-    TResult Function(List<Notification> field0)? update,
+    TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? clientClose,
     TResult Function(int field0, String field1)? clientActionInvoked,
     required TResult orElse(),
@@ -1136,7 +1146,7 @@ class _$DeamonAction_ClientActionInvoked
     required TResult Function() showNc,
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
-    required TResult Function(List<Notification> field0) update,
+    required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) clientClose,
     required TResult Function(int field0, String field1) clientActionInvoked,
   }) {
@@ -1150,7 +1160,7 @@ class _$DeamonAction_ClientActionInvoked
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
-    TResult? Function(List<Notification> field0)? update,
+    TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? clientClose,
     TResult? Function(int field0, String field1)? clientActionInvoked,
   }) {
@@ -1164,7 +1174,7 @@ class _$DeamonAction_ClientActionInvoked
     TResult Function()? showNc,
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
-    TResult Function(List<Notification> field0)? update,
+    TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? clientClose,
     TResult Function(int field0, String field1)? clientActionInvoked,
     required TResult orElse(),

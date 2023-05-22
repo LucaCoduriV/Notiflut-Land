@@ -144,6 +144,11 @@ impl Wire2Api<Urgency> for i32 {
         }
     }
 }
+impl Wire2Api<usize> for usize {
+    fn wire2api(self) -> usize {
+        self
+    }
+}
 // Section: impl IntoDart
 
 impl support::IntoDart for DeamonAction {
@@ -153,7 +158,9 @@ impl support::IntoDart for DeamonAction {
             Self::ShowNc => vec![1.into_dart()],
             Self::CloseNc => vec![2.into_dart()],
             Self::Close(field0) => vec![3.into_dart(), field0.into_dart()],
-            Self::Update(field0) => vec![4.into_dart(), field0.into_dart()],
+            Self::Update(field0, field1) => {
+                vec![4.into_dart(), field0.into_dart(), field1.into_dart()]
+            }
             Self::ClientClose(field0) => vec![5.into_dart(), field0.into_dart()],
             Self::ClientActionInvoked(field0, field1) => {
                 vec![6.into_dart(), field0.into_dart(), field1.into_dart()]
@@ -232,6 +239,7 @@ impl support::IntoDart for Urgency {
     }
 }
 impl support::IntoDartExceptPrimitive for Urgency {}
+
 // Section: executor
 
 support::lazy_static! {

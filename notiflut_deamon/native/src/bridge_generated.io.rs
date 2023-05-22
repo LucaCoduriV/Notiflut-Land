@@ -63,6 +63,11 @@ pub extern "C" fn new_box_autoadd_urgency_0(value: i32) -> *mut i32 {
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_usize_0(value: usize) -> *mut usize {
+    support::new_leak_box_ptr(value)
+}
+
+#[no_mangle]
 pub extern "C" fn new_list_notification_0(len: i32) -> *mut wire_list_notification {
     let wrap = wire_list_notification {
         ptr: support::new_leak_vec_ptr(<wire_Notification>::new_with_null_ptr(), len),
@@ -134,6 +139,11 @@ impl Wire2Api<Urgency> for *mut i32 {
         Wire2Api::<Urgency>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<usize> for *mut usize {
+    fn wire2api(self) -> usize {
+        unsafe { *support::box_from_leak_ptr(self) }
+    }
+}
 impl Wire2Api<DeamonAction> for wire_DeamonAction {
     fn wire2api(self) -> DeamonAction {
         match self.tag {
@@ -152,7 +162,7 @@ impl Wire2Api<DeamonAction> for wire_DeamonAction {
             4 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.Update);
-                DeamonAction::Update(ans.field0.wire2api())
+                DeamonAction::Update(ans.field0.wire2api(), ans.field1.wire2api())
             },
             5 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
@@ -348,6 +358,7 @@ pub struct wire_DeamonAction_Close {
 #[derive(Clone)]
 pub struct wire_DeamonAction_Update {
     field0: *mut wire_list_notification,
+    field1: *mut usize,
 }
 
 #[repr(C)]
@@ -407,6 +418,7 @@ pub extern "C" fn inflate_DeamonAction_Update() -> *mut DeamonActionKind {
     support::new_leak_box_ptr(DeamonActionKind {
         Update: support::new_leak_box_ptr(wire_DeamonAction_Update {
             field0: core::ptr::null_mut(),
+            field1: core::ptr::null_mut(),
         }),
     })
 }
