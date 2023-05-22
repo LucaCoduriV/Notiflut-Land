@@ -172,6 +172,7 @@ class _NotificationListState extends State<NotificationList> {
           notification.id,
           notification.appName,
           notification.summary,
+          notification.body,
           createdAt: notification.createdAt,
           onTileTap: () async {
             await nati.api.sendDeamonAction(

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:open_url/open_url.dart';
 import '../native.dart' as nati;
 import '../native/bridge_definitions.dart' as nati;
+import 'package:flutter_html/flutter_html.dart';
 
 class NotificationAction {
   final Function() action;
@@ -19,10 +23,25 @@ List<NotificationAction> buildFromActionList(
       .toList();
 }
 
+ImageSourceMatcher _fileUriMatcher() => (attributes, element) {
+      return attributes['src'] != null &&
+          attributes['src']!.startsWith("file://");
+    };
+
+ImageRender _fileUriRenderer() => (context, attributes, element) {
+      String src = attributes["src"]!.replaceFirst("file://", "");
+      var image = Image.file(
+        File(src),
+        width: double.infinity,
+      );
+      return image;
+    };
+
 class NotificationTile extends StatelessWidget {
   final int id;
+  final String appName;
   final String title;
-  final String subtitle;
+  final String body;
   final ImageProvider? imageProvider;
   final Function()? onTileTap;
   final Function()? closeAction;
@@ -31,8 +50,9 @@ class NotificationTile extends StatelessWidget {
 
   const NotificationTile(
     this.id,
+    this.appName,
     this.title,
-    this.subtitle, {
+    this.body, {
     super.key,
     this.imageProvider,
     this.closeAction,
@@ -59,6 +79,7 @@ class NotificationTile extends StatelessWidget {
         time = "${createdAt!.day}/${createdAt!.month}";
       }
     }
+    print(body);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Column(
@@ -66,7 +87,18 @@ class NotificationTile extends StatelessWidget {
           ListTile(
             title: Text(title),
             onTap: onTileTap,
-            subtitle: Text(subtitle),
+            subtitle: Html(
+                data: '<div>$body</div>',
+                customImageRenders: {
+                  _fileUriMatcher(): _fileUriRenderer(),
+                  assetUriMatcher(): assetImageRender(),
+                  networkSourceMatcher(extension: "svg"):
+                      svgNetworkImageRender(),
+                  networkSourceMatcher(): networkImageRender(),
+                },
+                onLinkTap: (link, context, _, element) {
+                  openUrl(link!);
+                }),
             leading: CircleAvatar(
               backgroundImage: imageProvider,
             ),

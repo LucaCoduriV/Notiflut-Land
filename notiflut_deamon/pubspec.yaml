@@ -40,10 +40,14 @@ dependencies:
   freezed_annotation: ^2.2.0
   image: ^4.0.16
   window_manager: ^0.3.2
+  flutter_html: ^2.2.1
+  open_url: ^2.0.1
   desktop_multi_window:
     git:
       url: https://github.com/LucaCoduriV/flutter_gtk_layer_shell.git
 
+dependency_overrides: 
+  flutter_svg: ^1.0.0
 
 dev_dependencies:
   flutter_test:

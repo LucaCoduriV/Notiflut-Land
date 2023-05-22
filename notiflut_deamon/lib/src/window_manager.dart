@@ -23,6 +23,7 @@ class PopUpWindowManager {
     window
       ..setAnchor(LayerEdge.right, true)
       ..setAnchor(LayerEdge.top, true)
+      ..setLayer(LayerSurface.top)
       ..setTitle('notification-popup')
       ..setLayerSize(const Size(0.0, 0.0));
   }

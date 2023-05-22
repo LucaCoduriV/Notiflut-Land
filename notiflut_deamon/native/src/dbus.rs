@@ -47,14 +47,14 @@ static ID_COUNT: AtomicU32 = AtomicU32::new(1);
 ///
 /// "sound"              The server supports sounds on notifications. If returned, the server must support the "sound-file" and "suppress-sound" hints.
 
-const SERVER_CAPABILITIES: [&str; 6] = [
+const SERVER_CAPABILITIES: [&str; 8] = [
     "actions",
     "body",
     // "action-icons",
     "actions",
     "body-hyperlinks",
-    // "body-images",
-    // "body-markup",
+    "body-images",
+    "body-markup",
     "icon-static",
     "persistence",
 ];

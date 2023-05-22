@@ -67,14 +67,20 @@ class _PopupWindowState extends State<PopupWindow> {
               data.iconData!, data.iconAlpha! ? 4 : 3, data.iconRowstride!)
           .image;
     } else if (data.iconPath != null && data.iconPath!.isNotEmpty) {
-          final path = data.iconPath!.replaceFirst("file://", "");
+      final path = data.iconPath!.replaceFirst("file://", "");
       imageProvider = Image.file(File(path)).image;
     }
     if (imageProvider != null) {
       await precacheImage(imageProvider, context);
     }
 
-    return NotificationTile(0, appName + " | " + title, body, imageProvider: imageProvider);
+    return NotificationTile(
+      0,
+      appName,
+      title,
+      body,
+      imageProvider: imageProvider,
+    );
   }
 
   @override
