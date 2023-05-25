@@ -124,7 +124,7 @@ class NotificationTile extends StatelessWidget {
             title: Text(title),
             onTap: onTileTap,
             subtitle: Html(
-              data: "<p>$body</p>",
+              data: body,
               customImageRenders: {
                 _fileUriMatcher(): _fileUriRenderer(),
                 assetUriMatcher(): assetImageRender(),
@@ -135,7 +135,7 @@ class NotificationTile extends StatelessWidget {
                 openUrl(link!);
               },
               style: {
-                "*": Style(
+                "body": Style(
                   margin: const EdgeInsets.all(0),
                   padding: const EdgeInsets.all(0),
                 )

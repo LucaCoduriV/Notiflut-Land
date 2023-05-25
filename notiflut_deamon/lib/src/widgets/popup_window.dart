@@ -61,14 +61,26 @@ class _PopupWindowState extends State<PopupWindow> {
     final body = data.body;
     final appName = data.appName;
 
-    ImageProvider<Object>? imageProvider;
+    ImageProvider<Object>? iconProvider;
     if (data.icon?.width != null) {
       final icon = data.icon;
-      imageProvider = createImageIiibiiay(icon!.width!, icon.height!,
+      iconProvider = createImageIiibiiay(icon!.width!, icon.height!,
               icon.data!, icon.alpha! ? 4 : 3, icon.rowstride!)
           .image;
     } else if (data.icon?.path != null && data.icon!.path!.isNotEmpty) {
-      imageProvider = Image.file(File(data.icon!.path!)).image;
+      iconProvider = Image.file(File(data.icon!.path!)).image;
+    }
+    ImageProvider<Object>? imageProvider;
+    if (data.image?.width != null) {
+      final image = data.image;
+      imageProvider = createImageIiibiiay(image!.width!, image.height!,
+              image.data!, image.alpha! ? 4 : 3, image.rowstride!)
+          .image;
+    } else if (data.image?.path != null && data.image!.path!.isNotEmpty) {
+      imageProvider = Image.file(File(data.image!.path!)).image;
+    }
+    if (iconProvider != null) {
+      await precacheImage(iconProvider, context);
     }
     if (imageProvider != null) {
       await precacheImage(imageProvider, context);
@@ -80,6 +92,7 @@ class _PopupWindowState extends State<PopupWindow> {
       title,
       body,
       imageProvider: imageProvider,
+      iconProvider: iconProvider,
     );
   }
 
