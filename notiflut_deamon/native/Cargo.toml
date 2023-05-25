@@ -17,6 +17,7 @@ anyhow = "1"
 thiserror = "1.0.40"
 chrono = "^0.4.24"
 freedesktop-icons = "0.2.3"
+freedesktop-desktop-entry = "0.5.0"
 
 [build-dependencies]
 flutter_rust_bridge_codegen = "1"

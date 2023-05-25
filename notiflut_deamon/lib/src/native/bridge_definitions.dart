@@ -56,9 +56,6 @@ class Hints {
   final bool? actionsIcon;
   final String? category;
   final String? desktopEntry;
-  final ImageData? imageData;
-  final String? imagePath;
-  final ImageData? iconData;
   final bool? resident;
   final String? soundFile;
   final String? soundName;
@@ -72,9 +69,6 @@ class Hints {
     this.actionsIcon,
     this.category,
     this.desktopEntry,
-    this.imageData,
-    this.imagePath,
-    this.iconData,
     this.resident,
     this.soundFile,
     this.soundName,
@@ -110,26 +104,38 @@ class Notification {
   final int id;
   final String appName;
   final int replacesId;
-  final String icon;
   final String summary;
   final String body;
   final List<String> actions;
   final int timeout;
   final DateTime createdAt;
   final Hints hints;
+  final Picture? appIcon;
+  final Picture? appImage;
 
   const Notification({
     required this.id,
     required this.appName,
     required this.replacesId,
-    required this.icon,
     required this.summary,
     required this.body,
     required this.actions,
     required this.timeout,
     required this.createdAt,
     required this.hints,
+    this.appIcon,
+    this.appImage,
   });
+}
+
+@freezed
+class Picture with _$Picture {
+  const factory Picture.data(
+    ImageData field0,
+  ) = Picture_Data;
+  const factory Picture.path(
+    String field0,
+  ) = Picture_Path;
 }
 
 enum Urgency {

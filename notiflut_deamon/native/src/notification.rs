@@ -5,28 +5,44 @@ use dbus::arg::prop_cast;
 use dbus::arg::PropMap;
 use dbus::arg::RefArg;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Notification {
     pub id: u32,
     pub app_name: String,
     pub replaces_id: u32,
-    pub icon: String,
     pub summary: String,
     pub body: String,
     pub actions: Vec<String>,
     pub timeout: i32,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub hints: Hints,
+    pub app_icon: Option<Picture>,
+    pub app_image: Option<Picture>,
 }
 
-#[derive(Debug, Clone)]
+impl std::fmt::Debug for Notification {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Notification")
+            .field("id", &self.id)
+            .field("app_name", &self.app_name)
+            .field("replaces_id", &self.replaces_id)
+            .field("summary", &self.summary)
+            .field("body", &self.body)
+            .field("actions", &self.actions)
+            .field("timeout", &self.timeout)
+            .field("created_at", &self.created_at)
+            .field("hints", &self.hints)
+            .field("icon", &self.app_icon)
+            .field("image", &self.app_image)
+            .finish()
+    }
+}
+
+#[derive(Clone)]
 pub struct Hints {
     pub actions_icon: Option<bool>,
     pub category: Option<String>,
     pub desktop_entry: Option<String>,
-    pub image_data: Option<ImageData>,
-    pub image_path: Option<String>,
-    pub icon_data: Option<ImageData>,
     pub resident: Option<bool>,
     pub sound_file: Option<String>,
     pub sound_name: Option<String>,
@@ -37,12 +53,29 @@ pub struct Hints {
     pub urgency: Option<Urgency>,
 }
 
+impl std::fmt::Debug for Hints {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Hints")
+            .field("actions_icon", &self.actions_icon)
+            .field("category", &self.category)
+            .field("desktop_entry", &self.desktop_entry)
+            .field("resident", &self.resident)
+            .field("sound_file", &self.sound_file)
+            .field("sound_name", &self.sound_name)
+            .field("suppress_sound", &self.suppress_sound)
+            .field("transient", &self.transient)
+            .field("x", &self.x)
+            .field("y", &self.y)
+            .field("urgency", &self.urgency)
+            .finish()
+    }
+}
+
 impl From<&PropMap> for Hints {
     fn from(map: &PropMap) -> Self {
         let actions_icon = prop_cast::<bool>(&map, "action-icons").copied();
         let category = prop_cast::<String>(&map, "category").cloned();
         let desktop_entry = prop_cast::<String>(&map, "desktop-entry").cloned();
-        let image_path = prop_cast::<String>(&map, "image-path").cloned();
         let resident = prop_cast::<bool>(&map, "resident").copied();
         let sound_file = prop_cast::<String>(&map, "sound-file").cloned();
         let sound_name = prop_cast::<String>(&map, "sound-name").cloned();
@@ -54,22 +87,10 @@ impl From<&PropMap> for Hints {
             Some(v) => Urgency::try_from(v).ok(),
             None => None,
         };
-        let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&map, "image-data") {
-            Some(v) => ImageData::try_from(v).ok(),
-            None => None,
-        };
-
-        let icon_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&map, "icon_data") {
-            Some(v) => ImageData::try_from(v).ok(),
-            None => None,
-        };
         Hints {
             actions_icon,
             category,
             desktop_entry,
-            image_data,
-            image_path,
-            icon_data,
             resident,
             sound_file,
             sound_name,
@@ -137,5 +158,20 @@ impl TryFrom<&VecDeque<Box<dyn RefArg>>> for ImageData {
             channels,
             data,
         })
+    }
+}
+
+#[derive(Clone)]
+pub enum Picture {
+    Data(ImageData),
+    Path(String),
+}
+
+impl std::fmt::Debug for Picture {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Data(_arg0) => f.debug_tuple("Data").field(&true).finish(),
+            Self::Path(arg0) => f.debug_tuple("Path").field(arg0).finish(),
+        }
     }
 }

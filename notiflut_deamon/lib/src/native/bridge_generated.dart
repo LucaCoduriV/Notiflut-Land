@@ -128,6 +128,10 @@ class NativeImpl implements Native {
     return _wire2api_notification(raw);
   }
 
+  Picture _wire2api_box_autoadd_picture(dynamic raw) {
+    return _wire2api_picture(raw);
+  }
+
   Urgency _wire2api_box_autoadd_urgency(dynamic raw) {
     return _wire2api_urgency(raw);
   }
@@ -171,23 +175,20 @@ class NativeImpl implements Native {
 
   Hints _wire2api_hints(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 14)
-      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
+    if (arr.length != 11)
+      throw Exception('unexpected arr length: expect 11 but see ${arr.length}');
     return Hints(
       actionsIcon: _wire2api_opt_box_autoadd_bool(arr[0]),
       category: _wire2api_opt_String(arr[1]),
       desktopEntry: _wire2api_opt_String(arr[2]),
-      imageData: _wire2api_opt_box_autoadd_image_data(arr[3]),
-      imagePath: _wire2api_opt_String(arr[4]),
-      iconData: _wire2api_opt_box_autoadd_image_data(arr[5]),
-      resident: _wire2api_opt_box_autoadd_bool(arr[6]),
-      soundFile: _wire2api_opt_String(arr[7]),
-      soundName: _wire2api_opt_String(arr[8]),
-      suppressSound: _wire2api_opt_box_autoadd_bool(arr[9]),
-      transient: _wire2api_opt_box_autoadd_bool(arr[10]),
-      x: _wire2api_opt_box_autoadd_i32(arr[11]),
-      y: _wire2api_opt_box_autoadd_i32(arr[12]),
-      urgency: _wire2api_opt_box_autoadd_urgency(arr[13]),
+      resident: _wire2api_opt_box_autoadd_bool(arr[3]),
+      soundFile: _wire2api_opt_String(arr[4]),
+      soundName: _wire2api_opt_String(arr[5]),
+      suppressSound: _wire2api_opt_box_autoadd_bool(arr[6]),
+      transient: _wire2api_opt_box_autoadd_bool(arr[7]),
+      x: _wire2api_opt_box_autoadd_i32(arr[8]),
+      y: _wire2api_opt_box_autoadd_i32(arr[9]),
+      urgency: _wire2api_opt_box_autoadd_urgency(arr[10]),
     );
   }
 
@@ -220,19 +221,20 @@ class NativeImpl implements Native {
 
   Notification _wire2api_notification(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 10)
-      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
+    if (arr.length != 11)
+      throw Exception('unexpected arr length: expect 11 but see ${arr.length}');
     return Notification(
       id: _wire2api_u32(arr[0]),
       appName: _wire2api_String(arr[1]),
       replacesId: _wire2api_u32(arr[2]),
-      icon: _wire2api_String(arr[3]),
-      summary: _wire2api_String(arr[4]),
-      body: _wire2api_String(arr[5]),
-      actions: _wire2api_StringList(arr[6]),
-      timeout: _wire2api_i32(arr[7]),
-      createdAt: _wire2api_Chrono_Utc(arr[8]),
-      hints: _wire2api_hints(arr[9]),
+      summary: _wire2api_String(arr[3]),
+      body: _wire2api_String(arr[4]),
+      actions: _wire2api_StringList(arr[5]),
+      timeout: _wire2api_i32(arr[6]),
+      createdAt: _wire2api_Chrono_Utc(arr[7]),
+      hints: _wire2api_hints(arr[8]),
+      appIcon: _wire2api_opt_box_autoadd_picture(arr[9]),
+      appImage: _wire2api_opt_box_autoadd_picture(arr[10]),
     );
   }
 
@@ -248,8 +250,8 @@ class NativeImpl implements Native {
     return raw == null ? null : _wire2api_box_autoadd_i32(raw);
   }
 
-  ImageData? _wire2api_opt_box_autoadd_image_data(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_image_data(raw);
+  Picture? _wire2api_opt_box_autoadd_picture(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_picture(raw);
   }
 
   Urgency? _wire2api_opt_box_autoadd_urgency(dynamic raw) {
@@ -258,6 +260,21 @@ class NativeImpl implements Native {
 
   int? _wire2api_opt_box_autoadd_usize(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_usize(raw);
+  }
+
+  Picture _wire2api_picture(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return Picture_Data(
+          _wire2api_box_autoadd_image_data(raw[1]),
+        );
+      case 1:
+        return Picture_Path(
+          _wire2api_String(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   int _wire2api_u32(dynamic raw) {
@@ -376,6 +393,13 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_Picture> api2wire_box_autoadd_picture(Picture raw) {
+    final ptr = inner.new_box_autoadd_picture_0();
+    _api_fill_to_wire_picture(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<ffi.Int32> api2wire_box_autoadd_urgency(Urgency raw) {
     return inner.new_box_autoadd_urgency_0(api2wire_urgency(raw));
   }
@@ -416,9 +440,8 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
-  ffi.Pointer<wire_ImageData> api2wire_opt_box_autoadd_image_data(
-      ImageData? raw) {
-    return raw == null ? ffi.nullptr : api2wire_box_autoadd_image_data(raw);
+  ffi.Pointer<wire_Picture> api2wire_opt_box_autoadd_picture(Picture? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_picture(raw);
   }
 
   @protected
@@ -455,6 +478,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   void _api_fill_to_wire_box_autoadd_notification(
       Notification apiObj, ffi.Pointer<wire_Notification> wireObj) {
     _api_fill_to_wire_notification(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_box_autoadd_picture(
+      Picture apiObj, ffi.Pointer<wire_Picture> wireObj) {
+    _api_fill_to_wire_picture(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_deamon_action(
@@ -512,9 +540,6 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     wireObj.actions_icon = api2wire_opt_box_autoadd_bool(apiObj.actionsIcon);
     wireObj.category = api2wire_opt_String(apiObj.category);
     wireObj.desktop_entry = api2wire_opt_String(apiObj.desktopEntry);
-    wireObj.image_data = api2wire_opt_box_autoadd_image_data(apiObj.imageData);
-    wireObj.image_path = api2wire_opt_String(apiObj.imagePath);
-    wireObj.icon_data = api2wire_opt_box_autoadd_image_data(apiObj.iconData);
     wireObj.resident = api2wire_opt_box_autoadd_bool(apiObj.resident);
     wireObj.sound_file = api2wire_opt_String(apiObj.soundFile);
     wireObj.sound_name = api2wire_opt_String(apiObj.soundName);
@@ -541,19 +566,36 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     wireObj.id = api2wire_u32(apiObj.id);
     wireObj.app_name = api2wire_String(apiObj.appName);
     wireObj.replaces_id = api2wire_u32(apiObj.replacesId);
-    wireObj.icon = api2wire_String(apiObj.icon);
     wireObj.summary = api2wire_String(apiObj.summary);
     wireObj.body = api2wire_String(apiObj.body);
     wireObj.actions = api2wire_StringList(apiObj.actions);
     wireObj.timeout = api2wire_i32(apiObj.timeout);
     wireObj.created_at = api2wire_Chrono_Utc(apiObj.createdAt);
     _api_fill_to_wire_hints(apiObj.hints, wireObj.hints);
+    wireObj.app_icon = api2wire_opt_box_autoadd_picture(apiObj.appIcon);
+    wireObj.app_image = api2wire_opt_box_autoadd_picture(apiObj.appImage);
   }
 
-  void _api_fill_to_wire_opt_box_autoadd_image_data(
-      ImageData? apiObj, ffi.Pointer<wire_ImageData> wireObj) {
-    if (apiObj != null)
-      _api_fill_to_wire_box_autoadd_image_data(apiObj, wireObj);
+  void _api_fill_to_wire_opt_box_autoadd_picture(
+      Picture? apiObj, ffi.Pointer<wire_Picture> wireObj) {
+    if (apiObj != null) _api_fill_to_wire_box_autoadd_picture(apiObj, wireObj);
+  }
+
+  void _api_fill_to_wire_picture(Picture apiObj, wire_Picture wireObj) {
+    if (apiObj is Picture_Data) {
+      var pre_field0 = api2wire_box_autoadd_image_data(apiObj.field0);
+      wireObj.tag = 0;
+      wireObj.kind = inner.inflate_Picture_Data();
+      wireObj.kind.ref.Data.ref.field0 = pre_field0;
+      return;
+    }
+    if (apiObj is Picture_Path) {
+      var pre_field0 = api2wire_String(apiObj.field0);
+      wireObj.tag = 1;
+      wireObj.kind = inner.inflate_Picture_Path();
+      wireObj.kind.ref.Path.ref.field0 = pre_field0;
+      return;
+    }
   }
 }
 
@@ -784,6 +826,16 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _new_box_autoadd_notification_0Ptr
           .asFunction<ffi.Pointer<wire_Notification> Function()>();
 
+  ffi.Pointer<wire_Picture> new_box_autoadd_picture_0() {
+    return _new_box_autoadd_picture_0();
+  }
+
+  late final _new_box_autoadd_picture_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Picture> Function()>>(
+          'new_box_autoadd_picture_0');
+  late final _new_box_autoadd_picture_0 = _new_box_autoadd_picture_0Ptr
+      .asFunction<ffi.Pointer<wire_Picture> Function()>();
+
   ffi.Pointer<ffi.Int32> new_box_autoadd_urgency_0(
     int value,
   ) {
@@ -894,6 +946,26 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _inflate_DeamonAction_ClientActionInvokedPtr
           .asFunction<ffi.Pointer<DeamonActionKind> Function()>();
 
+  ffi.Pointer<PictureKind> inflate_Picture_Data() {
+    return _inflate_Picture_Data();
+  }
+
+  late final _inflate_Picture_DataPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<PictureKind> Function()>>(
+          'inflate_Picture_Data');
+  late final _inflate_Picture_Data = _inflate_Picture_DataPtr
+      .asFunction<ffi.Pointer<PictureKind> Function()>();
+
+  ffi.Pointer<PictureKind> inflate_Picture_Path() {
+    return _inflate_Picture_Path();
+  }
+
+  late final _inflate_Picture_PathPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<PictureKind> Function()>>(
+          'inflate_Picture_Path');
+  late final _inflate_Picture_Path = _inflate_Picture_PathPtr
+      .asFunction<ffi.Pointer<PictureKind> Function()>();
+
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {
@@ -925,6 +997,30 @@ class wire_StringList extends ffi.Struct {
   external int len;
 }
 
+class wire_Hints extends ffi.Struct {
+  external ffi.Pointer<ffi.Bool> actions_icon;
+
+  external ffi.Pointer<wire_uint_8_list> category;
+
+  external ffi.Pointer<wire_uint_8_list> desktop_entry;
+
+  external ffi.Pointer<ffi.Bool> resident;
+
+  external ffi.Pointer<wire_uint_8_list> sound_file;
+
+  external ffi.Pointer<wire_uint_8_list> sound_name;
+
+  external ffi.Pointer<ffi.Bool> suppress_sound;
+
+  external ffi.Pointer<ffi.Bool> transient;
+
+  external ffi.Pointer<ffi.Int32> x;
+
+  external ffi.Pointer<ffi.Int32> y;
+
+  external ffi.Pointer<ffi.Int32> urgency;
+}
+
 class wire_ImageData extends ffi.Struct {
   @ffi.Int32()
   external int width;
@@ -947,34 +1043,25 @@ class wire_ImageData extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> data;
 }
 
-class wire_Hints extends ffi.Struct {
-  external ffi.Pointer<ffi.Bool> actions_icon;
+class wire_Picture_Data extends ffi.Struct {
+  external ffi.Pointer<wire_ImageData> field0;
+}
 
-  external ffi.Pointer<wire_uint_8_list> category;
+class wire_Picture_Path extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> field0;
+}
 
-  external ffi.Pointer<wire_uint_8_list> desktop_entry;
+class PictureKind extends ffi.Union {
+  external ffi.Pointer<wire_Picture_Data> Data;
 
-  external ffi.Pointer<wire_ImageData> image_data;
+  external ffi.Pointer<wire_Picture_Path> Path;
+}
 
-  external ffi.Pointer<wire_uint_8_list> image_path;
+class wire_Picture extends ffi.Struct {
+  @ffi.Int32()
+  external int tag;
 
-  external ffi.Pointer<wire_ImageData> icon_data;
-
-  external ffi.Pointer<ffi.Bool> resident;
-
-  external ffi.Pointer<wire_uint_8_list> sound_file;
-
-  external ffi.Pointer<wire_uint_8_list> sound_name;
-
-  external ffi.Pointer<ffi.Bool> suppress_sound;
-
-  external ffi.Pointer<ffi.Bool> transient;
-
-  external ffi.Pointer<ffi.Int32> x;
-
-  external ffi.Pointer<ffi.Int32> y;
-
-  external ffi.Pointer<ffi.Int32> urgency;
+  external ffi.Pointer<PictureKind> kind;
 }
 
 class wire_Notification extends ffi.Struct {
@@ -985,8 +1072,6 @@ class wire_Notification extends ffi.Struct {
 
   @ffi.Uint32()
   external int replaces_id;
-
-  external ffi.Pointer<wire_uint_8_list> icon;
 
   external ffi.Pointer<wire_uint_8_list> summary;
 
@@ -1001,6 +1086,10 @@ class wire_Notification extends ffi.Struct {
   external int created_at;
 
   external wire_Hints hints;
+
+  external ffi.Pointer<wire_Picture> app_icon;
+
+  external ffi.Pointer<wire_Picture> app_image;
 }
 
 class wire_DeamonAction_Show extends ffi.Struct {

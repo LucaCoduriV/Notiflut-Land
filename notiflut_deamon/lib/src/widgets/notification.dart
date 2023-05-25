@@ -23,11 +23,13 @@ List<NotificationAction> buildFromActionList(
       .toList();
 }
 
+/// This function is used to render html images
 ImageSourceMatcher _fileUriMatcher() => (attributes, element) {
       return attributes['src'] != null &&
           attributes['src']!.startsWith("file://");
     };
 
+/// This function is used to render html images
 ImageRender _fileUriRenderer() => (context, attributes, element) {
       String src = attributes["src"]!.replaceFirst("file://", "");
       var image = Image.file(
@@ -42,6 +44,7 @@ class NotificationTile extends StatelessWidget {
   final String appName;
   final String title;
   final String body;
+  final ImageProvider? iconProvider;
   final ImageProvider? imageProvider;
   final Function()? onTileTap;
   final Function()? closeAction;
@@ -55,6 +58,7 @@ class NotificationTile extends StatelessWidget {
     this.body, {
     super.key,
     this.imageProvider,
+    this.iconProvider,
     this.closeAction,
     this.onTileTap,
     this.actions,
@@ -79,42 +83,67 @@ class NotificationTile extends StatelessWidget {
         time = "${createdAt!.day}/${createdAt!.month}";
       }
     }
-    print(body);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: iconProvider,
+                      radius: 13,
+                    ),
+                    SizedBox(width: 10),
+                    Text(appName, style: TextStyle(fontSize: 13)),
+                  ],
+                ),
+                SizedBox(
+                  width: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(time),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: closeAction,
+                        child: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           ListTile(
             title: Text(title),
             onTap: onTileTap,
             subtitle: Html(
-                data: '<div>$body</div>',
-                customImageRenders: {
-                  _fileUriMatcher(): _fileUriRenderer(),
-                  assetUriMatcher(): assetImageRender(),
-                  networkSourceMatcher(extension: "svg"):
-                      svgNetworkImageRender(),
-                  networkSourceMatcher(): networkImageRender(),
-                },
-                onLinkTap: (link, context, _, element) {
-                  openUrl(link!);
-                }),
-            leading: CircleAvatar(
-              backgroundImage: imageProvider,
+              data: "<p>$body</p>",
+              customImageRenders: {
+                _fileUriMatcher(): _fileUriRenderer(),
+                assetUriMatcher(): assetImageRender(),
+                networkSourceMatcher(extension: "svg"): svgNetworkImageRender(),
+                networkSourceMatcher(): networkImageRender(),
+              },
+              onLinkTap: (link, context, _, element) {
+                openUrl(link!);
+              },
+              style: {
+                "*": Style(
+                  margin: const EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
+                )
+              },
             ),
-            trailing: SizedBox(
-              width: 100,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(time),
-                  InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: closeAction,
-                    child: const Icon(Icons.close),
-                  ),
-                ],
-              ),
+            leading: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              backgroundImage: imageProvider,
             ),
           ),
           Row(

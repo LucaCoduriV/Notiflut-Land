@@ -62,13 +62,13 @@ class _PopupWindowState extends State<PopupWindow> {
     final appName = data.appName;
 
     ImageProvider<Object>? imageProvider;
-    if (data.iconData != null) {
-      imageProvider = createImageIiibiiay(data.iconWidth!, data.iconHeight!,
-              data.iconData!, data.iconAlpha! ? 4 : 3, data.iconRowstride!)
+    if (data.icon?.width != null) {
+      final icon = data.icon;
+      imageProvider = createImageIiibiiay(icon!.width!, icon.height!,
+              icon.data!, icon.alpha! ? 4 : 3, icon.rowstride!)
           .image;
-    } else if (data.iconPath != null && data.iconPath!.isNotEmpty) {
-      final path = data.iconPath!.replaceFirst("file://", "");
-      imageProvider = Image.file(File(path)).image;
+    } else if (data.icon?.path != null && data.icon!.path!.isNotEmpty) {
+      imageProvider = Image.file(File(data.icon!.path!)).image;
     }
     if (imageProvider != null) {
       await precacheImage(imageProvider, context);
@@ -121,21 +121,69 @@ class _PopupWindowState extends State<PopupWindow> {
   }
 }
 
+class ImageData {
+  final String? path;
+
+  final Uint8List? data;
+  final int? height;
+  final int? width;
+  final int? rowstride;
+  final bool? alpha;
+  const ImageData({
+    this.path,
+    this.data,
+    this.height,
+    this.width,
+    this.rowstride,
+    this.alpha,
+  });
+
+  String toJson() {
+    return jsonEncode({
+      "image-data": data,
+      "image-height": height,
+      "image-width": width,
+      "image-rowstride": rowstride,
+      "image-alpha": alpha,
+      "image-path": path,
+    });
+  }
+
+  factory ImageData.fromJson(String json) {
+    final args = jsonDecode(json) as Map<String, dynamic>;
+
+    List<dynamic>? imageDataDyn = (args['image-data'] as List<dynamic>?);
+    String? imagePath = args['image-path'];
+
+    Uint8List? imageData;
+    if (imageDataDyn != null) {
+      imageData = Uint8List.fromList(imageDataDyn.cast<int>().toList());
+    }
+    int? imageWidth = args['image-width'] as int?;
+    int? imageHeight = args['image-height'] as int?;
+    int? imageRowstride = args['image-rowstride'] as int?;
+    bool? iconAlpha = args['image-alpha'] as bool?;
+
+    return ImageData(
+      data: imageData,
+      width: imageWidth,
+      height: imageHeight,
+      rowstride: imageRowstride,
+      alpha: iconAlpha,
+      path: imagePath,
+    );
+  }
+}
+
 class NotificationPopupData {
   int id;
 
   String summary;
   String appName;
   String body;
-  String? iconPath;
-
-  Uint8List? iconData;
-  int? iconHeight;
-  int? iconWidth;
-  int? iconRowstride;
-  bool? iconAlpha;
-
   int timeout;
+  ImageData? icon;
+  ImageData? image;
 
   NotificationPopupData({
     required this.id,
@@ -143,12 +191,8 @@ class NotificationPopupData {
     required this.appName,
     required this.body,
     required this.timeout,
-    this.iconData,
-    this.iconHeight,
-    this.iconWidth,
-    this.iconRowstride,
-    this.iconAlpha,
-    this.iconPath,
+    this.icon,
+    this.image,
   });
 
   String toJson() {
@@ -157,13 +201,9 @@ class NotificationPopupData {
       "summary": summary,
       "appName": appName,
       "body": body,
-      "icon-data": iconData,
-      "icon-height": iconHeight,
-      "icon-width": iconWidth,
-      "icon-rowstride": iconRowstride,
-      "icon-alpha": iconAlpha,
       "timeout": timeout,
-      "iconPath": iconPath,
+      "image": image?.toJson(),
+      "icon": icon?.toJson(),
     });
   }
 
@@ -175,17 +215,8 @@ class NotificationPopupData {
     String body = args['body'];
     String appName = args['appName'];
     int timeOut = args['timeout'];
-    List<dynamic>? iconDataDyn = (args['icon-data'] as List<dynamic>?);
-    String? iconPath = args['iconPath'];
-
-    Uint8List? iconData;
-    if (iconDataDyn != null) {
-      iconData = Uint8List.fromList(iconDataDyn.cast<int>().toList());
-    }
-    int? iconWidth = args['icon-width'] as int?;
-    int? iconHeight = args['icon-height'] as int?;
-    int? iconRowstride = args['icon-rowstride'] as int?;
-    bool? iconAlpha = args['icon-alpha'] as bool?;
+    ImageData icon = ImageData.fromJson(args['icon']);
+    ImageData image = ImageData.fromJson(args['image']);
 
     return NotificationPopupData(
       id: id,
@@ -193,12 +224,8 @@ class NotificationPopupData {
       summary: title,
       appName: appName,
       body: body,
-      iconData: iconData,
-      iconWidth: iconWidth,
-      iconHeight: iconHeight,
-      iconRowstride: iconRowstride,
-      iconAlpha: iconAlpha,
-      iconPath: iconPath,
+      image: image,
+      icon: icon,
     );
   }
 }

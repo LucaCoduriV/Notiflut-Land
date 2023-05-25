@@ -120,23 +120,42 @@ class _NotificationListState extends State<NotificationList> {
           // Send notification to popup manager
           if (index != null) {
             final notification = notifications[index];
-            final imageData = notification.hints.imageData;
-            final iconData = notification.hints.iconData;
+
+            ImageData? imageData;
+            notification.appImage?.when(data: (d) {
+              imageData = ImageData(
+                data: d.data,
+                width: d.width,
+                height: d.height,
+                alpha: d.onePointTwoBitAlpha,
+                rowstride: d.rowstride,
+              );
+            }, path: (p) {
+              imageData = ImageData(path: p);
+            });
+
+            ImageData? iconData;
+            notification.appIcon?.when(data: (d) {
+              iconData = ImageData(
+                data: d.data,
+                width: d.width,
+                height: d.height,
+                alpha: d.onePointTwoBitAlpha,
+                rowstride: d.rowstride,
+              );
+            }, path: (p) {
+              iconData = ImageData(path: p);
+            });
+
             try {
               final args = NotificationPopupData(
                 id: notification.id,
                 summary: notification.summary,
                 appName: notification.appName,
                 body: notification.body,
-                iconData: imageData?.data ?? iconData?.data,
-                iconAlpha: imageData?.onePointTwoBitAlpha ??
-                    iconData?.onePointTwoBitAlpha,
-                iconRowstride: imageData?.rowstride ?? iconData?.rowstride,
-                iconHeight: imageData?.height ?? iconData?.height,
-                iconWidth: imageData?.width ?? iconData?.width,
                 timeout: 5,
-                iconPath: notification.hints.imagePath ??
-                    (notification.icon.isNotEmpty ? notification.icon : null),
+                icon: iconData,
+                image: imageData,
               );
               PopUpWindowManager().showPopUp(args.toJson());
             } catch (e) {
@@ -155,18 +174,57 @@ class _NotificationListState extends State<NotificationList> {
       itemCount: notifications.length,
       itemBuilder: (context, index) {
         final notification = notifications[index];
-        final imageData =
-            notification.hints.imageData ?? notification.hints.iconData;
-        var path = notification.hints.imagePath ?? notification.icon;
+
+        ImageData? imageData;
+        notification.appImage?.when(data: (d) {
+          imageData = ImageData(
+            data: d.data,
+            width: d.width,
+            height: d.height,
+            alpha: d.onePointTwoBitAlpha,
+            rowstride: d.rowstride,
+          );
+        }, path: (p) {
+          imageData = ImageData(path: p);
+        });
+
+        ImageData? iconData;
+        notification.appIcon?.when(data: (d) {
+          iconData = ImageData(
+            data: d.data,
+            width: d.width,
+            height: d.height,
+            alpha: d.onePointTwoBitAlpha,
+            rowstride: d.rowstride,
+          );
+        }, path: (p) {
+          iconData = ImageData(path: p);
+        });
 
         ImageProvider<Object>? imageProvider;
-        if (imageData != null) {
-          imageProvider = createImageIiibiiay(imageData.width, imageData.height,
-                  imageData.data, imageData.channels, imageData.rowstride)
-              .image;
-        } else if (path.isNotEmpty) {
-          path = path.replaceFirst("file://", "");
-          imageProvider = Image.file(File(path)).image;
+        if (imageData?.data != null) {
+          imageProvider = createImageIiibiiay(
+            imageData!.width!,
+            imageData!.height!,
+            imageData!.data!,
+            3,
+            imageData!.rowstride!,
+          ).image;
+        } else if (imageData?.path != null && imageData!.path!.isNotEmpty) {
+          imageProvider = Image.file(File(imageData!.path!)).image;
+        }
+
+        ImageProvider<Object>? iconProvider;
+        if (iconData?.data != null) {
+          iconProvider = createImageIiibiiay(
+            iconData!.width!,
+            iconData!.height!,
+            iconData!.data!,
+            3,
+            iconData!.rowstride!,
+          ).image;
+        } else if (iconData?.path != null && iconData!.path!.isNotEmpty) {
+          iconProvider = Image.file(File(iconData!.path!)).image;
         }
         return NotificationTile(
           notification.id,
@@ -186,6 +244,7 @@ class _NotificationListState extends State<NotificationList> {
           },
           actions: buildFromActionList(notification.id, actions(index)),
           imageProvider: imageProvider,
+          iconProvider: iconProvider,
         );
       },
     );

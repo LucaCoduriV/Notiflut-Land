@@ -23,6 +23,7 @@ use crate::dbus::DeamonAction;
 use crate::notification::Hints;
 use crate::notification::ImageData;
 use crate::notification::Notification;
+use crate::notification::Picture;
 use crate::notification::Urgency;
 
 // Section: wire functions
@@ -176,9 +177,6 @@ impl support::IntoDart for Hints {
             self.actions_icon.into_dart(),
             self.category.into_dart(),
             self.desktop_entry.into_dart(),
-            self.image_data.into_dart(),
-            self.image_path.into_dart(),
-            self.icon_data.into_dart(),
             self.resident.into_dart(),
             self.sound_file.into_dart(),
             self.sound_name.into_dart(),
@@ -215,18 +213,30 @@ impl support::IntoDart for Notification {
             self.id.into_dart(),
             self.app_name.into_dart(),
             self.replaces_id.into_dart(),
-            self.icon.into_dart(),
             self.summary.into_dart(),
             self.body.into_dart(),
             self.actions.into_dart(),
             self.timeout.into_dart(),
             self.created_at.into_dart(),
             self.hints.into_dart(),
+            self.app_icon.into_dart(),
+            self.app_image.into_dart(),
         ]
         .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for Notification {}
+
+impl support::IntoDart for Picture {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Data(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::Path(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Picture {}
 
 impl support::IntoDart for Urgency {
     fn into_dart(self) -> support::DartAbi {

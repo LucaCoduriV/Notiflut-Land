@@ -58,6 +58,11 @@ pub extern "C" fn new_box_autoadd_notification_0() -> *mut wire_Notification {
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_picture_0() -> *mut wire_Picture {
+    support::new_leak_box_ptr(wire_Picture::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_urgency_0(value: i32) -> *mut i32 {
     support::new_leak_box_ptr(value)
 }
@@ -133,6 +138,12 @@ impl Wire2Api<Notification> for *mut wire_Notification {
         Wire2Api::<Notification>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<Picture> for *mut wire_Picture {
+    fn wire2api(self) -> Picture {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<Picture>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<Urgency> for *mut i32 {
     fn wire2api(self) -> Urgency {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -184,9 +195,6 @@ impl Wire2Api<Hints> for wire_Hints {
             actions_icon: self.actions_icon.wire2api(),
             category: self.category.wire2api(),
             desktop_entry: self.desktop_entry.wire2api(),
-            image_data: self.image_data.wire2api(),
-            image_path: self.image_path.wire2api(),
-            icon_data: self.icon_data.wire2api(),
             resident: self.resident.wire2api(),
             sound_file: self.sound_file.wire2api(),
             sound_name: self.sound_name.wire2api(),
@@ -227,13 +235,32 @@ impl Wire2Api<Notification> for wire_Notification {
             id: self.id.wire2api(),
             app_name: self.app_name.wire2api(),
             replaces_id: self.replaces_id.wire2api(),
-            icon: self.icon.wire2api(),
             summary: self.summary.wire2api(),
             body: self.body.wire2api(),
             actions: self.actions.wire2api(),
             timeout: self.timeout.wire2api(),
             created_at: self.created_at.wire2api(),
             hints: self.hints.wire2api(),
+            app_icon: self.app_icon.wire2api(),
+            app_image: self.app_image.wire2api(),
+        }
+    }
+}
+
+impl Wire2Api<Picture> for wire_Picture {
+    fn wire2api(self) -> Picture {
+        match self.tag {
+            0 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.Data);
+                Picture::Data(ans.field0.wire2api())
+            },
+            1 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.Path);
+                Picture::Path(ans.field0.wire2api())
+            },
+            _ => unreachable!(),
         }
     }
 }
@@ -262,9 +289,6 @@ pub struct wire_Hints {
     actions_icon: *mut bool,
     category: *mut wire_uint_8_list,
     desktop_entry: *mut wire_uint_8_list,
-    image_data: *mut wire_ImageData,
-    image_path: *mut wire_uint_8_list,
-    icon_data: *mut wire_ImageData,
     resident: *mut bool,
     sound_file: *mut wire_uint_8_list,
     sound_name: *mut wire_uint_8_list,
@@ -300,13 +324,14 @@ pub struct wire_Notification {
     id: u32,
     app_name: *mut wire_uint_8_list,
     replaces_id: u32,
-    icon: *mut wire_uint_8_list,
     summary: *mut wire_uint_8_list,
     body: *mut wire_uint_8_list,
     actions: *mut wire_StringList,
     timeout: i32,
     created_at: i64,
     hints: wire_Hints,
+    app_icon: *mut wire_Picture,
+    app_image: *mut wire_Picture,
 }
 
 #[repr(C)]
@@ -372,6 +397,31 @@ pub struct wire_DeamonAction_ClientClose {
 pub struct wire_DeamonAction_ClientActionInvoked {
     field0: u32,
     field1: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Picture {
+    tag: i32,
+    kind: *mut PictureKind,
+}
+
+#[repr(C)]
+pub union PictureKind {
+    Data: *mut wire_Picture_Data,
+    Path: *mut wire_Picture_Path,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Picture_Data {
+    field0: *mut wire_ImageData,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Picture_Path {
+    field0: *mut wire_uint_8_list,
 }
 
 // Section: impl NewWithNullPtr
@@ -448,9 +498,6 @@ impl NewWithNullPtr for wire_Hints {
             actions_icon: core::ptr::null_mut(),
             category: core::ptr::null_mut(),
             desktop_entry: core::ptr::null_mut(),
-            image_data: core::ptr::null_mut(),
-            image_path: core::ptr::null_mut(),
-            icon_data: core::ptr::null_mut(),
             resident: core::ptr::null_mut(),
             sound_file: core::ptr::null_mut(),
             sound_name: core::ptr::null_mut(),
@@ -495,13 +542,14 @@ impl NewWithNullPtr for wire_Notification {
             id: Default::default(),
             app_name: core::ptr::null_mut(),
             replaces_id: Default::default(),
-            icon: core::ptr::null_mut(),
             summary: core::ptr::null_mut(),
             body: core::ptr::null_mut(),
             actions: core::ptr::null_mut(),
             timeout: Default::default(),
             created_at: Default::default(),
             hints: Default::default(),
+            app_icon: core::ptr::null_mut(),
+            app_image: core::ptr::null_mut(),
         }
     }
 }
@@ -510,6 +558,33 @@ impl Default for wire_Notification {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }
+}
+
+impl NewWithNullPtr for wire_Picture {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            tag: -1,
+            kind: core::ptr::null_mut(),
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_Picture_Data() -> *mut PictureKind {
+    support::new_leak_box_ptr(PictureKind {
+        Data: support::new_leak_box_ptr(wire_Picture_Data {
+            field0: core::ptr::null_mut(),
+        }),
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_Picture_Path() -> *mut PictureKind {
+    support::new_leak_box_ptr(PictureKind {
+        Path: support::new_leak_box_ptr(wire_Picture_Path {
+            field0: core::ptr::null_mut(),
+        }),
+    })
 }
 
 // Section: sync execution mode utility
