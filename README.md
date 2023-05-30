@@ -24,6 +24,7 @@ This project is a notification center designed specifically for Wayland, impleme
 - [ ] persistence: The server supports persistence of notifications. Notifications will be retained until they are acknowledged or removed by the user or recalled by the sender. The presence of this capability allows clients to depend on the server to ensure a notification is seen and eliminate the need for the client to display a reminding function (such as a status icon) of its own.
 
 ### More
+- [ ] support for waybar
 - [ ] Widgets
 - [ ] Media player controller
 - [ ] custom styling
