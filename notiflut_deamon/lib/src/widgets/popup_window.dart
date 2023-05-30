@@ -64,8 +64,8 @@ class _PopupWindowState extends State<PopupWindow> {
     ImageProvider<Object>? iconProvider;
     if (data.icon?.width != null) {
       final icon = data.icon;
-      iconProvider = createImageIiibiiay(icon!.width!, icon.height!,
-              icon.data!, icon.alpha! ? 4 : 3, icon.rowstride!)
+      iconProvider = createImageIiibiiay(icon!.width!, icon.height!, icon.data!,
+              icon.alpha! ? 4 : 3, icon.rowstride!)
           .image;
     } else if (data.icon?.path != null && data.icon!.path!.isNotEmpty) {
       iconProvider = Image.file(File(data.icon!.path!)).image;
@@ -162,7 +162,10 @@ class ImageData {
     });
   }
 
-  factory ImageData.fromJson(String json) {
+  static ImageData? fromJson(String? json) {
+    if (json == null) {
+      return null;
+    }
     final args = jsonDecode(json) as Map<String, dynamic>;
 
     List<dynamic>? imageDataDyn = (args['image-data'] as List<dynamic>?);
@@ -228,8 +231,8 @@ class NotificationPopupData {
     String body = args['body'];
     String appName = args['appName'];
     int timeOut = args['timeout'];
-    ImageData icon = ImageData.fromJson(args['icon']);
-    ImageData image = ImageData.fromJson(args['image']);
+    ImageData? icon = ImageData.fromJson(args['icon']);
+    ImageData? image = ImageData.fromJson(args['image']);
 
     return NotificationPopupData(
       id: id,
