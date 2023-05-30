@@ -29,38 +29,61 @@ class NotificationCenter extends StatelessWidget {
         colorScheme: const ColorScheme.light(background: Colors.transparent),
       ),
       home: Scaffold(
-        // floatingActionButton: FloatingActionButton(onPressed: () async {
-        //   PopUpWindowManager().showPopUp("hello");
-        // }),
         backgroundColor: Colors.transparent,
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            // all the remaning left space hides the Notification center
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  LayerShellController.main().hide();
-                },
+        body: Bar(notificationStream: notificationStream),
+      ),
+    );
+  }
+}
+
+class Bar extends StatelessWidget {
+  const Bar({
+    super.key,
+    required this.notificationStream,
+  });
+
+  final Stream<nati.DeamonAction> notificationStream;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        // all the remaning left space hides the Notification center
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              LayerShellController.main().hide();
+            },
+          ),
+        ),
+        Card(
+          color: Color(0xFFEAEAEB),
+          child: SizedBox(
+            width: 500,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  OutlinedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50), // NEW
+                    ),
+                    child: const Text("Close all"),
+                    onPressed: () {
+                      print("Notifications closed");
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: NotificationList(notificationStream),
+                  ),
+                ],
               ),
             ),
-            Container(
-              width: 500,
-              decoration: const BoxDecoration(
-                  color: Color(0xAA000000),
-                  border: Border(
-                    left: BorderSide(
-                      width: 1,
-                      color: Colors.white,
-                    ),
-                  )),
-              padding: const EdgeInsets.all(10),
-              height: double.infinity,
-              child: NotificationList(notificationStream),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
