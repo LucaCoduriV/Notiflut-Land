@@ -26,6 +26,7 @@ This project is a notification center designed specifically for Wayland, impleme
 - [ ] Widgets
 - [ ] Media player controller
 - [ ] custom styling
+- [ ] Filter notifications
 
 ## Installation
 ### Generate bridge code
