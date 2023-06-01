@@ -237,8 +237,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: d79e18152a8d6c4f6f9c76828c7bc1967efc0a4b
+      ref: "60686492f6522a96d99e1e2ca9beeec46884347b"
+      resolved-ref: "60686492f6522a96d99e1e2ca9beeec46884347b"
       url: "https://github.com/LucaCoduriV/flutter_gtk_layer_shell.git"
     source: git
     version: "0.1.0"

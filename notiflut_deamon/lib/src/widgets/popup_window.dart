@@ -25,6 +25,10 @@ class PopupWindow extends StatefulWidget {
 class _PopupWindowState extends State<PopupWindow> {
   List<NotificationPopupData> datas = [];
   final ScrollController controller = ScrollController();
+  bool doneByAfterBuild = false;
+
+  // I use this to be sure that the window was resized before showing it.
+  final timeToWaitBeforeShow = 500;
 
   @override
   void initState() {
@@ -40,7 +44,7 @@ class _PopupWindowState extends State<PopupWindow> {
       case "Show":
         final args = NotificationPopupData.fromJson(call.arguments);
         datas.add(args);
-        Future.delayed(const Duration(seconds: 5), () {
+        Future.delayed(const Duration(seconds: 5, milliseconds: timeToWaitBeforeShow), () {
           datas.retainWhere((element) => element.summary != args.summary);
           if (datas.isEmpty) {
             widget.layerController.hide();
@@ -48,6 +52,7 @@ class _PopupWindowState extends State<PopupWindow> {
           setState(() {});
         });
         setState(() {});
+        await Future.delayed(const Duration(milliseconds: timeToWaitBeforeShow));
         widget.layerController.show();
         break;
       default:
@@ -83,6 +88,7 @@ class _PopupWindowState extends State<PopupWindow> {
       await precacheImage(iconProvider, context);
     }
     if (imageProvider != null) {
+      // ignore: use_build_context_synchronously
       await precacheImage(imageProvider, context);
     }
 
@@ -107,6 +113,7 @@ class _PopupWindowState extends State<PopupWindow> {
               datas.map((e) => _createNotificationPopup(e, context)).toList()),
           builder: (context, snap) {
             executeAfterBuild();
+
             if (snap.data != null) {
               return ListView(
                 shrinkWrap: true,
@@ -125,11 +132,14 @@ class _PopupWindowState extends State<PopupWindow> {
   }
 
   Future<void> executeAfterBuild() async {
-    await Future.delayed(Duration.zero);
+    await Future.delayed(const Duration(milliseconds: timeToWaitBeforeShow));
     if (controller.hasClients) {
       final size =
           controller.position.extentAfter + controller.position.extentInside;
-      widget.layerController.setLayerSize(Size(500, size));
+      if (size != 0) {
+        print("New size: $size");
+        await widget.layerController.setLayerSize(Size(500, size));
+      }
     }
   }
 }
