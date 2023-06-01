@@ -72,6 +72,10 @@ class Bar extends StatelessWidget {
                     child: const Text("Close all"),
                     onPressed: () {
                       print("Notifications closed");
+
+                      nati.api.sendDeamonAction(
+                        action: nati.DeamonAction.flutterCloseAll(),
+                      );
                     },
                   ),
                   const SizedBox(height: 10),
@@ -257,13 +261,12 @@ class _NotificationListState extends State<NotificationList> {
           createdAt: notification.createdAt,
           onTileTap: () async {
             await nati.api.sendDeamonAction(
-                action: nati.DeamonAction.clientActionInvoked(
+                action: nati.DeamonAction.flutterActionInvoked(
                     notification.id, "default"));
           },
           closeAction: () async {
             await nati.api.sendDeamonAction(
-                action: nati.DeamonAction.clientClose(notification.id));
-            setState(() {});
+                action: nati.DeamonAction.flutterClose(notification.id));
           },
           actions: buildFromActionList(notification.id, actions(index)),
           imageProvider: imageProvider,

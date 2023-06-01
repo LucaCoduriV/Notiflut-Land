@@ -162,9 +162,10 @@ impl support::IntoDart for DeamonAction {
             Self::Update(field0, field1) => {
                 vec![4.into_dart(), field0.into_dart(), field1.into_dart()]
             }
-            Self::ClientClose(field0) => vec![5.into_dart(), field0.into_dart()],
-            Self::ClientActionInvoked(field0, field1) => {
-                vec![6.into_dart(), field0.into_dart(), field1.into_dart()]
+            Self::FlutterClose(field0) => vec![5.into_dart(), field0.into_dart()],
+            Self::FlutterCloseAll => vec![6.into_dart()],
+            Self::FlutterActionInvoked(field0, field1) => {
+                vec![7.into_dart(), field0.into_dart(), field1.into_dart()]
             }
         }
         .into_dart()

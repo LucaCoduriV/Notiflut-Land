@@ -177,13 +177,14 @@ impl Wire2Api<DeamonAction> for wire_DeamonAction {
             },
             5 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
-                let ans = support::box_from_leak_ptr(ans.ClientClose);
-                DeamonAction::ClientClose(ans.field0.wire2api())
+                let ans = support::box_from_leak_ptr(ans.FlutterClose);
+                DeamonAction::FlutterClose(ans.field0.wire2api())
             },
-            6 => unsafe {
+            6 => DeamonAction::FlutterCloseAll,
+            7 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
-                let ans = support::box_from_leak_ptr(ans.ClientActionInvoked);
-                DeamonAction::ClientActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
+                let ans = support::box_from_leak_ptr(ans.FlutterActionInvoked);
+                DeamonAction::FlutterActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
             },
             _ => unreachable!(),
         }
@@ -355,8 +356,9 @@ pub union DeamonActionKind {
     CloseNc: *mut wire_DeamonAction_CloseNc,
     Close: *mut wire_DeamonAction_Close,
     Update: *mut wire_DeamonAction_Update,
-    ClientClose: *mut wire_DeamonAction_ClientClose,
-    ClientActionInvoked: *mut wire_DeamonAction_ClientActionInvoked,
+    FlutterClose: *mut wire_DeamonAction_FlutterClose,
+    FlutterCloseAll: *mut wire_DeamonAction_FlutterCloseAll,
+    FlutterActionInvoked: *mut wire_DeamonAction_FlutterActionInvoked,
 }
 
 #[repr(C)]
@@ -388,13 +390,17 @@ pub struct wire_DeamonAction_Update {
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_ClientClose {
+pub struct wire_DeamonAction_FlutterClose {
     field0: u32,
 }
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_ClientActionInvoked {
+pub struct wire_DeamonAction_FlutterCloseAll {}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_DeamonAction_FlutterActionInvoked {
     field0: u32,
     field1: *mut wire_uint_8_list,
 }
@@ -474,18 +480,18 @@ pub extern "C" fn inflate_DeamonAction_Update() -> *mut DeamonActionKind {
 }
 
 #[no_mangle]
-pub extern "C" fn inflate_DeamonAction_ClientClose() -> *mut DeamonActionKind {
+pub extern "C" fn inflate_DeamonAction_FlutterClose() -> *mut DeamonActionKind {
     support::new_leak_box_ptr(DeamonActionKind {
-        ClientClose: support::new_leak_box_ptr(wire_DeamonAction_ClientClose {
+        FlutterClose: support::new_leak_box_ptr(wire_DeamonAction_FlutterClose {
             field0: Default::default(),
         }),
     })
 }
 
 #[no_mangle]
-pub extern "C" fn inflate_DeamonAction_ClientActionInvoked() -> *mut DeamonActionKind {
+pub extern "C" fn inflate_DeamonAction_FlutterActionInvoked() -> *mut DeamonActionKind {
     support::new_leak_box_ptr(DeamonActionKind {
-        ClientActionInvoked: support::new_leak_box_ptr(wire_DeamonAction_ClientActionInvoked {
+        FlutterActionInvoked: support::new_leak_box_ptr(wire_DeamonAction_FlutterActionInvoked {
             field0: Default::default(),
             field1: core::ptr::null_mut(),
         }),

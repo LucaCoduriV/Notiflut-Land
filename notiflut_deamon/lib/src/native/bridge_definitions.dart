@@ -43,13 +43,14 @@ class DeamonAction with _$DeamonAction {
     List<Notification> field0, [
     int? field1,
   ]) = DeamonAction_Update;
-  const factory DeamonAction.clientClose(
+  const factory DeamonAction.flutterClose(
     int field0,
-  ) = DeamonAction_ClientClose;
-  const factory DeamonAction.clientActionInvoked(
+  ) = DeamonAction_FlutterClose;
+  const factory DeamonAction.flutterCloseAll() = DeamonAction_FlutterCloseAll;
+  const factory DeamonAction.flutterActionInvoked(
     int field0,
     String field1,
-  ) = DeamonAction_ClientActionInvoked;
+  ) = DeamonAction_FlutterActionInvoked;
 }
 
 class Hints {

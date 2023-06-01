@@ -160,11 +160,13 @@ class NativeImpl implements Native {
           _wire2api_opt_box_autoadd_usize(raw[2]),
         );
       case 5:
-        return DeamonAction_ClientClose(
+        return DeamonAction_FlutterClose(
           _wire2api_u32(raw[1]),
         );
       case 6:
-        return DeamonAction_ClientActionInvoked(
+        return DeamonAction_FlutterCloseAll();
+      case 7:
+        return DeamonAction_FlutterActionInvoked(
           _wire2api_u32(raw[1]),
           _wire2api_String(raw[2]),
         );
@@ -518,20 +520,24 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       wireObj.kind.ref.Update.ref.field1 = pre_field1;
       return;
     }
-    if (apiObj is DeamonAction_ClientClose) {
+    if (apiObj is DeamonAction_FlutterClose) {
       var pre_field0 = api2wire_u32(apiObj.field0);
       wireObj.tag = 5;
-      wireObj.kind = inner.inflate_DeamonAction_ClientClose();
-      wireObj.kind.ref.ClientClose.ref.field0 = pre_field0;
+      wireObj.kind = inner.inflate_DeamonAction_FlutterClose();
+      wireObj.kind.ref.FlutterClose.ref.field0 = pre_field0;
       return;
     }
-    if (apiObj is DeamonAction_ClientActionInvoked) {
+    if (apiObj is DeamonAction_FlutterCloseAll) {
+      wireObj.tag = 6;
+      return;
+    }
+    if (apiObj is DeamonAction_FlutterActionInvoked) {
       var pre_field0 = api2wire_u32(apiObj.field0);
       var pre_field1 = api2wire_String(apiObj.field1);
-      wireObj.tag = 6;
-      wireObj.kind = inner.inflate_DeamonAction_ClientActionInvoked();
-      wireObj.kind.ref.ClientActionInvoked.ref.field0 = pre_field0;
-      wireObj.kind.ref.ClientActionInvoked.ref.field1 = pre_field1;
+      wireObj.tag = 7;
+      wireObj.kind = inner.inflate_DeamonAction_FlutterActionInvoked();
+      wireObj.kind.ref.FlutterActionInvoked.ref.field0 = pre_field0;
+      wireObj.kind.ref.FlutterActionInvoked.ref.field1 = pre_field1;
       return;
     }
   }
@@ -924,26 +930,26 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _inflate_DeamonAction_Update = _inflate_DeamonAction_UpdatePtr
       .asFunction<ffi.Pointer<DeamonActionKind> Function()>();
 
-  ffi.Pointer<DeamonActionKind> inflate_DeamonAction_ClientClose() {
-    return _inflate_DeamonAction_ClientClose();
+  ffi.Pointer<DeamonActionKind> inflate_DeamonAction_FlutterClose() {
+    return _inflate_DeamonAction_FlutterClose();
   }
 
-  late final _inflate_DeamonAction_ClientClosePtr =
+  late final _inflate_DeamonAction_FlutterClosePtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<DeamonActionKind> Function()>>(
-          'inflate_DeamonAction_ClientClose');
-  late final _inflate_DeamonAction_ClientClose =
-      _inflate_DeamonAction_ClientClosePtr
+          'inflate_DeamonAction_FlutterClose');
+  late final _inflate_DeamonAction_FlutterClose =
+      _inflate_DeamonAction_FlutterClosePtr
           .asFunction<ffi.Pointer<DeamonActionKind> Function()>();
 
-  ffi.Pointer<DeamonActionKind> inflate_DeamonAction_ClientActionInvoked() {
-    return _inflate_DeamonAction_ClientActionInvoked();
+  ffi.Pointer<DeamonActionKind> inflate_DeamonAction_FlutterActionInvoked() {
+    return _inflate_DeamonAction_FlutterActionInvoked();
   }
 
-  late final _inflate_DeamonAction_ClientActionInvokedPtr =
+  late final _inflate_DeamonAction_FlutterActionInvokedPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<DeamonActionKind> Function()>>(
-          'inflate_DeamonAction_ClientActionInvoked');
-  late final _inflate_DeamonAction_ClientActionInvoked =
-      _inflate_DeamonAction_ClientActionInvokedPtr
+          'inflate_DeamonAction_FlutterActionInvoked');
+  late final _inflate_DeamonAction_FlutterActionInvoked =
+      _inflate_DeamonAction_FlutterActionInvokedPtr
           .asFunction<ffi.Pointer<DeamonActionKind> Function()>();
 
   ffi.Pointer<PictureKind> inflate_Picture_Data() {
@@ -1118,12 +1124,14 @@ class wire_DeamonAction_Update extends ffi.Struct {
   external ffi.Pointer<ffi.UintPtr> field1;
 }
 
-class wire_DeamonAction_ClientClose extends ffi.Struct {
+class wire_DeamonAction_FlutterClose extends ffi.Struct {
   @ffi.Uint32()
   external int field0;
 }
 
-class wire_DeamonAction_ClientActionInvoked extends ffi.Struct {
+class wire_DeamonAction_FlutterCloseAll extends ffi.Opaque {}
+
+class wire_DeamonAction_FlutterActionInvoked extends ffi.Struct {
   @ffi.Uint32()
   external int field0;
 
@@ -1141,10 +1149,12 @@ class DeamonActionKind extends ffi.Union {
 
   external ffi.Pointer<wire_DeamonAction_Update> Update;
 
-  external ffi.Pointer<wire_DeamonAction_ClientClose> ClientClose;
+  external ffi.Pointer<wire_DeamonAction_FlutterClose> FlutterClose;
 
-  external ffi.Pointer<wire_DeamonAction_ClientActionInvoked>
-      ClientActionInvoked;
+  external ffi.Pointer<wire_DeamonAction_FlutterCloseAll> FlutterCloseAll;
+
+  external ffi.Pointer<wire_DeamonAction_FlutterActionInvoked>
+      FlutterActionInvoked;
 }
 
 class wire_DeamonAction extends ffi.Struct {

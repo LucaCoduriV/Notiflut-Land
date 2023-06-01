@@ -154,7 +154,7 @@ impl NotificationDeamon {
                             return Err(DeamonError::Error);
                         }
                     }
-                    DeamonAction::ClientClose(id) => {
+                    DeamonAction::FlutterClose(id) => {
                         notifications.write().unwrap().retain(|v| v.id != id);
                         let message =
                             dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
@@ -171,7 +171,27 @@ impl NotificationDeamon {
                             return Err(DeamonError::Error);
                         }
                     }
-                    DeamonAction::ClientActionInvoked(id, action_key) => {
+                    DeamonAction::FlutterCloseAll => {
+                        let mut notifications_mutex = notifications.write().unwrap();
+
+                        for notification in notifications_mutex.iter() {
+                            let message =
+                                dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
+                                    id: notification.id,
+                                    reason: 2, // 2 means dismissed by user
+                                };
+                            let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
+                            let _result = signal_sender.send(message.to_emit_message(&path));
+                        }
+
+                        notifications_mutex.clear();
+                        if let false =
+                            sender.add(DeamonAction::Update(notifications_mutex.clone(), None))
+                        {
+                            return Err(DeamonError::Error);
+                        }
+                    }
+                    DeamonAction::FlutterActionInvoked(id, action_key) => {
                         notifications.write().unwrap().retain(|v| v.id != id);
                         let message = dbus_definition::OrgFreedesktopNotificationsActionInvoked {
                             id,

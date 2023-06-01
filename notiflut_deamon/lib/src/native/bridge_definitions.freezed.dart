@@ -23,8 +23,9 @@ mixin _$DeamonAction {
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
-    required TResult Function(int field0) clientClose,
-    required TResult Function(int field0, String field1) clientActionInvoked,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -34,8 +35,9 @@ mixin _$DeamonAction {
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
-    TResult? Function(int field0)? clientClose,
-    TResult? Function(int field0, String field1)? clientActionInvoked,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -45,8 +47,9 @@ mixin _$DeamonAction {
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
-    TResult Function(int field0)? clientClose,
-    TResult Function(int field0, String field1)? clientActionInvoked,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -57,9 +60,11 @@ mixin _$DeamonAction {
     required TResult Function(DeamonAction_CloseNc value) closeNc,
     required TResult Function(DeamonAction_Close value) close,
     required TResult Function(DeamonAction_Update value) update,
-    required TResult Function(DeamonAction_ClientClose value) clientClose,
-    required TResult Function(DeamonAction_ClientActionInvoked value)
-        clientActionInvoked,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -69,9 +74,10 @@ mixin _$DeamonAction {
     TResult? Function(DeamonAction_CloseNc value)? closeNc,
     TResult? Function(DeamonAction_Close value)? close,
     TResult? Function(DeamonAction_Update value)? update,
-    TResult? Function(DeamonAction_ClientClose value)? clientClose,
-    TResult? Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -81,9 +87,10 @@ mixin _$DeamonAction {
     TResult Function(DeamonAction_CloseNc value)? closeNc,
     TResult Function(DeamonAction_Close value)? close,
     TResult Function(DeamonAction_Update value)? update,
-    TResult Function(DeamonAction_ClientClose value)? clientClose,
-    TResult Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -176,8 +183,9 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
-    required TResult Function(int field0) clientClose,
-    required TResult Function(int field0, String field1) clientActionInvoked,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return show(field0);
   }
@@ -190,8 +198,9 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
-    TResult? Function(int field0)? clientClose,
-    TResult? Function(int field0, String field1)? clientActionInvoked,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return show?.call(field0);
   }
@@ -204,8 +213,9 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
-    TResult Function(int field0)? clientClose,
-    TResult Function(int field0, String field1)? clientActionInvoked,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (show != null) {
@@ -222,9 +232,11 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     required TResult Function(DeamonAction_CloseNc value) closeNc,
     required TResult Function(DeamonAction_Close value) close,
     required TResult Function(DeamonAction_Update value) update,
-    required TResult Function(DeamonAction_ClientClose value) clientClose,
-    required TResult Function(DeamonAction_ClientActionInvoked value)
-        clientActionInvoked,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
   }) {
     return show(this);
   }
@@ -237,9 +249,10 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     TResult? Function(DeamonAction_CloseNc value)? closeNc,
     TResult? Function(DeamonAction_Close value)? close,
     TResult? Function(DeamonAction_Update value)? update,
-    TResult? Function(DeamonAction_ClientClose value)? clientClose,
-    TResult? Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
   }) {
     return show?.call(this);
   }
@@ -252,9 +265,10 @@ class _$DeamonAction_Show implements DeamonAction_Show {
     TResult Function(DeamonAction_CloseNc value)? closeNc,
     TResult Function(DeamonAction_Close value)? close,
     TResult Function(DeamonAction_Update value)? update,
-    TResult Function(DeamonAction_ClientClose value)? clientClose,
-    TResult Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (show != null) {
@@ -317,8 +331,9 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
-    required TResult Function(int field0) clientClose,
-    required TResult Function(int field0, String field1) clientActionInvoked,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return showNc();
   }
@@ -331,8 +346,9 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
-    TResult? Function(int field0)? clientClose,
-    TResult? Function(int field0, String field1)? clientActionInvoked,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return showNc?.call();
   }
@@ -345,8 +361,9 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
-    TResult Function(int field0)? clientClose,
-    TResult Function(int field0, String field1)? clientActionInvoked,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (showNc != null) {
@@ -363,9 +380,11 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     required TResult Function(DeamonAction_CloseNc value) closeNc,
     required TResult Function(DeamonAction_Close value) close,
     required TResult Function(DeamonAction_Update value) update,
-    required TResult Function(DeamonAction_ClientClose value) clientClose,
-    required TResult Function(DeamonAction_ClientActionInvoked value)
-        clientActionInvoked,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
   }) {
     return showNc(this);
   }
@@ -378,9 +397,10 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     TResult? Function(DeamonAction_CloseNc value)? closeNc,
     TResult? Function(DeamonAction_Close value)? close,
     TResult? Function(DeamonAction_Update value)? update,
-    TResult? Function(DeamonAction_ClientClose value)? clientClose,
-    TResult? Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
   }) {
     return showNc?.call(this);
   }
@@ -393,9 +413,10 @@ class _$DeamonAction_ShowNc implements DeamonAction_ShowNc {
     TResult Function(DeamonAction_CloseNc value)? closeNc,
     TResult Function(DeamonAction_Close value)? close,
     TResult Function(DeamonAction_Update value)? update,
-    TResult Function(DeamonAction_ClientClose value)? clientClose,
-    TResult Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (showNc != null) {
@@ -452,8 +473,9 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
-    required TResult Function(int field0) clientClose,
-    required TResult Function(int field0, String field1) clientActionInvoked,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return closeNc();
   }
@@ -466,8 +488,9 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
-    TResult? Function(int field0)? clientClose,
-    TResult? Function(int field0, String field1)? clientActionInvoked,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return closeNc?.call();
   }
@@ -480,8 +503,9 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
-    TResult Function(int field0)? clientClose,
-    TResult Function(int field0, String field1)? clientActionInvoked,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (closeNc != null) {
@@ -498,9 +522,11 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     required TResult Function(DeamonAction_CloseNc value) closeNc,
     required TResult Function(DeamonAction_Close value) close,
     required TResult Function(DeamonAction_Update value) update,
-    required TResult Function(DeamonAction_ClientClose value) clientClose,
-    required TResult Function(DeamonAction_ClientActionInvoked value)
-        clientActionInvoked,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
   }) {
     return closeNc(this);
   }
@@ -513,9 +539,10 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     TResult? Function(DeamonAction_CloseNc value)? closeNc,
     TResult? Function(DeamonAction_Close value)? close,
     TResult? Function(DeamonAction_Update value)? update,
-    TResult? Function(DeamonAction_ClientClose value)? clientClose,
-    TResult? Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
   }) {
     return closeNc?.call(this);
   }
@@ -528,9 +555,10 @@ class _$DeamonAction_CloseNc implements DeamonAction_CloseNc {
     TResult Function(DeamonAction_CloseNc value)? closeNc,
     TResult Function(DeamonAction_Close value)? close,
     TResult Function(DeamonAction_Update value)? update,
-    TResult Function(DeamonAction_ClientClose value)? clientClose,
-    TResult Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (closeNc != null) {
@@ -614,8 +642,9 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
-    required TResult Function(int field0) clientClose,
-    required TResult Function(int field0, String field1) clientActionInvoked,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return close(field0);
   }
@@ -628,8 +657,9 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
-    TResult? Function(int field0)? clientClose,
-    TResult? Function(int field0, String field1)? clientActionInvoked,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return close?.call(field0);
   }
@@ -642,8 +672,9 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
-    TResult Function(int field0)? clientClose,
-    TResult Function(int field0, String field1)? clientActionInvoked,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (close != null) {
@@ -660,9 +691,11 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     required TResult Function(DeamonAction_CloseNc value) closeNc,
     required TResult Function(DeamonAction_Close value) close,
     required TResult Function(DeamonAction_Update value) update,
-    required TResult Function(DeamonAction_ClientClose value) clientClose,
-    required TResult Function(DeamonAction_ClientActionInvoked value)
-        clientActionInvoked,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
   }) {
     return close(this);
   }
@@ -675,9 +708,10 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     TResult? Function(DeamonAction_CloseNc value)? closeNc,
     TResult? Function(DeamonAction_Close value)? close,
     TResult? Function(DeamonAction_Update value)? update,
-    TResult? Function(DeamonAction_ClientClose value)? clientClose,
-    TResult? Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
   }) {
     return close?.call(this);
   }
@@ -690,9 +724,10 @@ class _$DeamonAction_Close implements DeamonAction_Close {
     TResult Function(DeamonAction_CloseNc value)? closeNc,
     TResult Function(DeamonAction_Close value)? close,
     TResult Function(DeamonAction_Update value)? update,
-    TResult Function(DeamonAction_ClientClose value)? clientClose,
-    TResult Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (close != null) {
@@ -797,8 +832,9 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
-    required TResult Function(int field0) clientClose,
-    required TResult Function(int field0, String field1) clientActionInvoked,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return update(field0, field1);
   }
@@ -811,8 +847,9 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
-    TResult? Function(int field0)? clientClose,
-    TResult? Function(int field0, String field1)? clientActionInvoked,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return update?.call(field0, field1);
   }
@@ -825,8 +862,9 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
-    TResult Function(int field0)? clientClose,
-    TResult Function(int field0, String field1)? clientActionInvoked,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (update != null) {
@@ -843,9 +881,11 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     required TResult Function(DeamonAction_CloseNc value) closeNc,
     required TResult Function(DeamonAction_Close value) close,
     required TResult Function(DeamonAction_Update value) update,
-    required TResult Function(DeamonAction_ClientClose value) clientClose,
-    required TResult Function(DeamonAction_ClientActionInvoked value)
-        clientActionInvoked,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
   }) {
     return update(this);
   }
@@ -858,9 +898,10 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     TResult? Function(DeamonAction_CloseNc value)? closeNc,
     TResult? Function(DeamonAction_Close value)? close,
     TResult? Function(DeamonAction_Update value)? update,
-    TResult? Function(DeamonAction_ClientClose value)? clientClose,
-    TResult? Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
   }) {
     return update?.call(this);
   }
@@ -873,9 +914,10 @@ class _$DeamonAction_Update implements DeamonAction_Update {
     TResult Function(DeamonAction_CloseNc value)? closeNc,
     TResult Function(DeamonAction_Close value)? close,
     TResult Function(DeamonAction_Update value)? update,
-    TResult Function(DeamonAction_ClientClose value)? clientClose,
-    TResult Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
     required TResult orElse(),
   }) {
     if (update != null) {
@@ -897,20 +939,21 @@ abstract class DeamonAction_Update implements DeamonAction {
 }
 
 /// @nodoc
-abstract class _$$DeamonAction_ClientCloseCopyWith<$Res> {
-  factory _$$DeamonAction_ClientCloseCopyWith(_$DeamonAction_ClientClose value,
-          $Res Function(_$DeamonAction_ClientClose) then) =
-      __$$DeamonAction_ClientCloseCopyWithImpl<$Res>;
+abstract class _$$DeamonAction_FlutterCloseCopyWith<$Res> {
+  factory _$$DeamonAction_FlutterCloseCopyWith(
+          _$DeamonAction_FlutterClose value,
+          $Res Function(_$DeamonAction_FlutterClose) then) =
+      __$$DeamonAction_FlutterCloseCopyWithImpl<$Res>;
   @useResult
   $Res call({int field0});
 }
 
 /// @nodoc
-class __$$DeamonAction_ClientCloseCopyWithImpl<$Res>
-    extends _$DeamonActionCopyWithImpl<$Res, _$DeamonAction_ClientClose>
-    implements _$$DeamonAction_ClientCloseCopyWith<$Res> {
-  __$$DeamonAction_ClientCloseCopyWithImpl(_$DeamonAction_ClientClose _value,
-      $Res Function(_$DeamonAction_ClientClose) _then)
+class __$$DeamonAction_FlutterCloseCopyWithImpl<$Res>
+    extends _$DeamonActionCopyWithImpl<$Res, _$DeamonAction_FlutterClose>
+    implements _$$DeamonAction_FlutterCloseCopyWith<$Res> {
+  __$$DeamonAction_FlutterCloseCopyWithImpl(_$DeamonAction_FlutterClose _value,
+      $Res Function(_$DeamonAction_FlutterClose) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -918,7 +961,7 @@ class __$$DeamonAction_ClientCloseCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$DeamonAction_ClientClose(
+    return _then(_$DeamonAction_FlutterClose(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -929,22 +972,22 @@ class __$$DeamonAction_ClientCloseCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
-  const _$DeamonAction_ClientClose(this.field0);
+class _$DeamonAction_FlutterClose implements DeamonAction_FlutterClose {
+  const _$DeamonAction_FlutterClose(this.field0);
 
   @override
   final int field0;
 
   @override
   String toString() {
-    return 'DeamonAction.clientClose(field0: $field0)';
+    return 'DeamonAction.flutterClose(field0: $field0)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DeamonAction_ClientClose &&
+            other is _$DeamonAction_FlutterClose &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -954,10 +997,9 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DeamonAction_ClientCloseCopyWith<_$DeamonAction_ClientClose>
-      get copyWith =>
-          __$$DeamonAction_ClientCloseCopyWithImpl<_$DeamonAction_ClientClose>(
-              this, _$identity);
+  _$$DeamonAction_FlutterCloseCopyWith<_$DeamonAction_FlutterClose>
+      get copyWith => __$$DeamonAction_FlutterCloseCopyWithImpl<
+          _$DeamonAction_FlutterClose>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -967,10 +1009,11 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
-    required TResult Function(int field0) clientClose,
-    required TResult Function(int field0, String field1) clientActionInvoked,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
-    return clientClose(field0);
+    return flutterClose(field0);
   }
 
   @override
@@ -981,10 +1024,11 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
-    TResult? Function(int field0)? clientClose,
-    TResult? Function(int field0, String field1)? clientActionInvoked,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
-    return clientClose?.call(field0);
+    return flutterClose?.call(field0);
   }
 
   @override
@@ -995,12 +1039,13 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
-    TResult Function(int field0)? clientClose,
-    TResult Function(int field0, String field1)? clientActionInvoked,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
-    if (clientClose != null) {
-      return clientClose(field0);
+    if (flutterClose != null) {
+      return flutterClose(field0);
     }
     return orElse();
   }
@@ -1013,11 +1058,13 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     required TResult Function(DeamonAction_CloseNc value) closeNc,
     required TResult Function(DeamonAction_Close value) close,
     required TResult Function(DeamonAction_Update value) update,
-    required TResult Function(DeamonAction_ClientClose value) clientClose,
-    required TResult Function(DeamonAction_ClientActionInvoked value)
-        clientActionInvoked,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
   }) {
-    return clientClose(this);
+    return flutterClose(this);
   }
 
   @override
@@ -1028,11 +1075,12 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     TResult? Function(DeamonAction_CloseNc value)? closeNc,
     TResult? Function(DeamonAction_Close value)? close,
     TResult? Function(DeamonAction_Update value)? update,
-    TResult? Function(DeamonAction_ClientClose value)? clientClose,
-    TResult? Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
   }) {
-    return clientClose?.call(this);
+    return flutterClose?.call(this);
   }
 
   @override
@@ -1043,45 +1091,192 @@ class _$DeamonAction_ClientClose implements DeamonAction_ClientClose {
     TResult Function(DeamonAction_CloseNc value)? closeNc,
     TResult Function(DeamonAction_Close value)? close,
     TResult Function(DeamonAction_Update value)? update,
-    TResult Function(DeamonAction_ClientClose value)? clientClose,
-    TResult Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
     required TResult orElse(),
   }) {
-    if (clientClose != null) {
-      return clientClose(this);
+    if (flutterClose != null) {
+      return flutterClose(this);
     }
     return orElse();
   }
 }
 
-abstract class DeamonAction_ClientClose implements DeamonAction {
-  const factory DeamonAction_ClientClose(final int field0) =
-      _$DeamonAction_ClientClose;
+abstract class DeamonAction_FlutterClose implements DeamonAction {
+  const factory DeamonAction_FlutterClose(final int field0) =
+      _$DeamonAction_FlutterClose;
 
   int get field0;
   @JsonKey(ignore: true)
-  _$$DeamonAction_ClientCloseCopyWith<_$DeamonAction_ClientClose>
+  _$$DeamonAction_FlutterCloseCopyWith<_$DeamonAction_FlutterClose>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DeamonAction_ClientActionInvokedCopyWith<$Res> {
-  factory _$$DeamonAction_ClientActionInvokedCopyWith(
-          _$DeamonAction_ClientActionInvoked value,
-          $Res Function(_$DeamonAction_ClientActionInvoked) then) =
-      __$$DeamonAction_ClientActionInvokedCopyWithImpl<$Res>;
+abstract class _$$DeamonAction_FlutterCloseAllCopyWith<$Res> {
+  factory _$$DeamonAction_FlutterCloseAllCopyWith(
+          _$DeamonAction_FlutterCloseAll value,
+          $Res Function(_$DeamonAction_FlutterCloseAll) then) =
+      __$$DeamonAction_FlutterCloseAllCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$DeamonAction_FlutterCloseAllCopyWithImpl<$Res>
+    extends _$DeamonActionCopyWithImpl<$Res, _$DeamonAction_FlutterCloseAll>
+    implements _$$DeamonAction_FlutterCloseAllCopyWith<$Res> {
+  __$$DeamonAction_FlutterCloseAllCopyWithImpl(
+      _$DeamonAction_FlutterCloseAll _value,
+      $Res Function(_$DeamonAction_FlutterCloseAll) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$DeamonAction_FlutterCloseAll implements DeamonAction_FlutterCloseAll {
+  const _$DeamonAction_FlutterCloseAll();
+
+  @override
+  String toString() {
+    return 'DeamonAction.flutterCloseAll()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DeamonAction_FlutterCloseAll);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Notification field0) show,
+    required TResult Function() showNc,
+    required TResult Function() closeNc,
+    required TResult Function(int field0) close,
+    required TResult Function(List<Notification> field0, int? field1) update,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
+  }) {
+    return flutterCloseAll();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(Notification field0)? show,
+    TResult? Function()? showNc,
+    TResult? Function()? closeNc,
+    TResult? Function(int field0)? close,
+    TResult? Function(List<Notification> field0, int? field1)? update,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
+  }) {
+    return flutterCloseAll?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Notification field0)? show,
+    TResult Function()? showNc,
+    TResult Function()? closeNc,
+    TResult Function(int field0)? close,
+    TResult Function(List<Notification> field0, int? field1)? update,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
+    required TResult orElse(),
+  }) {
+    if (flutterCloseAll != null) {
+      return flutterCloseAll();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(DeamonAction_Show value) show,
+    required TResult Function(DeamonAction_ShowNc value) showNc,
+    required TResult Function(DeamonAction_CloseNc value) closeNc,
+    required TResult Function(DeamonAction_Close value) close,
+    required TResult Function(DeamonAction_Update value) update,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
+  }) {
+    return flutterCloseAll(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(DeamonAction_Show value)? show,
+    TResult? Function(DeamonAction_ShowNc value)? showNc,
+    TResult? Function(DeamonAction_CloseNc value)? closeNc,
+    TResult? Function(DeamonAction_Close value)? close,
+    TResult? Function(DeamonAction_Update value)? update,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
+  }) {
+    return flutterCloseAll?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(DeamonAction_Show value)? show,
+    TResult Function(DeamonAction_ShowNc value)? showNc,
+    TResult Function(DeamonAction_CloseNc value)? closeNc,
+    TResult Function(DeamonAction_Close value)? close,
+    TResult Function(DeamonAction_Update value)? update,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
+    required TResult orElse(),
+  }) {
+    if (flutterCloseAll != null) {
+      return flutterCloseAll(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class DeamonAction_FlutterCloseAll implements DeamonAction {
+  const factory DeamonAction_FlutterCloseAll() = _$DeamonAction_FlutterCloseAll;
+}
+
+/// @nodoc
+abstract class _$$DeamonAction_FlutterActionInvokedCopyWith<$Res> {
+  factory _$$DeamonAction_FlutterActionInvokedCopyWith(
+          _$DeamonAction_FlutterActionInvoked value,
+          $Res Function(_$DeamonAction_FlutterActionInvoked) then) =
+      __$$DeamonAction_FlutterActionInvokedCopyWithImpl<$Res>;
   @useResult
   $Res call({int field0, String field1});
 }
 
 /// @nodoc
-class __$$DeamonAction_ClientActionInvokedCopyWithImpl<$Res>
-    extends _$DeamonActionCopyWithImpl<$Res, _$DeamonAction_ClientActionInvoked>
-    implements _$$DeamonAction_ClientActionInvokedCopyWith<$Res> {
-  __$$DeamonAction_ClientActionInvokedCopyWithImpl(
-      _$DeamonAction_ClientActionInvoked _value,
-      $Res Function(_$DeamonAction_ClientActionInvoked) _then)
+class __$$DeamonAction_FlutterActionInvokedCopyWithImpl<$Res>
+    extends _$DeamonActionCopyWithImpl<$Res,
+        _$DeamonAction_FlutterActionInvoked>
+    implements _$$DeamonAction_FlutterActionInvokedCopyWith<$Res> {
+  __$$DeamonAction_FlutterActionInvokedCopyWithImpl(
+      _$DeamonAction_FlutterActionInvoked _value,
+      $Res Function(_$DeamonAction_FlutterActionInvoked) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1090,7 +1285,7 @@ class __$$DeamonAction_ClientActionInvokedCopyWithImpl<$Res>
     Object? field0 = null,
     Object? field1 = null,
   }) {
-    return _then(_$DeamonAction_ClientActionInvoked(
+    return _then(_$DeamonAction_FlutterActionInvoked(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -1105,9 +1300,9 @@ class __$$DeamonAction_ClientActionInvokedCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DeamonAction_ClientActionInvoked
-    implements DeamonAction_ClientActionInvoked {
-  const _$DeamonAction_ClientActionInvoked(this.field0, this.field1);
+class _$DeamonAction_FlutterActionInvoked
+    implements DeamonAction_FlutterActionInvoked {
+  const _$DeamonAction_FlutterActionInvoked(this.field0, this.field1);
 
   @override
   final int field0;
@@ -1116,14 +1311,14 @@ class _$DeamonAction_ClientActionInvoked
 
   @override
   String toString() {
-    return 'DeamonAction.clientActionInvoked(field0: $field0, field1: $field1)';
+    return 'DeamonAction.flutterActionInvoked(field0: $field0, field1: $field1)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DeamonAction_ClientActionInvoked &&
+            other is _$DeamonAction_FlutterActionInvoked &&
             (identical(other.field0, field0) || other.field0 == field0) &&
             (identical(other.field1, field1) || other.field1 == field1));
   }
@@ -1134,10 +1329,10 @@ class _$DeamonAction_ClientActionInvoked
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DeamonAction_ClientActionInvokedCopyWith<
-          _$DeamonAction_ClientActionInvoked>
-      get copyWith => __$$DeamonAction_ClientActionInvokedCopyWithImpl<
-          _$DeamonAction_ClientActionInvoked>(this, _$identity);
+  _$$DeamonAction_FlutterActionInvokedCopyWith<
+          _$DeamonAction_FlutterActionInvoked>
+      get copyWith => __$$DeamonAction_FlutterActionInvokedCopyWithImpl<
+          _$DeamonAction_FlutterActionInvoked>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1147,10 +1342,11 @@ class _$DeamonAction_ClientActionInvoked
     required TResult Function() closeNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
-    required TResult Function(int field0) clientClose,
-    required TResult Function(int field0, String field1) clientActionInvoked,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
-    return clientActionInvoked(field0, field1);
+    return flutterActionInvoked(field0, field1);
   }
 
   @override
@@ -1161,10 +1357,11 @@ class _$DeamonAction_ClientActionInvoked
     TResult? Function()? closeNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
-    TResult? Function(int field0)? clientClose,
-    TResult? Function(int field0, String field1)? clientActionInvoked,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
-    return clientActionInvoked?.call(field0, field1);
+    return flutterActionInvoked?.call(field0, field1);
   }
 
   @override
@@ -1175,12 +1372,13 @@ class _$DeamonAction_ClientActionInvoked
     TResult Function()? closeNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
-    TResult Function(int field0)? clientClose,
-    TResult Function(int field0, String field1)? clientActionInvoked,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
-    if (clientActionInvoked != null) {
-      return clientActionInvoked(field0, field1);
+    if (flutterActionInvoked != null) {
+      return flutterActionInvoked(field0, field1);
     }
     return orElse();
   }
@@ -1193,11 +1391,13 @@ class _$DeamonAction_ClientActionInvoked
     required TResult Function(DeamonAction_CloseNc value) closeNc,
     required TResult Function(DeamonAction_Close value) close,
     required TResult Function(DeamonAction_Update value) update,
-    required TResult Function(DeamonAction_ClientClose value) clientClose,
-    required TResult Function(DeamonAction_ClientActionInvoked value)
-        clientActionInvoked,
+    required TResult Function(DeamonAction_FlutterClose value) flutterClose,
+    required TResult Function(DeamonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DeamonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
   }) {
-    return clientActionInvoked(this);
+    return flutterActionInvoked(this);
   }
 
   @override
@@ -1208,11 +1408,12 @@ class _$DeamonAction_ClientActionInvoked
     TResult? Function(DeamonAction_CloseNc value)? closeNc,
     TResult? Function(DeamonAction_Close value)? close,
     TResult? Function(DeamonAction_Update value)? update,
-    TResult? Function(DeamonAction_ClientClose value)? clientClose,
-    TResult? Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult? Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
   }) {
-    return clientActionInvoked?.call(this);
+    return flutterActionInvoked?.call(this);
   }
 
   @override
@@ -1223,28 +1424,29 @@ class _$DeamonAction_ClientActionInvoked
     TResult Function(DeamonAction_CloseNc value)? closeNc,
     TResult Function(DeamonAction_Close value)? close,
     TResult Function(DeamonAction_Update value)? update,
-    TResult Function(DeamonAction_ClientClose value)? clientClose,
-    TResult Function(DeamonAction_ClientActionInvoked value)?
-        clientActionInvoked,
+    TResult Function(DeamonAction_FlutterClose value)? flutterClose,
+    TResult Function(DeamonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DeamonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
     required TResult orElse(),
   }) {
-    if (clientActionInvoked != null) {
-      return clientActionInvoked(this);
+    if (flutterActionInvoked != null) {
+      return flutterActionInvoked(this);
     }
     return orElse();
   }
 }
 
-abstract class DeamonAction_ClientActionInvoked implements DeamonAction {
-  const factory DeamonAction_ClientActionInvoked(
+abstract class DeamonAction_FlutterActionInvoked implements DeamonAction {
+  const factory DeamonAction_FlutterActionInvoked(
           final int field0, final String field1) =
-      _$DeamonAction_ClientActionInvoked;
+      _$DeamonAction_FlutterActionInvoked;
 
   int get field0;
   String get field1;
   @JsonKey(ignore: true)
-  _$$DeamonAction_ClientActionInvokedCopyWith<
-          _$DeamonAction_ClientActionInvoked>
+  _$$DeamonAction_FlutterActionInvokedCopyWith<
+          _$DeamonAction_FlutterActionInvoked>
       get copyWith => throw _privateConstructorUsedError;
 }
 

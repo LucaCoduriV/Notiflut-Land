@@ -18,7 +18,7 @@ List<NotificationAction> buildFromActionList(
       .where((element) => element.key != "default")
       .map((entry) => NotificationAction(entry.value, () async {
             await nati.api.sendDeamonAction(
-                action: nati.DeamonAction.clientActionInvoked(id, entry.key));
+                action: nati.DeamonAction.flutterActionInvoked(id, entry.key));
           }))
       .toList();
 }

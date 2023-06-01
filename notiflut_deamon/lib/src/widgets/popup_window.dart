@@ -44,7 +44,7 @@ class _PopupWindowState extends State<PopupWindow> {
       case "Show":
         final args = NotificationPopupData.fromJson(call.arguments);
         datas.add(args);
-        Future.delayed(const Duration(seconds: 5, milliseconds: timeToWaitBeforeShow), () {
+        Future.delayed(Duration(seconds: 5, milliseconds: timeToWaitBeforeShow), () {
           datas.retainWhere((element) => element.summary != args.summary);
           if (datas.isEmpty) {
             widget.layerController.hide();
@@ -52,7 +52,7 @@ class _PopupWindowState extends State<PopupWindow> {
           setState(() {});
         });
         setState(() {});
-        await Future.delayed(const Duration(milliseconds: timeToWaitBeforeShow));
+        await Future.delayed(Duration(milliseconds: timeToWaitBeforeShow));
         widget.layerController.show();
         break;
       default:
@@ -132,7 +132,7 @@ class _PopupWindowState extends State<PopupWindow> {
   }
 
   Future<void> executeAfterBuild() async {
-    await Future.delayed(const Duration(milliseconds: timeToWaitBeforeShow));
+    await Future.delayed(Duration(milliseconds: timeToWaitBeforeShow));
     if (controller.hasClients) {
       final size =
           controller.position.extentAfter + controller.position.extentInside;

@@ -85,8 +85,9 @@ pub enum DeamonAction {
     CloseNc,
     Close(u32),
     Update(Vec<Notification>, Option<usize>),
-    ClientClose(u32),
-    ClientActionInvoked(u32, String),
+    FlutterClose(u32),
+    FlutterCloseAll,
+    FlutterActionInvoked(u32, String),
 }
 
 pub struct DbusNotification {
