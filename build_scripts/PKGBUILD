@@ -23,14 +23,13 @@ build() {
 }
 
 package() {
-    #DESTDIR="$pkgdir/" ninja -C build install
-    #install -Dm644 "$_pkgfoldername-$pkgver/COPYING" -t "$pkgdir/usr/share/licenses/$pkgname"
-    # mkdir -p "$pkgdir/usr/share/notiflut_land"
-    # mkdir -p "$pkgdir/usr/lib/notiflut_land"
-
 	install -dm 755 "${pkgdir}/opt/${pkgname}"
-    cp -a "$_pkgfoldername-$pkgver/notiflut_deamon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
+  cp -a "$_pkgfoldername-$pkgver/notiflut_deamon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
 
-    install -d "$pkgdir/usr/bin/"
-    ln -s /opt/${pkgname}/notiflut_land ${pkgdir}/usr/bin/notiflut_land
+  install -d "$pkgdir/usr/bin/"
+  ln -s /opt/${pkgname}/notiflut_land ${pkgdir}/usr/bin/notiflut_land
+
+  #install service
+  install -Dm644 $_pkgfoldername-$pkgver/notiflut_deamon/notiflut.systemd.service ${pkgdir}/etc/systemd/system/
+  install -Dm644 $_pkgfoldername-$pkgver/notiflut_deamon/org.lucacoduriv.notiflut.service ${pkgdir}/usr/share/dbus-1/services/
 }
