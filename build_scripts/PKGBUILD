@@ -1,0 +1,36 @@
+pkgname=notiflut
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="A simple notificaion daemon with a GTK panel for checking previous notifications like other DEs"
+_pkgfoldername=Notiflut-Land
+url="https://github.com/LucaCoduriV/$_pkgfoldername"
+arch=(
+    'x86_64'
+    'aarch64' # ARM v8 64-bit
+    'armv7h'  # ARM v7 hardfloat
+)
+license=('Apache-2.0')
+depends=("gtk3" "gtk-layer-shell" "dbus" "glib2" "gobject-introspection" "libgee" "json-glib" "libhandy" "libpulse" )
+conflicts=("notiflut" "notiflut-client")
+provides=("notiflut" "notiflut-client")
+makedepends=('flutter' 'clang' 'cmake' 'ninja' 'gtk3' 'pkgconf' 'xz' 'rust')
+source=("${_pkgfoldername}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('c9b2607a1c0c360ac24cff366b5cb8dc12461f49dc633e6521ae729e4ba1544e')
+
+build() {
+    cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_deamon"
+    flutter build linux --release
+}
+
+package() {
+    #DESTDIR="$pkgdir/" ninja -C build install
+    #install -Dm644 "$_pkgfoldername-$pkgver/COPYING" -t "$pkgdir/usr/share/licenses/$pkgname"
+    # mkdir -p "$pkgdir/usr/share/notiflut_land"
+    # mkdir -p "$pkgdir/usr/lib/notiflut_land"
+
+	install -dm 755 "${pkgdir}/opt/${pkgname}"
+    cp -a "$_pkgfoldername-$pkgver/notiflut_deamon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
+
+    install -d "$pkgdir/usr/bin/"
+    ln -s /opt/${pkgname}/notiflut_land ${pkgdir}/usr/bin/notiflut_land
+}
