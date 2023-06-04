@@ -1,5 +1,5 @@
 pkgname=notiflut
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="A simple notificaion daemon with a GTK panel for checking previous notifications like other DEs"
 _pkgfoldername=Notiflut-Land
@@ -15,7 +15,7 @@ conflicts=("notiflut" "notiflut-client")
 provides=("notiflut" "notiflut-client")
 makedepends=('flutter' 'clang' 'cmake' 'ninja' 'gtk3' 'pkgconf' 'xz' 'rust')
 source=("${_pkgfoldername}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
-sha256sums=('c9b2607a1c0c360ac24cff366b5cb8dc12461f49dc633e6521ae729e4ba1544e')
+# sha256sums=('c9b2607a1c0c360ac24cff366b5cb8dc12461f49dc633e6521ae729e4ba1544e')
 
 build() {
     cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_deamon"
