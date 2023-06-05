@@ -14,8 +14,10 @@ depends=("gtk3" "gtk-layer-shell" "dbus" "glib2" "gobject-introspection" "libgee
 conflicts=("notiflut" "notiflut-client")
 provides=("notiflut" "notiflut-client")
 makedepends=('flutter' 'clang' 'cmake' 'ninja' 'gtk3' 'pkgconf' 'xz' 'rust')
-source=("${_pkgfoldername}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
-sha256sums=('d9f46d1c061bb305ed7ac2edd88b44a9b34b8dbf1cd58ede315c4e400868a191')
+# source=("${_pkgfoldername}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+# sha256sums=('8c26c94525ab983e73ce21c50d3e7c7fdeb58f10ec1e6bdea6e1782eef22c01a')
+source=('git+https://github.com/LucaCoduriV/Notiflut-Land.git')
+sha256sums=('SKIP')
 
 build() {
     cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_daemon"
