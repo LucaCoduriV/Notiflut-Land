@@ -14,32 +14,30 @@ depends=("gtk3" "gtk-layer-shell" "dbus" "glib2" "gobject-introspection" "libgee
 conflicts=("notiflut" "notiflut-client")
 provides=("notiflut" "notiflut-client")
 makedepends=('flutter' 'clang' 'cmake' 'ninja' 'gtk3' 'pkgconf' 'xz' 'rust')
-# source=("${_pkgfoldername}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
-# sha256sums=('8c26c94525ab983e73ce21c50d3e7c7fdeb58f10ec1e6bdea6e1782eef22c01a')
 source=('git+https://github.com/LucaCoduriV/Notiflut-Land.git')
 sha256sums=('SKIP')
 
 build() {
-    cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_daemon"
+    cd "$srcdir/$_pkgfoldername/notiflut_daemon"
     flutter_rust_bridge_codegen --rust-input native/src/api.rs --dart-output lib/src/native/bridge_generated.dart --dart-decl-output lib/src/native/bridge_definitions.dart
     flutter build linux --release
 
-    cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_ctl"
+    cd "$srcdir/$_pkgfoldername/notiflut_ctl"
     cargo build --release
 }
 
 package() {
 	install -dm 755 "${pkgdir}/opt/${pkgname}"
-  cp -a "$_pkgfoldername-$pkgver/notiflut_daemon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
+  cp -a "$_pkgfoldername/notiflut_daemon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
 
   install -d "$pkgdir/usr/bin/"
   ln -s /opt/${pkgname}/notiflut_land ${pkgdir}/usr/bin/notiflut_land
 
   #install service
-  mv $_pkgfoldername-$pkgver/notiflut_daemon/notiflut.systemd.service $_pkgfoldername-$pkgver/notiflut_daemon/notiflut.service
-  install -Dm 644 $_pkgfoldername-$pkgver/notiflut_daemon/notiflut.service -t ${pkgdir}/etc/systemd/user/
-  install -Dm 644 $_pkgfoldername-$pkgver/notiflut_daemon/org.lucacoduriv.notiflut.service -t ${pkgdir}/usr/share/dbus-1/services/
+  mv $_pkgfoldername/notiflut_daemon/notiflut.systemd.service $_pkgfoldername/notiflut_daemon/notiflut.service
+  install -Dm 644 $_pkgfoldername/notiflut_daemon/notiflut.service -t ${pkgdir}/etc/systemd/user/
+  install -Dm 644 $_pkgfoldername/notiflut_daemon/org.lucacoduriv.notiflut.service -t ${pkgdir}/usr/share/dbus-1/services/
 
   #install ctl (TODO CHECK PERMISSION)
-	install -dm 777 "$_pkgfoldername-$pkgver/notiflut_ctl/target/release/notiflut_ctl" -t "${pkgdir}/usr/bin/"
+	install -Dm 777 "$_pkgfoldername/notiflut_ctl/target/release/notiflut_ctl" -t "${pkgdir}/usr/bin/"
 }
