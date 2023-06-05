@@ -1,5 +1,5 @@
 pkgname=notiflut
-pkgver=0.1.1
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="A simple notificaion daemon with a GTK panel for checking previous notifications like other DEs"
 _pkgfoldername=Notiflut-Land
@@ -19,6 +19,7 @@ source=("${_pkgfoldername}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
 
 build() {
     cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_deamon"
+    flutter_rust_bridge_codegen --rust-input native/src/api.rs --dart-output lib/src/native/bridge_generated.dart --dart-decl-output lib/src/native/bridge_definitions.dart
     flutter build linux --release
 }
 
@@ -30,6 +31,7 @@ package() {
   ln -s /opt/${pkgname}/notiflut_land ${pkgdir}/usr/bin/notiflut_land
 
   #install service
-  install -Dm644 $_pkgfoldername-$pkgver/notiflut_deamon/notiflut.systemd.service ${pkgdir}/etc/systemd/system/
-  install -Dm644 $_pkgfoldername-$pkgver/notiflut_deamon/org.lucacoduriv.notiflut.service ${pkgdir}/usr/share/dbus-1/services/
+  mv $_pkgfoldername-$pkgver/notiflut_deamon/notiflut.systemd.service $_pkgfoldername-$pkgver/notiflut_deamon/notiflut.service
+  install -Dm644 $_pkgfoldername-$pkgver/notiflut_deamon/notiflut.service -t ${pkgdir}/etc/systemd/user/
+  install -Dm644 $_pkgfoldername-$pkgver/notiflut_deamon/org.lucacoduriv.notiflut.service -t ${pkgdir}/usr/share/dbus-1/services/
 }
