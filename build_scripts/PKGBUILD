@@ -18,20 +18,26 @@ source=("${_pkgfoldername}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
 # sha256sums=('c9b2607a1c0c360ac24cff366b5cb8dc12461f49dc633e6521ae729e4ba1544e')
 
 build() {
-    cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_deamon"
+    cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_daemon"
     flutter_rust_bridge_codegen --rust-input native/src/api.rs --dart-output lib/src/native/bridge_generated.dart --dart-decl-output lib/src/native/bridge_definitions.dart
     flutter build linux --release
+
+    cd "$srcdir/$_pkgfoldername-$pkgver/notiflut_ctl"
+    cargo build --release
 }
 
 package() {
 	install -dm 755 "${pkgdir}/opt/${pkgname}"
-  cp -a "$_pkgfoldername-$pkgver/notiflut_deamon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
+  cp -a "$_pkgfoldername-$pkgver/notiflut_daemon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
 
   install -d "$pkgdir/usr/bin/"
   ln -s /opt/${pkgname}/notiflut_land ${pkgdir}/usr/bin/notiflut_land
 
   #install service
-  mv $_pkgfoldername-$pkgver/notiflut_deamon/notiflut.systemd.service $_pkgfoldername-$pkgver/notiflut_deamon/notiflut.service
-  install -Dm644 $_pkgfoldername-$pkgver/notiflut_deamon/notiflut.service -t ${pkgdir}/etc/systemd/user/
-  install -Dm644 $_pkgfoldername-$pkgver/notiflut_deamon/org.lucacoduriv.notiflut.service -t ${pkgdir}/usr/share/dbus-1/services/
+  mv $_pkgfoldername-$pkgver/notiflut_daemon/notiflut.systemd.service $_pkgfoldername-$pkgver/notiflut_daemon/notiflut.service
+  install -Dm 644 $_pkgfoldername-$pkgver/notiflut_daemon/notiflut.service -t ${pkgdir}/etc/systemd/user/
+  install -Dm 644 $_pkgfoldername-$pkgver/notiflut_daemon/org.lucacoduriv.notiflut.service -t ${pkgdir}/usr/share/dbus-1/services/
+
+  #install ctl (TODO CHECK PERMISSION)
+	install -dm 777 "$_pkgfoldername-$pkgver/notiflut_ctl/target/release/notiflut_ctl" -t "${pkgdir}/usr/bin/"
 }
