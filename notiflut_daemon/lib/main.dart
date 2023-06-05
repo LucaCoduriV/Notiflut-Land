@@ -11,7 +11,6 @@ import './src/native.dart' as nati;
 import 'package:window_manager/window_manager.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 
-
 void main(List<String> args) async {
   log("App Starting...");
   WidgetsFlutterBinding.ensureInitialized();

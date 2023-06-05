@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../native.dart' as nati;
-import '../native/bridge_definitions.dart' as nati;
 import '../utils.dart';
 import '../window_manager.dart';
 import 'notification.dart';
@@ -58,7 +57,7 @@ class Bar extends StatelessWidget {
           ),
         ),
         Card(
-          color: Color(0xFFEAEAEB),
+          color: const Color(0xFFEAEAEB),
           child: SizedBox(
             width: 500,
             child: Padding(
@@ -74,7 +73,7 @@ class Bar extends StatelessWidget {
                       print("Notifications closed");
 
                       nati.api.sendDeamonAction(
-                        action: nati.DeamonAction.flutterCloseAll(),
+                        action: const nati.DeamonAction.flutterCloseAll(),
                       );
                     },
                   ),

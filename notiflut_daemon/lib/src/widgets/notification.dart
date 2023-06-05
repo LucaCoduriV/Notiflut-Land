@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:open_url/open_url.dart';
 import '../native.dart' as nati;
-import '../native/bridge_definitions.dart' as nati;
 import 'package:flutter_html/flutter_html.dart';
 
 class NotificationAction {
@@ -99,8 +98,8 @@ class NotificationTile extends StatelessWidget {
                       backgroundImage: iconProvider,
                       radius: 13,
                     ),
-                    SizedBox(width: 10),
-                    Text(appName, style: TextStyle(fontSize: 13)),
+                    const SizedBox(width: 10),
+                    Text(appName, style: const TextStyle(fontSize: 13)),
                   ],
                 ),
                 SizedBox(
