@@ -15,7 +15,7 @@ import 'notification.dart';
 import 'popup_window.dart';
 
 class NotificationCenter extends StatelessWidget {
-  final Stream<nati.DeamonAction> notificationStream;
+  final Stream<nati.DaemonAction> notificationStream;
   const NotificationCenter(this.notificationStream, {super.key});
 
   // This widget is the root of your application.
@@ -42,7 +42,7 @@ class Bar extends StatelessWidget {
     required this.notificationStream,
   });
 
-  final Stream<nati.DeamonAction> notificationStream;
+  final Stream<nati.DaemonAction> notificationStream;
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +73,8 @@ class Bar extends StatelessWidget {
                     onPressed: () {
                       print("Notifications closed");
 
-                      nati.api.sendDeamonAction(
-                        action: const nati.DeamonAction.flutterCloseAll(),
+                      nati.api.sendDaemonAction(
+                        action: const nati.DaemonAction.flutterCloseAll(),
                       );
                     },
                   ),
@@ -93,7 +93,7 @@ class Bar extends StatelessWidget {
 }
 
 class NotificationList extends StatefulWidget {
-  final Stream<nati.DeamonAction> notificationStream;
+  final Stream<nati.DaemonAction> notificationStream;
   const NotificationList(this.notificationStream, {super.key});
 
   @override
@@ -103,7 +103,7 @@ class NotificationList extends StatefulWidget {
 class _NotificationListState extends State<NotificationList> {
   List<nati.Notification> notifications = [];
   Timer? timer;
-  StreamSubscription<nati.DeamonAction>? notificationStreamSub;
+  StreamSubscription<nati.DaemonAction>? notificationStreamSub;
 
   Map<String, String> actions(int id) {
     final Map<String, String> map = HashMap();
@@ -260,13 +260,13 @@ class _NotificationListState extends State<NotificationList> {
           notification.body,
           createdAt: notification.createdAt,
           onTileTap: () async {
-            await nati.api.sendDeamonAction(
-                action: nati.DeamonAction.flutterActionInvoked(
+            await nati.api.sendDaemonAction(
+                action: nati.DaemonAction.flutterActionInvoked(
                     notification.id, "default"));
           },
           closeAction: () async {
-            await nati.api.sendDeamonAction(
-                action: nati.DeamonAction.flutterClose(notification.id));
+            await nati.api.sendDaemonAction(
+                action: nati.DaemonAction.flutterClose(notification.id));
           },
           actions: buildFromActionList(notification.id, actions(index)),
           imageProvider: imageProvider,

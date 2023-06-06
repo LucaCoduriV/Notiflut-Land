@@ -1,5 +1,5 @@
 [Unit]
-Description=Notiflut notification deamon
+Description=Notiflut notification daemon
 PartOf=graphical-session.target
 
 [Service]

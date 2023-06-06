@@ -18,8 +18,8 @@ use dbus::{
 use dbus_crossroads::Crossroads;
 
 use crate::{
+    daemon::ChannelMessage,
     dbus_definition,
-    deamon::ChannelMessage,
     desktop_file_manager::DesktopFileManager,
     notification::{Hints, ImageData, Notification, Picture},
 };
@@ -79,7 +79,7 @@ const SERVER_CAPABILITIES: [&str; 8] = [
 ];
 
 #[derive(Debug)]
-pub enum DeamonAction {
+pub enum DaemonAction {
     Show(Notification),
     ShowNc,
     CloseNc,
@@ -91,7 +91,7 @@ pub enum DeamonAction {
 }
 
 pub struct DbusNotification {
-    sender: Sender<ChannelMessage<DeamonAction>>,
+    sender: Sender<ChannelMessage<DaemonAction>>,
 }
 
 impl DbusNotification {
@@ -169,7 +169,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
     fn close_notification(&mut self, id: u32) -> Result<(), dbus::MethodErr> {
         if let Err(_) = self
             .sender
-            .send(ChannelMessage::Message(DeamonAction::Close(id)))
+            .send(ChannelMessage::Message(DaemonAction::Close(id)))
         {
             return Err(dbus::MethodErr::failed(
                 "Error with channel, couldn't send the action.",
@@ -235,7 +235,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
 
         if let Err(_) = self
             .sender
-            .send(ChannelMessage::Message(DeamonAction::Show(notification)))
+            .send(ChannelMessage::Message(DaemonAction::Show(notification)))
         {
             return Err(dbus::MethodErr::failed(
                 "Error with channel, couldn't send the action.",
@@ -258,7 +258,7 @@ impl DbusServer {
 
     pub fn register_notification_handler(
         &mut self,
-        sender: Sender<ChannelMessage<DeamonAction>>,
+        sender: Sender<ChannelMessage<DaemonAction>>,
     ) -> Result<(), Box<dyn Error>> {
         let mut crossroad = Crossroads::new();
 
@@ -279,7 +279,7 @@ impl DbusServer {
             let sender_clonded = sender.clone();
             builder.method("OpenNC", (), ("reply",), move |_, _, ()| {
                 sender_clonded
-                    .send(ChannelMessage::Message(DeamonAction::ShowNc))
+                    .send(ChannelMessage::Message(DaemonAction::ShowNc))
                     .map_err(|e| MethodErr::failed(&e))?;
                 Ok((String::from("Notification center open"),))
             });
@@ -287,7 +287,7 @@ impl DbusServer {
             let sender_clonded = sender.clone();
             builder.method("CloseNC", (), ("reply",), move |_, _, ()| {
                 sender_clonded
-                    .send(ChannelMessage::Message(DeamonAction::CloseNc))
+                    .send(ChannelMessage::Message(DaemonAction::CloseNc))
                     .map_err(|e| MethodErr::failed(&e))?;
                 Ok((String::from("Notification center closed"),))
             });

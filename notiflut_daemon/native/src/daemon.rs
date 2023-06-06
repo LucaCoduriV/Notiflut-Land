@@ -7,17 +7,17 @@ use std::{
 };
 
 use crate::{
-    dbus::{self, DbusServer, DeamonAction},
+    dbus::{self, DaemonAction, DbusServer},
     dbus_definition,
     notification::Notification,
 };
 #[derive(thiserror::Error, Debug)]
-pub enum DeamonError {
+pub enum DaemonError {
     #[error("An error occured")]
     Error,
-    #[error("The deamon is already down")]
+    #[error("The daemon is already down")]
     AlreadyDown,
-    #[error("The deamon is aldready up")]
+    #[error("The daemon is aldready up")]
     AlreadyUp,
 }
 
@@ -26,18 +26,18 @@ pub enum ChannelMessage<T> {
     Stop,
 }
 
-pub struct NotificationDeamon {
-    pub sender: Option<std::sync::mpsc::Sender<ChannelMessage<DeamonAction>>>,
+pub struct NotificationDaemon {
+    pub sender: Option<std::sync::mpsc::Sender<ChannelMessage<DaemonAction>>>,
 
     stop: Arc<Mutex<bool>>,
-    notification_join_handle: Option<JoinHandle<Result<(), DeamonError>>>,
+    notification_join_handle: Option<JoinHandle<Result<(), DaemonError>>>,
     signal_recv: Arc<Mutex<Option<Receiver<::dbus::message::Message>>>>,
     dbus_server: Option<Arc<Mutex<DbusServer>>>,
 }
 
-impl NotificationDeamon {
+impl NotificationDaemon {
     pub fn new() -> Self {
-        NotificationDeamon {
+        NotificationDaemon {
             stop: Arc::new(Mutex::new(false)),
             notification_join_handle: None,
             sender: None,
@@ -47,19 +47,19 @@ impl NotificationDeamon {
         }
     }
 
-    pub fn run_deamon(
+    pub fn run_daemon(
         &mut self,
-        flutter_stream_sink: StreamSink<DeamonAction>,
-    ) -> Result<(), DeamonError> {
+        flutter_stream_sink: StreamSink<DaemonAction>,
+    ) -> Result<(), DaemonError> {
         if *self.stop.lock().unwrap() {
-            return Err(DeamonError::AlreadyUp).into();
+            return Err(DaemonError::AlreadyUp).into();
         }
-        let mut dbus_server = dbus::DbusServer::init().map_err(|_| DeamonError::Error)?;
-        let (sender, recv) = std::sync::mpsc::channel::<ChannelMessage<DeamonAction>>();
+        let mut dbus_server = dbus::DbusServer::init().map_err(|_| DaemonError::Error)?;
+        let (sender, recv) = std::sync::mpsc::channel::<ChannelMessage<DaemonAction>>();
         self.sender = Some(sender.clone());
         dbus_server
             .register_notification_handler(sender)
-            .map_err(|_| DeamonError::Error)?;
+            .map_err(|_| DaemonError::Error)?;
         self.dbus_server = Some(Arc::new(Mutex::new(dbus_server)));
         self.handle_actions(flutter_stream_sink, recv);
 
@@ -89,7 +89,7 @@ impl NotificationDeamon {
                     .lock()
                     .unwrap()
                     .wait_and_process(Duration::from_millis(200))
-                    .map_err(|_| DeamonError::Error)
+                    .map_err(|_| DaemonError::Error)
                 {
                     Ok(it) => it,
                     Err(err) => return Err(err),
@@ -104,9 +104,9 @@ impl NotificationDeamon {
 
     fn handle_actions(
         &mut self,
-        sender: StreamSink<DeamonAction>,
-        recv: Receiver<ChannelMessage<DeamonAction>>,
-    ) -> JoinHandle<Result<(), DeamonError>> {
+        sender: StreamSink<DaemonAction>,
+        recv: Receiver<ChannelMessage<DaemonAction>>,
+    ) -> JoinHandle<Result<(), DaemonError>> {
         let (signal_sender, signal_recv) = std::sync::mpsc::channel::<::dbus::message::Message>();
         {
             let mut sr = self.signal_recv.lock().unwrap();
@@ -126,7 +126,7 @@ impl NotificationDeamon {
                 };
 
                 match action {
-                    DeamonAction::Show(notification) => {
+                    DaemonAction::Show(notification) => {
                         notifications
                             .write()
                             .unwrap()
@@ -138,23 +138,23 @@ impl NotificationDeamon {
                         } else {
                             Some(last_index as usize)
                         };
-                        if let false = sender.add(DeamonAction::Update(
+                        if let false = sender.add(DaemonAction::Update(
                             notifications.read().unwrap().clone(),
                             last_index,
                         )) {
-                            return Err(DeamonError::Error);
+                            return Err(DaemonError::Error);
                         }
                     }
-                    DeamonAction::Close(id) => {
+                    DaemonAction::Close(id) => {
                         notifications.write().unwrap().retain(|v| v.id != id);
-                        if let false = sender.add(DeamonAction::Update(
+                        if let false = sender.add(DaemonAction::Update(
                             notifications.read().unwrap().clone(),
                             None,
                         )) {
-                            return Err(DeamonError::Error);
+                            return Err(DaemonError::Error);
                         }
                     }
-                    DeamonAction::FlutterClose(id) => {
+                    DaemonAction::FlutterClose(id) => {
                         notifications.write().unwrap().retain(|v| v.id != id);
                         let message =
                             dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
@@ -164,14 +164,14 @@ impl NotificationDeamon {
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
                         let _result = signal_sender.send(message.to_emit_message(&path));
 
-                        if let false = sender.add(DeamonAction::Update(
+                        if let false = sender.add(DaemonAction::Update(
                             notifications.read().unwrap().clone(),
                             None,
                         )) {
-                            return Err(DeamonError::Error);
+                            return Err(DaemonError::Error);
                         }
                     }
-                    DeamonAction::FlutterCloseAll => {
+                    DaemonAction::FlutterCloseAll => {
                         let mut notifications_mutex = notifications.write().unwrap();
 
                         for notification in notifications_mutex.iter() {
@@ -186,12 +186,12 @@ impl NotificationDeamon {
 
                         notifications_mutex.clear();
                         if let false =
-                            sender.add(DeamonAction::Update(notifications_mutex.clone(), None))
+                            sender.add(DaemonAction::Update(notifications_mutex.clone(), None))
                         {
-                            return Err(DeamonError::Error);
+                            return Err(DaemonError::Error);
                         }
                     }
-                    DeamonAction::FlutterActionInvoked(id, action_key) => {
+                    DaemonAction::FlutterActionInvoked(id, action_key) => {
                         notifications.write().unwrap().retain(|v| v.id != id);
                         let message = dbus_definition::OrgFreedesktopNotificationsActionInvoked {
                             id,
@@ -200,18 +200,18 @@ impl NotificationDeamon {
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
                         let _result = signal_sender.send(message.to_emit_message(&path));
 
-                        if let false = sender.add(DeamonAction::Update(
+                        if let false = sender.add(DaemonAction::Update(
                             notifications.read().unwrap().clone(),
                             None,
                         )) {
-                            return Err(DeamonError::Error);
+                            return Err(DaemonError::Error);
                         }
                     }
-                    DeamonAction::ShowNc => {
-                        sender.add(DeamonAction::ShowNc);
+                    DaemonAction::ShowNc => {
+                        sender.add(DaemonAction::ShowNc);
                     }
-                    DeamonAction::CloseNc => {
-                        sender.add(DeamonAction::CloseNc);
+                    DaemonAction::CloseNc => {
+                        sender.add(DaemonAction::CloseNc);
                     }
                     _ => {}
                 };
@@ -220,13 +220,13 @@ impl NotificationDeamon {
         action_join_handler
     }
 
-    pub fn stop_deamon(&mut self) -> Result<(), DeamonError> {
+    pub fn stop_daemon(&mut self) -> Result<(), DaemonError> {
         *self.stop.lock().unwrap() = true;
         let handle = self.notification_join_handle.take();
         let result = match handle {
             Some(h) => h.join(),
             None => {
-                return Err(DeamonError::AlreadyDown);
+                return Err(DaemonError::AlreadyDown);
             }
         };
         print!("Stop result: {result:?}");

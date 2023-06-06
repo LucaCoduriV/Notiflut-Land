@@ -7,18 +7,18 @@ pub extern "C" fn wire_setup(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_start_deamon(port_: i64) {
-    wire_start_deamon_impl(port_)
+pub extern "C" fn wire_start_daemon(port_: i64) {
+    wire_start_daemon_impl(port_)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_stop_deamon(port_: i64) {
-    wire_stop_deamon_impl(port_)
+pub extern "C" fn wire_stop_daemon(port_: i64) {
+    wire_stop_daemon_impl(port_)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_send_deamon_action(port_: i64, action: *mut wire_DeamonAction) {
-    wire_send_deamon_action_impl(port_, action)
+pub extern "C" fn wire_send_daemon_action(port_: i64, action: *mut wire_DaemonAction) {
+    wire_send_daemon_action_impl(port_, action)
 }
 
 // Section: allocate functions
@@ -38,8 +38,8 @@ pub extern "C" fn new_box_autoadd_bool_0(value: bool) -> *mut bool {
 }
 
 #[no_mangle]
-pub extern "C" fn new_box_autoadd_deamon_action_0() -> *mut wire_DeamonAction {
-    support::new_leak_box_ptr(wire_DeamonAction::new_with_null_ptr())
+pub extern "C" fn new_box_autoadd_daemon_action_0() -> *mut wire_DaemonAction {
+    support::new_leak_box_ptr(wire_DaemonAction::new_with_null_ptr())
 }
 
 #[no_mangle]
@@ -115,10 +115,10 @@ impl Wire2Api<bool> for *mut bool {
         unsafe { *support::box_from_leak_ptr(self) }
     }
 }
-impl Wire2Api<DeamonAction> for *mut wire_DeamonAction {
-    fn wire2api(self) -> DeamonAction {
+impl Wire2Api<DaemonAction> for *mut wire_DaemonAction {
+    fn wire2api(self) -> DaemonAction {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
-        Wire2Api::<DeamonAction>::wire2api(*wrap).into()
+        Wire2Api::<DaemonAction>::wire2api(*wrap).into()
     }
 }
 impl Wire2Api<i32> for *mut i32 {
@@ -155,36 +155,36 @@ impl Wire2Api<usize> for *mut usize {
         unsafe { *support::box_from_leak_ptr(self) }
     }
 }
-impl Wire2Api<DeamonAction> for wire_DeamonAction {
-    fn wire2api(self) -> DeamonAction {
+impl Wire2Api<DaemonAction> for wire_DaemonAction {
+    fn wire2api(self) -> DaemonAction {
         match self.tag {
             0 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.Show);
-                DeamonAction::Show(ans.field0.wire2api())
+                DaemonAction::Show(ans.field0.wire2api())
             },
-            1 => DeamonAction::ShowNc,
-            2 => DeamonAction::CloseNc,
+            1 => DaemonAction::ShowNc,
+            2 => DaemonAction::CloseNc,
             3 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.Close);
-                DeamonAction::Close(ans.field0.wire2api())
+                DaemonAction::Close(ans.field0.wire2api())
             },
             4 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.Update);
-                DeamonAction::Update(ans.field0.wire2api(), ans.field1.wire2api())
+                DaemonAction::Update(ans.field0.wire2api(), ans.field1.wire2api())
             },
             5 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.FlutterClose);
-                DeamonAction::FlutterClose(ans.field0.wire2api())
+                DaemonAction::FlutterClose(ans.field0.wire2api())
             },
-            6 => DeamonAction::FlutterCloseAll,
+            6 => DaemonAction::FlutterCloseAll,
             7 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.FlutterActionInvoked);
-                DeamonAction::FlutterActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
+                DaemonAction::FlutterActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
             },
             _ => unreachable!(),
         }
@@ -344,63 +344,63 @@ pub struct wire_uint_8_list {
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction {
+pub struct wire_DaemonAction {
     tag: i32,
-    kind: *mut DeamonActionKind,
+    kind: *mut DaemonActionKind,
 }
 
 #[repr(C)]
-pub union DeamonActionKind {
-    Show: *mut wire_DeamonAction_Show,
-    ShowNc: *mut wire_DeamonAction_ShowNc,
-    CloseNc: *mut wire_DeamonAction_CloseNc,
-    Close: *mut wire_DeamonAction_Close,
-    Update: *mut wire_DeamonAction_Update,
-    FlutterClose: *mut wire_DeamonAction_FlutterClose,
-    FlutterCloseAll: *mut wire_DeamonAction_FlutterCloseAll,
-    FlutterActionInvoked: *mut wire_DeamonAction_FlutterActionInvoked,
+pub union DaemonActionKind {
+    Show: *mut wire_DaemonAction_Show,
+    ShowNc: *mut wire_DaemonAction_ShowNc,
+    CloseNc: *mut wire_DaemonAction_CloseNc,
+    Close: *mut wire_DaemonAction_Close,
+    Update: *mut wire_DaemonAction_Update,
+    FlutterClose: *mut wire_DaemonAction_FlutterClose,
+    FlutterCloseAll: *mut wire_DaemonAction_FlutterCloseAll,
+    FlutterActionInvoked: *mut wire_DaemonAction_FlutterActionInvoked,
 }
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_Show {
+pub struct wire_DaemonAction_Show {
     field0: *mut wire_Notification,
 }
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_ShowNc {}
+pub struct wire_DaemonAction_ShowNc {}
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_CloseNc {}
+pub struct wire_DaemonAction_CloseNc {}
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_Close {
+pub struct wire_DaemonAction_Close {
     field0: u32,
 }
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_Update {
+pub struct wire_DaemonAction_Update {
     field0: *mut wire_list_notification,
     field1: *mut usize,
 }
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_FlutterClose {
+pub struct wire_DaemonAction_FlutterClose {
     field0: u32,
 }
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_FlutterCloseAll {}
+pub struct wire_DaemonAction_FlutterCloseAll {}
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_DeamonAction_FlutterActionInvoked {
+pub struct wire_DaemonAction_FlutterActionInvoked {
     field0: u32,
     field1: *mut wire_uint_8_list,
 }
@@ -442,7 +442,7 @@ impl<T> NewWithNullPtr for *mut T {
     }
 }
 
-impl NewWithNullPtr for wire_DeamonAction {
+impl NewWithNullPtr for wire_DaemonAction {
     fn new_with_null_ptr() -> Self {
         Self {
             tag: -1,
@@ -452,27 +452,27 @@ impl NewWithNullPtr for wire_DeamonAction {
 }
 
 #[no_mangle]
-pub extern "C" fn inflate_DeamonAction_Show() -> *mut DeamonActionKind {
-    support::new_leak_box_ptr(DeamonActionKind {
-        Show: support::new_leak_box_ptr(wire_DeamonAction_Show {
+pub extern "C" fn inflate_DaemonAction_Show() -> *mut DaemonActionKind {
+    support::new_leak_box_ptr(DaemonActionKind {
+        Show: support::new_leak_box_ptr(wire_DaemonAction_Show {
             field0: core::ptr::null_mut(),
         }),
     })
 }
 
 #[no_mangle]
-pub extern "C" fn inflate_DeamonAction_Close() -> *mut DeamonActionKind {
-    support::new_leak_box_ptr(DeamonActionKind {
-        Close: support::new_leak_box_ptr(wire_DeamonAction_Close {
+pub extern "C" fn inflate_DaemonAction_Close() -> *mut DaemonActionKind {
+    support::new_leak_box_ptr(DaemonActionKind {
+        Close: support::new_leak_box_ptr(wire_DaemonAction_Close {
             field0: Default::default(),
         }),
     })
 }
 
 #[no_mangle]
-pub extern "C" fn inflate_DeamonAction_Update() -> *mut DeamonActionKind {
-    support::new_leak_box_ptr(DeamonActionKind {
-        Update: support::new_leak_box_ptr(wire_DeamonAction_Update {
+pub extern "C" fn inflate_DaemonAction_Update() -> *mut DaemonActionKind {
+    support::new_leak_box_ptr(DaemonActionKind {
+        Update: support::new_leak_box_ptr(wire_DaemonAction_Update {
             field0: core::ptr::null_mut(),
             field1: core::ptr::null_mut(),
         }),
@@ -480,18 +480,18 @@ pub extern "C" fn inflate_DeamonAction_Update() -> *mut DeamonActionKind {
 }
 
 #[no_mangle]
-pub extern "C" fn inflate_DeamonAction_FlutterClose() -> *mut DeamonActionKind {
-    support::new_leak_box_ptr(DeamonActionKind {
-        FlutterClose: support::new_leak_box_ptr(wire_DeamonAction_FlutterClose {
+pub extern "C" fn inflate_DaemonAction_FlutterClose() -> *mut DaemonActionKind {
+    support::new_leak_box_ptr(DaemonActionKind {
+        FlutterClose: support::new_leak_box_ptr(wire_DaemonAction_FlutterClose {
             field0: Default::default(),
         }),
     })
 }
 
 #[no_mangle]
-pub extern "C" fn inflate_DeamonAction_FlutterActionInvoked() -> *mut DeamonActionKind {
-    support::new_leak_box_ptr(DeamonActionKind {
-        FlutterActionInvoked: support::new_leak_box_ptr(wire_DeamonAction_FlutterActionInvoked {
+pub extern "C" fn inflate_DaemonAction_FlutterActionInvoked() -> *mut DaemonActionKind {
+    support::new_leak_box_ptr(DaemonActionKind {
+        FlutterActionInvoked: support::new_leak_box_ptr(wire_DaemonAction_FlutterActionInvoked {
             field0: Default::default(),
             field1: core::ptr::null_mut(),
         }),

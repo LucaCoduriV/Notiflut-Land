@@ -16,41 +16,41 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kSetupConstMeta;
 
-  Stream<DeamonAction> startDeamon({dynamic hint});
+  Stream<DaemonAction> startDaemon({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kStartDeamonConstMeta;
+  FlutterRustBridgeTaskConstMeta get kStartDaemonConstMeta;
 
-  Future<void> stopDeamon({dynamic hint});
+  Future<void> stopDaemon({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kStopDeamonConstMeta;
+  FlutterRustBridgeTaskConstMeta get kStopDaemonConstMeta;
 
-  Future<void> sendDeamonAction({required DeamonAction action, dynamic hint});
+  Future<void> sendDaemonAction({required DaemonAction action, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kSendDeamonActionConstMeta;
+  FlutterRustBridgeTaskConstMeta get kSendDaemonActionConstMeta;
 }
 
 @freezed
-class DeamonAction with _$DeamonAction {
-  const factory DeamonAction.show(
+class DaemonAction with _$DaemonAction {
+  const factory DaemonAction.show(
     Notification field0,
-  ) = DeamonAction_Show;
-  const factory DeamonAction.showNc() = DeamonAction_ShowNc;
-  const factory DeamonAction.closeNc() = DeamonAction_CloseNc;
-  const factory DeamonAction.close(
+  ) = DaemonAction_Show;
+  const factory DaemonAction.showNc() = DaemonAction_ShowNc;
+  const factory DaemonAction.closeNc() = DaemonAction_CloseNc;
+  const factory DaemonAction.close(
     int field0,
-  ) = DeamonAction_Close;
-  const factory DeamonAction.update(
+  ) = DaemonAction_Close;
+  const factory DaemonAction.update(
     List<Notification> field0, [
     int? field1,
-  ]) = DeamonAction_Update;
-  const factory DeamonAction.flutterClose(
+  ]) = DaemonAction_Update;
+  const factory DaemonAction.flutterClose(
     int field0,
-  ) = DeamonAction_FlutterClose;
-  const factory DeamonAction.flutterCloseAll() = DeamonAction_FlutterCloseAll;
-  const factory DeamonAction.flutterActionInvoked(
+  ) = DaemonAction_FlutterClose;
+  const factory DaemonAction.flutterCloseAll() = DaemonAction_FlutterCloseAll;
+  const factory DaemonAction.flutterActionInvoked(
     int field0,
     String field1,
-  ) = DeamonAction_FlutterActionInvoked;
+  ) = DaemonAction_FlutterActionInvoked;
 }
 
 class Hints {

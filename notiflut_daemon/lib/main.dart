@@ -49,7 +49,7 @@ void mainNotificationCenter() async {
     await windowManager.setPosition(const Offset(100, 100));
   });
   await nati.api.setup();
-  final notificationStream = nati.api.startDeamon();
+  final notificationStream = nati.api.startDaemon();
   final popUpWindowsManager = PopUpWindowManager();
   await popUpWindowsManager.init();
   runApp(NotificationCenter(notificationStream));

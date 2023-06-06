@@ -4,28 +4,28 @@ use anyhow::Ok;
 use flutter_rust_bridge::StreamSink;
 
 use crate::{
-    dbus::DeamonAction,
-    deamon::{ChannelMessage, NotificationDeamon},
+    daemon::{ChannelMessage, NotificationDaemon},
+    dbus::DaemonAction,
 };
 
-static DEAMON: Mutex<Option<NotificationDeamon>> = Mutex::new(None);
+static DAEMON: Mutex<Option<NotificationDaemon>> = Mutex::new(None);
 
 pub fn setup() {
-    *DEAMON.lock().unwrap() = Some(NotificationDeamon::new());
+    *DAEMON.lock().unwrap() = Some(NotificationDaemon::new());
 }
 
-pub fn start_deamon(s: StreamSink<DeamonAction>) -> anyhow::Result<()> {
-    DEAMON.lock().unwrap().as_mut().unwrap().run_deamon(s)?;
+pub fn start_daemon(s: StreamSink<DaemonAction>) -> anyhow::Result<()> {
+    DAEMON.lock().unwrap().as_mut().unwrap().run_daemon(s)?;
     Ok(())
 }
 
-pub fn stop_deamon() -> anyhow::Result<()> {
-    DEAMON.lock().unwrap().as_mut().unwrap().stop_deamon()?;
+pub fn stop_daemon() -> anyhow::Result<()> {
+    DAEMON.lock().unwrap().as_mut().unwrap().stop_daemon()?;
     Ok(())
 }
 
-pub fn send_deamon_action(action: DeamonAction) -> anyhow::Result<()> {
-    DEAMON
+pub fn send_daemon_action(action: DaemonAction) -> anyhow::Result<()> {
+    DAEMON
         .lock()
         .unwrap()
         .as_mut()

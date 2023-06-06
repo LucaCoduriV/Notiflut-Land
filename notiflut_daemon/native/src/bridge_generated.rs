@@ -19,7 +19,7 @@ use std::sync::Arc;
 
 // Section: imports
 
-use crate::dbus::DeamonAction;
+use crate::dbus::DaemonAction;
 use crate::notification::Hints;
 use crate::notification::ImageData;
 use crate::notification::Notification;
@@ -38,39 +38,39 @@ fn wire_setup_impl(port_: MessagePort) {
         move || move |task_callback| Ok(setup()),
     )
 }
-fn wire_start_deamon_impl(port_: MessagePort) {
+fn wire_start_daemon_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "start_deamon",
+            debug_name: "start_daemon",
             port: Some(port_),
             mode: FfiCallMode::Stream,
         },
-        move || move |task_callback| start_deamon(task_callback.stream_sink()),
+        move || move |task_callback| start_daemon(task_callback.stream_sink()),
     )
 }
-fn wire_stop_deamon_impl(port_: MessagePort) {
+fn wire_stop_daemon_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "stop_deamon",
+            debug_name: "stop_daemon",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| stop_deamon(),
+        move || move |task_callback| stop_daemon(),
     )
 }
-fn wire_send_deamon_action_impl(
+fn wire_send_daemon_action_impl(
     port_: MessagePort,
-    action: impl Wire2Api<DeamonAction> + UnwindSafe,
+    action: impl Wire2Api<DaemonAction> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "send_deamon_action",
+            debug_name: "send_daemon_action",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
             let api_action = action.wire2api();
-            move |task_callback| send_deamon_action(api_action)
+            move |task_callback| send_daemon_action(api_action)
         },
     )
 }
@@ -152,7 +152,7 @@ impl Wire2Api<usize> for usize {
 }
 // Section: impl IntoDart
 
-impl support::IntoDart for DeamonAction {
+impl support::IntoDart for DaemonAction {
     fn into_dart(self) -> support::DartAbi {
         match self {
             Self::Show(field0) => vec![0.into_dart(), field0.into_dart()],
@@ -171,7 +171,7 @@ impl support::IntoDart for DeamonAction {
         .into_dart()
     }
 }
-impl support::IntoDartExceptPrimitive for DeamonAction {}
+impl support::IntoDartExceptPrimitive for DaemonAction {}
 impl support::IntoDart for Hints {
     fn into_dart(self) -> support::DartAbi {
         vec![
