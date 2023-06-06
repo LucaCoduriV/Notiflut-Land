@@ -21,7 +21,7 @@ use crate::{
     daemon::ChannelMessage,
     dbus_definition,
     desktop_file_manager::DesktopFileManager,
-    notification::{Hints, ImageData, Notification, Picture},
+    notification::{Hints, ImageData, ImageSource, Notification},
 };
 /// D-Bus interface for desktop notifications.
 pub const NOTIFICATION_INTERFACE: &str = "org.freedesktop.Notifications";
@@ -90,16 +90,23 @@ pub enum DaemonAction {
     FlutterActionInvoked(u32, String),
 }
 
+/// DbusNotification is responsible to react to dbus callbacks by sending
+/// all events through channel to let the daemon decide what to do
 pub struct DbusNotification {
     sender: Sender<ChannelMessage<DaemonAction>>,
 }
 
 impl DbusNotification {
+    /// This function helps to have a unique way to read image and icon
+    /// from notifications. It gets all possible data entry and outputs one
+    /// image and one icon.
     /// An implementation which can display both the image and icon
     /// must show the icon from the "app_icon" parameter and choose which image to display using the following order:
-    /// 1. "image-data"
-    /// 2. "image-path"
-    /// 3. for compatibility reason, "icon_data"
+    ///     1. "image-data"
+    ///     2. "image-path"
+    ///     3. for compatibility reason, "icon_data"
+    /// In case none of these parameter are provided we will try to use the
+    /// application name to find the icon.
     fn get_icon_and_image(
         app_name: String,
         desktop_entry_name: Option<String>,
@@ -107,15 +114,15 @@ impl DbusNotification {
         image_data: Option<ImageData>,
         image_path: Option<String>,
         icon_data: Option<ImageData>,
-    ) -> (Option<Picture>, Option<Picture>) {
-        let icon: Option<Picture> = if !app_icon.is_empty() {
+    ) -> (Option<ImageSource>, Option<ImageSource>) {
+        let icon: Option<ImageSource> = if !app_icon.is_empty() {
             app_icon
                 .starts_with("file://")
-                .then(|| Picture::Path(app_icon.replace("file://", "")))
+                .then(|| ImageSource::Path(app_icon.replace("file://", "")))
                 .or(freedesktop_icons::lookup(&app_icon)
                     .find()
                     .and_then(|p| Some(p.to_str().unwrap().to_string()))
-                    .and_then(|p| Some(Picture::Path(p))))
+                    .and_then(|p| Some(ImageSource::Path(p))))
         } else {
             let desk = DesktopFileManager::new();
             let file_name = desktop_entry_name.unwrap_or_else(|| app_name.to_lowercase());
@@ -124,26 +131,26 @@ impl DbusNotification {
             let icon = desk.find(&(file_name)).and_then(|v| v.icon);
             icon.and_then(|icon| {
                 icon.starts_with("file://")
-                    .then(|| Picture::Path(icon.replace("file://", "")))
+                    .then(|| ImageSource::Path(icon.replace("file://", "")))
                     .or(freedesktop_icons::lookup(&icon)
                         .find()
                         .and_then(|p| Some(p.to_str().unwrap().to_string()))
-                        .and_then(|p| Some(Picture::Path(p))))
+                        .and_then(|p| Some(ImageSource::Path(p))))
             })
         };
 
-        let image: Option<Picture> = if image_data.is_some() {
-            Some(Picture::Data(image_data.unwrap()))
+        let image: Option<ImageSource> = if image_data.is_some() {
+            Some(ImageSource::Data(image_data.unwrap()))
         } else if let Some(image) = image_path {
             image
                 .starts_with("file://")
-                .then(|| Picture::Path(image.replace("file://", "")))
+                .then(|| ImageSource::Path(image.replace("file://", "")))
                 .or(freedesktop_icons::lookup(&image)
                     .find()
                     .and_then(|p| Some(p.to_str().unwrap().to_string()))
-                    .and_then(|p| Some(Picture::Path(p))))
+                    .and_then(|p| Some(ImageSource::Path(p))))
         } else {
-            icon_data.map(|data| Picture::Data(data))
+            icon_data.map(|data| ImageSource::Data(data))
         };
 
         (icon, image)
@@ -246,6 +253,8 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
     }
 }
 
+/// DbusServer is responsible to register as a notification server and listen
+/// to Notification events and events from our control app
 pub struct DbusServer {
     pub connection: Connection,
 }

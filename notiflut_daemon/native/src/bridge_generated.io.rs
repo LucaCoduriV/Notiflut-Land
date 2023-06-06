@@ -53,13 +53,13 @@ pub extern "C" fn new_box_autoadd_image_data_0() -> *mut wire_ImageData {
 }
 
 #[no_mangle]
-pub extern "C" fn new_box_autoadd_notification_0() -> *mut wire_Notification {
-    support::new_leak_box_ptr(wire_Notification::new_with_null_ptr())
+pub extern "C" fn new_box_autoadd_image_source_0() -> *mut wire_ImageSource {
+    support::new_leak_box_ptr(wire_ImageSource::new_with_null_ptr())
 }
 
 #[no_mangle]
-pub extern "C" fn new_box_autoadd_picture_0() -> *mut wire_Picture {
-    support::new_leak_box_ptr(wire_Picture::new_with_null_ptr())
+pub extern "C" fn new_box_autoadd_notification_0() -> *mut wire_Notification {
+    support::new_leak_box_ptr(wire_Notification::new_with_null_ptr())
 }
 
 #[no_mangle]
@@ -132,16 +132,16 @@ impl Wire2Api<ImageData> for *mut wire_ImageData {
         Wire2Api::<ImageData>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<ImageSource> for *mut wire_ImageSource {
+    fn wire2api(self) -> ImageSource {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<ImageSource>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<Notification> for *mut wire_Notification {
     fn wire2api(self) -> Notification {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
         Wire2Api::<Notification>::wire2api(*wrap).into()
-    }
-}
-impl Wire2Api<Picture> for *mut wire_Picture {
-    fn wire2api(self) -> Picture {
-        let wrap = unsafe { support::box_from_leak_ptr(self) };
-        Wire2Api::<Picture>::wire2api(*wrap).into()
     }
 }
 impl Wire2Api<Urgency> for *mut i32 {
@@ -221,6 +221,23 @@ impl Wire2Api<ImageData> for wire_ImageData {
         }
     }
 }
+impl Wire2Api<ImageSource> for wire_ImageSource {
+    fn wire2api(self) -> ImageSource {
+        match self.tag {
+            0 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.Data);
+                ImageSource::Data(ans.field0.wire2api())
+            },
+            1 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.Path);
+                ImageSource::Path(ans.field0.wire2api())
+            },
+            _ => unreachable!(),
+        }
+    }
+}
 impl Wire2Api<Vec<Notification>> for *mut wire_list_notification {
     fn wire2api(self) -> Vec<Notification> {
         let vec = unsafe {
@@ -244,24 +261,6 @@ impl Wire2Api<Notification> for wire_Notification {
             hints: self.hints.wire2api(),
             app_icon: self.app_icon.wire2api(),
             app_image: self.app_image.wire2api(),
-        }
-    }
-}
-
-impl Wire2Api<Picture> for wire_Picture {
-    fn wire2api(self) -> Picture {
-        match self.tag {
-            0 => unsafe {
-                let ans = support::box_from_leak_ptr(self.kind);
-                let ans = support::box_from_leak_ptr(ans.Data);
-                Picture::Data(ans.field0.wire2api())
-            },
-            1 => unsafe {
-                let ans = support::box_from_leak_ptr(self.kind);
-                let ans = support::box_from_leak_ptr(ans.Path);
-                Picture::Path(ans.field0.wire2api())
-            },
-            _ => unreachable!(),
         }
     }
 }
@@ -331,8 +330,8 @@ pub struct wire_Notification {
     timeout: i32,
     created_at: i64,
     hints: wire_Hints,
-    app_icon: *mut wire_Picture,
-    app_image: *mut wire_Picture,
+    app_icon: *mut wire_ImageSource,
+    app_image: *mut wire_ImageSource,
 }
 
 #[repr(C)]
@@ -407,26 +406,26 @@ pub struct wire_DaemonAction_FlutterActionInvoked {
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_Picture {
+pub struct wire_ImageSource {
     tag: i32,
-    kind: *mut PictureKind,
+    kind: *mut ImageSourceKind,
 }
 
 #[repr(C)]
-pub union PictureKind {
-    Data: *mut wire_Picture_Data,
-    Path: *mut wire_Picture_Path,
+pub union ImageSourceKind {
+    Data: *mut wire_ImageSource_Data,
+    Path: *mut wire_ImageSource_Path,
 }
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_Picture_Data {
+pub struct wire_ImageSource_Data {
     field0: *mut wire_ImageData,
 }
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_Picture_Path {
+pub struct wire_ImageSource_Path {
     field0: *mut wire_uint_8_list,
 }
 
@@ -542,6 +541,33 @@ impl Default for wire_ImageData {
     }
 }
 
+impl NewWithNullPtr for wire_ImageSource {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            tag: -1,
+            kind: core::ptr::null_mut(),
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_ImageSource_Data() -> *mut ImageSourceKind {
+    support::new_leak_box_ptr(ImageSourceKind {
+        Data: support::new_leak_box_ptr(wire_ImageSource_Data {
+            field0: core::ptr::null_mut(),
+        }),
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_ImageSource_Path() -> *mut ImageSourceKind {
+    support::new_leak_box_ptr(ImageSourceKind {
+        Path: support::new_leak_box_ptr(wire_ImageSource_Path {
+            field0: core::ptr::null_mut(),
+        }),
+    })
+}
+
 impl NewWithNullPtr for wire_Notification {
     fn new_with_null_ptr() -> Self {
         Self {
@@ -564,33 +590,6 @@ impl Default for wire_Notification {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }
-}
-
-impl NewWithNullPtr for wire_Picture {
-    fn new_with_null_ptr() -> Self {
-        Self {
-            tag: -1,
-            kind: core::ptr::null_mut(),
-        }
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn inflate_Picture_Data() -> *mut PictureKind {
-    support::new_leak_box_ptr(PictureKind {
-        Data: support::new_leak_box_ptr(wire_Picture_Data {
-            field0: core::ptr::null_mut(),
-        }),
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn inflate_Picture_Path() -> *mut PictureKind {
-    support::new_leak_box_ptr(PictureKind {
-        Path: support::new_leak_box_ptr(wire_Picture_Path {
-            field0: core::ptr::null_mut(),
-        }),
-    })
 }
 
 // Section: sync execution mode utility

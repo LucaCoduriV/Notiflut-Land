@@ -101,6 +101,16 @@ class ImageData {
   });
 }
 
+@freezed
+class ImageSource with _$ImageSource {
+  const factory ImageSource.data(
+    ImageData field0,
+  ) = ImageSource_Data;
+  const factory ImageSource.path(
+    String field0,
+  ) = ImageSource_Path;
+}
+
 class Notification {
   final int id;
   final String appName;
@@ -111,8 +121,8 @@ class Notification {
   final int timeout;
   final DateTime createdAt;
   final Hints hints;
-  final Picture? appIcon;
-  final Picture? appImage;
+  final ImageSource? appIcon;
+  final ImageSource? appImage;
 
   const Notification({
     required this.id,
@@ -127,16 +137,6 @@ class Notification {
     this.appIcon,
     this.appImage,
   });
-}
-
-@freezed
-class Picture with _$Picture {
-  const factory Picture.data(
-    ImageData field0,
-  ) = Picture_Data;
-  const factory Picture.path(
-    String field0,
-  ) = Picture_Path;
 }
 
 enum Urgency {

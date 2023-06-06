@@ -1451,7 +1451,7 @@ abstract class DaemonAction_FlutterActionInvoked implements DaemonAction {
 }
 
 /// @nodoc
-mixin _$Picture {
+mixin _$ImageSource {
   Object get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
@@ -1474,35 +1474,36 @@ mixin _$Picture {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(Picture_Data value) data,
-    required TResult Function(Picture_Path value) path,
+    required TResult Function(ImageSource_Data value) data,
+    required TResult Function(ImageSource_Path value) path,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Picture_Data value)? data,
-    TResult? Function(Picture_Path value)? path,
+    TResult? Function(ImageSource_Data value)? data,
+    TResult? Function(ImageSource_Path value)? path,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(Picture_Data value)? data,
-    TResult Function(Picture_Path value)? path,
+    TResult Function(ImageSource_Data value)? data,
+    TResult Function(ImageSource_Path value)? path,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $PictureCopyWith<$Res> {
-  factory $PictureCopyWith(Picture value, $Res Function(Picture) then) =
-      _$PictureCopyWithImpl<$Res, Picture>;
+abstract class $ImageSourceCopyWith<$Res> {
+  factory $ImageSourceCopyWith(
+          ImageSource value, $Res Function(ImageSource) then) =
+      _$ImageSourceCopyWithImpl<$Res, ImageSource>;
 }
 
 /// @nodoc
-class _$PictureCopyWithImpl<$Res, $Val extends Picture>
-    implements $PictureCopyWith<$Res> {
-  _$PictureCopyWithImpl(this._value, this._then);
+class _$ImageSourceCopyWithImpl<$Res, $Val extends ImageSource>
+    implements $ImageSourceCopyWith<$Res> {
+  _$ImageSourceCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -1511,20 +1512,20 @@ class _$PictureCopyWithImpl<$Res, $Val extends Picture>
 }
 
 /// @nodoc
-abstract class _$$Picture_DataCopyWith<$Res> {
-  factory _$$Picture_DataCopyWith(
-          _$Picture_Data value, $Res Function(_$Picture_Data) then) =
-      __$$Picture_DataCopyWithImpl<$Res>;
+abstract class _$$ImageSource_DataCopyWith<$Res> {
+  factory _$$ImageSource_DataCopyWith(
+          _$ImageSource_Data value, $Res Function(_$ImageSource_Data) then) =
+      __$$ImageSource_DataCopyWithImpl<$Res>;
   @useResult
   $Res call({ImageData field0});
 }
 
 /// @nodoc
-class __$$Picture_DataCopyWithImpl<$Res>
-    extends _$PictureCopyWithImpl<$Res, _$Picture_Data>
-    implements _$$Picture_DataCopyWith<$Res> {
-  __$$Picture_DataCopyWithImpl(
-      _$Picture_Data _value, $Res Function(_$Picture_Data) _then)
+class __$$ImageSource_DataCopyWithImpl<$Res>
+    extends _$ImageSourceCopyWithImpl<$Res, _$ImageSource_Data>
+    implements _$$ImageSource_DataCopyWith<$Res> {
+  __$$ImageSource_DataCopyWithImpl(
+      _$ImageSource_Data _value, $Res Function(_$ImageSource_Data) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1532,7 +1533,7 @@ class __$$Picture_DataCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$Picture_Data(
+    return _then(_$ImageSource_Data(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -1543,22 +1544,22 @@ class __$$Picture_DataCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Picture_Data implements Picture_Data {
-  const _$Picture_Data(this.field0);
+class _$ImageSource_Data implements ImageSource_Data {
+  const _$ImageSource_Data(this.field0);
 
   @override
   final ImageData field0;
 
   @override
   String toString() {
-    return 'Picture.data(field0: $field0)';
+    return 'ImageSource.data(field0: $field0)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Picture_Data &&
+            other is _$ImageSource_Data &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -1568,8 +1569,8 @@ class _$Picture_Data implements Picture_Data {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$Picture_DataCopyWith<_$Picture_Data> get copyWith =>
-      __$$Picture_DataCopyWithImpl<_$Picture_Data>(this, _$identity);
+  _$$ImageSource_DataCopyWith<_$ImageSource_Data> get copyWith =>
+      __$$ImageSource_DataCopyWithImpl<_$ImageSource_Data>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1605,8 +1606,8 @@ class _$Picture_Data implements Picture_Data {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(Picture_Data value) data,
-    required TResult Function(Picture_Path value) path,
+    required TResult Function(ImageSource_Data value) data,
+    required TResult Function(ImageSource_Path value) path,
   }) {
     return data(this);
   }
@@ -1614,8 +1615,8 @@ class _$Picture_Data implements Picture_Data {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Picture_Data value)? data,
-    TResult? Function(Picture_Path value)? path,
+    TResult? Function(ImageSource_Data value)? data,
+    TResult? Function(ImageSource_Path value)? path,
   }) {
     return data?.call(this);
   }
@@ -1623,8 +1624,8 @@ class _$Picture_Data implements Picture_Data {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(Picture_Data value)? data,
-    TResult Function(Picture_Path value)? path,
+    TResult Function(ImageSource_Data value)? data,
+    TResult Function(ImageSource_Path value)? path,
     required TResult orElse(),
   }) {
     if (data != null) {
@@ -1634,31 +1635,31 @@ class _$Picture_Data implements Picture_Data {
   }
 }
 
-abstract class Picture_Data implements Picture {
-  const factory Picture_Data(final ImageData field0) = _$Picture_Data;
+abstract class ImageSource_Data implements ImageSource {
+  const factory ImageSource_Data(final ImageData field0) = _$ImageSource_Data;
 
   @override
   ImageData get field0;
   @JsonKey(ignore: true)
-  _$$Picture_DataCopyWith<_$Picture_Data> get copyWith =>
+  _$$ImageSource_DataCopyWith<_$ImageSource_Data> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$Picture_PathCopyWith<$Res> {
-  factory _$$Picture_PathCopyWith(
-          _$Picture_Path value, $Res Function(_$Picture_Path) then) =
-      __$$Picture_PathCopyWithImpl<$Res>;
+abstract class _$$ImageSource_PathCopyWith<$Res> {
+  factory _$$ImageSource_PathCopyWith(
+          _$ImageSource_Path value, $Res Function(_$ImageSource_Path) then) =
+      __$$ImageSource_PathCopyWithImpl<$Res>;
   @useResult
   $Res call({String field0});
 }
 
 /// @nodoc
-class __$$Picture_PathCopyWithImpl<$Res>
-    extends _$PictureCopyWithImpl<$Res, _$Picture_Path>
-    implements _$$Picture_PathCopyWith<$Res> {
-  __$$Picture_PathCopyWithImpl(
-      _$Picture_Path _value, $Res Function(_$Picture_Path) _then)
+class __$$ImageSource_PathCopyWithImpl<$Res>
+    extends _$ImageSourceCopyWithImpl<$Res, _$ImageSource_Path>
+    implements _$$ImageSource_PathCopyWith<$Res> {
+  __$$ImageSource_PathCopyWithImpl(
+      _$ImageSource_Path _value, $Res Function(_$ImageSource_Path) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1666,7 +1667,7 @@ class __$$Picture_PathCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$Picture_Path(
+    return _then(_$ImageSource_Path(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -1677,22 +1678,22 @@ class __$$Picture_PathCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Picture_Path implements Picture_Path {
-  const _$Picture_Path(this.field0);
+class _$ImageSource_Path implements ImageSource_Path {
+  const _$ImageSource_Path(this.field0);
 
   @override
   final String field0;
 
   @override
   String toString() {
-    return 'Picture.path(field0: $field0)';
+    return 'ImageSource.path(field0: $field0)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Picture_Path &&
+            other is _$ImageSource_Path &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -1702,8 +1703,8 @@ class _$Picture_Path implements Picture_Path {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$Picture_PathCopyWith<_$Picture_Path> get copyWith =>
-      __$$Picture_PathCopyWithImpl<_$Picture_Path>(this, _$identity);
+  _$$ImageSource_PathCopyWith<_$ImageSource_Path> get copyWith =>
+      __$$ImageSource_PathCopyWithImpl<_$ImageSource_Path>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1739,8 +1740,8 @@ class _$Picture_Path implements Picture_Path {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(Picture_Data value) data,
-    required TResult Function(Picture_Path value) path,
+    required TResult Function(ImageSource_Data value) data,
+    required TResult Function(ImageSource_Path value) path,
   }) {
     return path(this);
   }
@@ -1748,8 +1749,8 @@ class _$Picture_Path implements Picture_Path {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Picture_Data value)? data,
-    TResult? Function(Picture_Path value)? path,
+    TResult? Function(ImageSource_Data value)? data,
+    TResult? Function(ImageSource_Path value)? path,
   }) {
     return path?.call(this);
   }
@@ -1757,8 +1758,8 @@ class _$Picture_Path implements Picture_Path {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(Picture_Data value)? data,
-    TResult Function(Picture_Path value)? path,
+    TResult Function(ImageSource_Data value)? data,
+    TResult Function(ImageSource_Path value)? path,
     required TResult orElse(),
   }) {
     if (path != null) {
@@ -1768,12 +1769,12 @@ class _$Picture_Path implements Picture_Path {
   }
 }
 
-abstract class Picture_Path implements Picture {
-  const factory Picture_Path(final String field0) = _$Picture_Path;
+abstract class ImageSource_Path implements ImageSource {
+  const factory ImageSource_Path(final String field0) = _$ImageSource_Path;
 
   @override
   String get field0;
   @JsonKey(ignore: true)
-  _$$Picture_PathCopyWith<_$Picture_Path> get copyWith =>
+  _$$ImageSource_PathCopyWith<_$ImageSource_Path> get copyWith =>
       throw _privateConstructorUsedError;
 }

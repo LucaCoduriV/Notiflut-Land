@@ -124,12 +124,12 @@ class NativeImpl implements Native {
     return _wire2api_image_data(raw);
   }
 
-  Notification _wire2api_box_autoadd_notification(dynamic raw) {
-    return _wire2api_notification(raw);
+  ImageSource _wire2api_box_autoadd_image_source(dynamic raw) {
+    return _wire2api_image_source(raw);
   }
 
-  Picture _wire2api_box_autoadd_picture(dynamic raw) {
-    return _wire2api_picture(raw);
+  Notification _wire2api_box_autoadd_notification(dynamic raw) {
+    return _wire2api_notification(raw);
   }
 
   Urgency _wire2api_box_autoadd_urgency(dynamic raw) {
@@ -217,6 +217,21 @@ class NativeImpl implements Native {
     );
   }
 
+  ImageSource _wire2api_image_source(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return ImageSource_Data(
+          _wire2api_box_autoadd_image_data(raw[1]),
+        );
+      case 1:
+        return ImageSource_Path(
+          _wire2api_String(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
   List<Notification> _wire2api_list_notification(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_notification).toList();
   }
@@ -235,8 +250,8 @@ class NativeImpl implements Native {
       timeout: _wire2api_i32(arr[6]),
       createdAt: _wire2api_Chrono_Utc(arr[7]),
       hints: _wire2api_hints(arr[8]),
-      appIcon: _wire2api_opt_box_autoadd_picture(arr[9]),
-      appImage: _wire2api_opt_box_autoadd_picture(arr[10]),
+      appIcon: _wire2api_opt_box_autoadd_image_source(arr[9]),
+      appImage: _wire2api_opt_box_autoadd_image_source(arr[10]),
     );
   }
 
@@ -252,8 +267,8 @@ class NativeImpl implements Native {
     return raw == null ? null : _wire2api_box_autoadd_i32(raw);
   }
 
-  Picture? _wire2api_opt_box_autoadd_picture(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_picture(raw);
+  ImageSource? _wire2api_opt_box_autoadd_image_source(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_image_source(raw);
   }
 
   Urgency? _wire2api_opt_box_autoadd_urgency(dynamic raw) {
@@ -262,21 +277,6 @@ class NativeImpl implements Native {
 
   int? _wire2api_opt_box_autoadd_usize(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_usize(raw);
-  }
-
-  Picture _wire2api_picture(dynamic raw) {
-    switch (raw[0]) {
-      case 0:
-        return Picture_Data(
-          _wire2api_box_autoadd_image_data(raw[1]),
-        );
-      case 1:
-        return Picture_Path(
-          _wire2api_String(raw[1]),
-        );
-      default:
-        throw Exception("unreachable");
-    }
   }
 
   int _wire2api_u32(dynamic raw) {
@@ -387,17 +387,18 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
-  ffi.Pointer<wire_Notification> api2wire_box_autoadd_notification(
-      Notification raw) {
-    final ptr = inner.new_box_autoadd_notification_0();
-    _api_fill_to_wire_notification(raw, ptr.ref);
+  ffi.Pointer<wire_ImageSource> api2wire_box_autoadd_image_source(
+      ImageSource raw) {
+    final ptr = inner.new_box_autoadd_image_source_0();
+    _api_fill_to_wire_image_source(raw, ptr.ref);
     return ptr;
   }
 
   @protected
-  ffi.Pointer<wire_Picture> api2wire_box_autoadd_picture(Picture raw) {
-    final ptr = inner.new_box_autoadd_picture_0();
-    _api_fill_to_wire_picture(raw, ptr.ref);
+  ffi.Pointer<wire_Notification> api2wire_box_autoadd_notification(
+      Notification raw) {
+    final ptr = inner.new_box_autoadd_notification_0();
+    _api_fill_to_wire_notification(raw, ptr.ref);
     return ptr;
   }
 
@@ -442,8 +443,9 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
-  ffi.Pointer<wire_Picture> api2wire_opt_box_autoadd_picture(Picture? raw) {
-    return raw == null ? ffi.nullptr : api2wire_box_autoadd_picture(raw);
+  ffi.Pointer<wire_ImageSource> api2wire_opt_box_autoadd_image_source(
+      ImageSource? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_image_source(raw);
   }
 
   @protected
@@ -477,14 +479,14 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     _api_fill_to_wire_image_data(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_image_source(
+      ImageSource apiObj, ffi.Pointer<wire_ImageSource> wireObj) {
+    _api_fill_to_wire_image_source(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_notification(
       Notification apiObj, ffi.Pointer<wire_Notification> wireObj) {
     _api_fill_to_wire_notification(apiObj, wireObj.ref);
-  }
-
-  void _api_fill_to_wire_box_autoadd_picture(
-      Picture apiObj, ffi.Pointer<wire_Picture> wireObj) {
-    _api_fill_to_wire_picture(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_daemon_action(
@@ -567,6 +569,24 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     wireObj.data = api2wire_uint_8_list(apiObj.data);
   }
 
+  void _api_fill_to_wire_image_source(
+      ImageSource apiObj, wire_ImageSource wireObj) {
+    if (apiObj is ImageSource_Data) {
+      var pre_field0 = api2wire_box_autoadd_image_data(apiObj.field0);
+      wireObj.tag = 0;
+      wireObj.kind = inner.inflate_ImageSource_Data();
+      wireObj.kind.ref.Data.ref.field0 = pre_field0;
+      return;
+    }
+    if (apiObj is ImageSource_Path) {
+      var pre_field0 = api2wire_String(apiObj.field0);
+      wireObj.tag = 1;
+      wireObj.kind = inner.inflate_ImageSource_Path();
+      wireObj.kind.ref.Path.ref.field0 = pre_field0;
+      return;
+    }
+  }
+
   void _api_fill_to_wire_notification(
       Notification apiObj, wire_Notification wireObj) {
     wireObj.id = api2wire_u32(apiObj.id);
@@ -578,30 +598,14 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     wireObj.timeout = api2wire_i32(apiObj.timeout);
     wireObj.created_at = api2wire_Chrono_Utc(apiObj.createdAt);
     _api_fill_to_wire_hints(apiObj.hints, wireObj.hints);
-    wireObj.app_icon = api2wire_opt_box_autoadd_picture(apiObj.appIcon);
-    wireObj.app_image = api2wire_opt_box_autoadd_picture(apiObj.appImage);
+    wireObj.app_icon = api2wire_opt_box_autoadd_image_source(apiObj.appIcon);
+    wireObj.app_image = api2wire_opt_box_autoadd_image_source(apiObj.appImage);
   }
 
-  void _api_fill_to_wire_opt_box_autoadd_picture(
-      Picture? apiObj, ffi.Pointer<wire_Picture> wireObj) {
-    if (apiObj != null) _api_fill_to_wire_box_autoadd_picture(apiObj, wireObj);
-  }
-
-  void _api_fill_to_wire_picture(Picture apiObj, wire_Picture wireObj) {
-    if (apiObj is Picture_Data) {
-      var pre_field0 = api2wire_box_autoadd_image_data(apiObj.field0);
-      wireObj.tag = 0;
-      wireObj.kind = inner.inflate_Picture_Data();
-      wireObj.kind.ref.Data.ref.field0 = pre_field0;
-      return;
-    }
-    if (apiObj is Picture_Path) {
-      var pre_field0 = api2wire_String(apiObj.field0);
-      wireObj.tag = 1;
-      wireObj.kind = inner.inflate_Picture_Path();
-      wireObj.kind.ref.Path.ref.field0 = pre_field0;
-      return;
-    }
+  void _api_fill_to_wire_opt_box_autoadd_image_source(
+      ImageSource? apiObj, ffi.Pointer<wire_ImageSource> wireObj) {
+    if (apiObj != null)
+      _api_fill_to_wire_box_autoadd_image_source(apiObj, wireObj);
   }
 }
 
@@ -821,6 +825,17 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_image_data_0 = _new_box_autoadd_image_data_0Ptr
       .asFunction<ffi.Pointer<wire_ImageData> Function()>();
 
+  ffi.Pointer<wire_ImageSource> new_box_autoadd_image_source_0() {
+    return _new_box_autoadd_image_source_0();
+  }
+
+  late final _new_box_autoadd_image_source_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_ImageSource> Function()>>(
+          'new_box_autoadd_image_source_0');
+  late final _new_box_autoadd_image_source_0 =
+      _new_box_autoadd_image_source_0Ptr
+          .asFunction<ffi.Pointer<wire_ImageSource> Function()>();
+
   ffi.Pointer<wire_Notification> new_box_autoadd_notification_0() {
     return _new_box_autoadd_notification_0();
   }
@@ -831,16 +846,6 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_notification_0 =
       _new_box_autoadd_notification_0Ptr
           .asFunction<ffi.Pointer<wire_Notification> Function()>();
-
-  ffi.Pointer<wire_Picture> new_box_autoadd_picture_0() {
-    return _new_box_autoadd_picture_0();
-  }
-
-  late final _new_box_autoadd_picture_0Ptr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Picture> Function()>>(
-          'new_box_autoadd_picture_0');
-  late final _new_box_autoadd_picture_0 = _new_box_autoadd_picture_0Ptr
-      .asFunction<ffi.Pointer<wire_Picture> Function()>();
 
   ffi.Pointer<ffi.Int32> new_box_autoadd_urgency_0(
     int value,
@@ -952,25 +957,25 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _inflate_DaemonAction_FlutterActionInvokedPtr
           .asFunction<ffi.Pointer<DaemonActionKind> Function()>();
 
-  ffi.Pointer<PictureKind> inflate_Picture_Data() {
-    return _inflate_Picture_Data();
+  ffi.Pointer<ImageSourceKind> inflate_ImageSource_Data() {
+    return _inflate_ImageSource_Data();
   }
 
-  late final _inflate_Picture_DataPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<PictureKind> Function()>>(
-          'inflate_Picture_Data');
-  late final _inflate_Picture_Data = _inflate_Picture_DataPtr
-      .asFunction<ffi.Pointer<PictureKind> Function()>();
+  late final _inflate_ImageSource_DataPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ImageSourceKind> Function()>>(
+          'inflate_ImageSource_Data');
+  late final _inflate_ImageSource_Data = _inflate_ImageSource_DataPtr
+      .asFunction<ffi.Pointer<ImageSourceKind> Function()>();
 
-  ffi.Pointer<PictureKind> inflate_Picture_Path() {
-    return _inflate_Picture_Path();
+  ffi.Pointer<ImageSourceKind> inflate_ImageSource_Path() {
+    return _inflate_ImageSource_Path();
   }
 
-  late final _inflate_Picture_PathPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<PictureKind> Function()>>(
-          'inflate_Picture_Path');
-  late final _inflate_Picture_Path = _inflate_Picture_PathPtr
-      .asFunction<ffi.Pointer<PictureKind> Function()>();
+  late final _inflate_ImageSource_PathPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ImageSourceKind> Function()>>(
+          'inflate_ImageSource_Path');
+  late final _inflate_ImageSource_Path = _inflate_ImageSource_PathPtr
+      .asFunction<ffi.Pointer<ImageSourceKind> Function()>();
 
   void free_WireSyncReturn(
     WireSyncReturn ptr,
@@ -1049,25 +1054,25 @@ class wire_ImageData extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> data;
 }
 
-class wire_Picture_Data extends ffi.Struct {
+class wire_ImageSource_Data extends ffi.Struct {
   external ffi.Pointer<wire_ImageData> field0;
 }
 
-class wire_Picture_Path extends ffi.Struct {
+class wire_ImageSource_Path extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> field0;
 }
 
-class PictureKind extends ffi.Union {
-  external ffi.Pointer<wire_Picture_Data> Data;
+class ImageSourceKind extends ffi.Union {
+  external ffi.Pointer<wire_ImageSource_Data> Data;
 
-  external ffi.Pointer<wire_Picture_Path> Path;
+  external ffi.Pointer<wire_ImageSource_Path> Path;
 }
 
-class wire_Picture extends ffi.Struct {
+class wire_ImageSource extends ffi.Struct {
   @ffi.Int32()
   external int tag;
 
-  external ffi.Pointer<PictureKind> kind;
+  external ffi.Pointer<ImageSourceKind> kind;
 }
 
 class wire_Notification extends ffi.Struct {
@@ -1093,9 +1098,9 @@ class wire_Notification extends ffi.Struct {
 
   external wire_Hints hints;
 
-  external ffi.Pointer<wire_Picture> app_icon;
+  external ffi.Pointer<wire_ImageSource> app_icon;
 
-  external ffi.Pointer<wire_Picture> app_image;
+  external ffi.Pointer<wire_ImageSource> app_image;
 }
 
 class wire_DaemonAction_Show extends ffi.Struct {

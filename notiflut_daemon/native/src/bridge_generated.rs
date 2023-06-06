@@ -22,8 +22,8 @@ use std::sync::Arc;
 use crate::dbus::DaemonAction;
 use crate::notification::Hints;
 use crate::notification::ImageData;
+use crate::notification::ImageSource;
 use crate::notification::Notification;
-use crate::notification::Picture;
 use crate::notification::Urgency;
 
 // Section: wire functions
@@ -208,6 +208,17 @@ impl support::IntoDart for ImageData {
 }
 impl support::IntoDartExceptPrimitive for ImageData {}
 
+impl support::IntoDart for ImageSource {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Data(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::Path(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for ImageSource {}
+
 impl support::IntoDart for Notification {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -227,17 +238,6 @@ impl support::IntoDart for Notification {
     }
 }
 impl support::IntoDartExceptPrimitive for Notification {}
-
-impl support::IntoDart for Picture {
-    fn into_dart(self) -> support::DartAbi {
-        match self {
-            Self::Data(field0) => vec![0.into_dart(), field0.into_dart()],
-            Self::Path(field0) => vec![1.into_dart(), field0.into_dart()],
-        }
-        .into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for Picture {}
 
 impl support::IntoDart for Urgency {
     fn into_dart(self) -> support::DartAbi {

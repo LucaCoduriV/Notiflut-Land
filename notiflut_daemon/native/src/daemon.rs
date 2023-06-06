@@ -55,18 +55,19 @@ impl NotificationDaemon {
             return Err(DaemonError::AlreadyUp).into();
         }
         let mut dbus_server = dbus::DbusServer::init().map_err(|_| DaemonError::Error)?;
-        let (sender, recv) = std::sync::mpsc::channel::<ChannelMessage<DaemonAction>>();
+        let (sender, dbus_events_recv) = std::sync::mpsc::channel::<ChannelMessage<DaemonAction>>();
         self.sender = Some(sender.clone());
         dbus_server
             .register_notification_handler(sender)
             .map_err(|_| DaemonError::Error)?;
         self.dbus_server = Some(Arc::new(Mutex::new(dbus_server)));
-        self.handle_actions(flutter_stream_sink, recv);
+        self.handle_actions(flutter_stream_sink, dbus_events_recv);
 
-        let dbus_server = Arc::clone(self.dbus_server.as_ref().unwrap());
+        let dbus_server_mutex = Arc::clone(self.dbus_server.as_ref().unwrap());
         let stop = Arc::clone(&self.stop);
         let arc_signal_recv = Arc::clone(&self.signal_recv);
-        // start listening for notification
+        // Start listening for notification and sends signals if there is some
+        // waiting to be sended.
         let thread_handle = std::thread::spawn(move || {
             let mut recv: Option<Receiver<::dbus::message::Message>> = None;
             while !*stop.lock().unwrap() {
@@ -75,7 +76,7 @@ impl NotificationDaemon {
                 if recv.is_some() {
                     if let Ok(message) = recv.as_mut().unwrap().try_recv() {
                         println!("sending signal: {:?}", message);
-                        let dbus_server_guard = dbus_server.lock().unwrap();
+                        let dbus_server_guard = dbus_server_mutex.lock().unwrap();
                         let result = dbus_server_guard.connection.channel().send(message);
                         println!("Signal result: {:?}", result);
                     }
@@ -85,7 +86,7 @@ impl NotificationDaemon {
                         recv = lock.take();
                     }
                 }
-                match dbus_server
+                match dbus_server_mutex
                     .lock()
                     .unwrap()
                     .wait_and_process(Duration::from_millis(200))
@@ -102,23 +103,30 @@ impl NotificationDaemon {
         Ok(())
     }
 
+    /// Handles all messages received from flutter and dbus
+    /// * `flutter_sender` - the channel to send data to flutter
+    /// * `flutter_and_dbus_recv` - the channel used to get events from flutter and dbus
     fn handle_actions(
         &mut self,
-        sender: StreamSink<DaemonAction>,
-        recv: Receiver<ChannelMessage<DaemonAction>>,
+        flutter_sender: StreamSink<DaemonAction>,
+        flutter_and_dbus_recv: Receiver<ChannelMessage<DaemonAction>>,
     ) -> JoinHandle<Result<(), DaemonError>> {
+        // We set the channel that will be used to send signals by an other
+        // thread.
         let (signal_sender, signal_recv) = std::sync::mpsc::channel::<::dbus::message::Message>();
         {
             let mut sr = self.signal_recv.lock().unwrap();
             *sr = Some(signal_recv);
         }
 
+        // this vector will handle all notifications received by dbus
+        // and will remain alive till the app is killed
         let notifications: Arc<RwLock<Vec<Notification>>> = Arc::new(RwLock::new(Vec::new()));
 
         let action_join_handler = std::thread::spawn(move || {
             // let mut notifications: Vec<Notification> = Vec::new();
             loop {
-                let action = match recv.recv().unwrap() {
+                let action = match flutter_and_dbus_recv.recv().unwrap() {
                     ChannelMessage::Message(m) => m,
                     ChannelMessage::Stop => {
                         return Ok(());
@@ -138,7 +146,7 @@ impl NotificationDaemon {
                         } else {
                             Some(last_index as usize)
                         };
-                        if let false = sender.add(DaemonAction::Update(
+                        if let false = flutter_sender.add(DaemonAction::Update(
                             notifications.read().unwrap().clone(),
                             last_index,
                         )) {
@@ -147,7 +155,7 @@ impl NotificationDaemon {
                     }
                     DaemonAction::Close(id) => {
                         notifications.write().unwrap().retain(|v| v.id != id);
-                        if let false = sender.add(DaemonAction::Update(
+                        if let false = flutter_sender.add(DaemonAction::Update(
                             notifications.read().unwrap().clone(),
                             None,
                         )) {
@@ -164,7 +172,7 @@ impl NotificationDaemon {
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
                         let _result = signal_sender.send(message.to_emit_message(&path));
 
-                        if let false = sender.add(DaemonAction::Update(
+                        if let false = flutter_sender.add(DaemonAction::Update(
                             notifications.read().unwrap().clone(),
                             None,
                         )) {
@@ -185,8 +193,8 @@ impl NotificationDaemon {
                         }
 
                         notifications_mutex.clear();
-                        if let false =
-                            sender.add(DaemonAction::Update(notifications_mutex.clone(), None))
+                        if let false = flutter_sender
+                            .add(DaemonAction::Update(notifications_mutex.clone(), None))
                         {
                             return Err(DaemonError::Error);
                         }
@@ -200,7 +208,7 @@ impl NotificationDaemon {
                         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
                         let _result = signal_sender.send(message.to_emit_message(&path));
 
-                        if let false = sender.add(DaemonAction::Update(
+                        if let false = flutter_sender.add(DaemonAction::Update(
                             notifications.read().unwrap().clone(),
                             None,
                         )) {
@@ -208,10 +216,10 @@ impl NotificationDaemon {
                         }
                     }
                     DaemonAction::ShowNc => {
-                        sender.add(DaemonAction::ShowNc);
+                        flutter_sender.add(DaemonAction::ShowNc);
                     }
                     DaemonAction::CloseNc => {
-                        sender.add(DaemonAction::CloseNc);
+                        flutter_sender.add(DaemonAction::CloseNc);
                     }
                     _ => {}
                 };

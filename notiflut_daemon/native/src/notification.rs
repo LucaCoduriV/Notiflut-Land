@@ -16,8 +16,8 @@ pub struct Notification {
     pub timeout: i32,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub hints: Hints,
-    pub app_icon: Option<Picture>,
-    pub app_image: Option<Picture>,
+    pub app_icon: Option<ImageSource>,
+    pub app_image: Option<ImageSource>,
 }
 
 impl std::fmt::Debug for Notification {
@@ -162,12 +162,12 @@ impl TryFrom<&VecDeque<Box<dyn RefArg>>> for ImageData {
 }
 
 #[derive(Clone)]
-pub enum Picture {
+pub enum ImageSource {
     Data(ImageData),
     Path(String),
 }
 
-impl std::fmt::Debug for Picture {
+impl std::fmt::Debug for ImageSource {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Data(_arg0) => f.debug_tuple("Data").field(&true).finish(),
