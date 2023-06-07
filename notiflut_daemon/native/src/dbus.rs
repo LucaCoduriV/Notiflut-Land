@@ -78,6 +78,7 @@ const SERVER_CAPABILITIES: [&str; 8] = [
     "persistence",
 ];
 
+// TODO Seperate messages from Flutter and Messages from Dbus
 #[derive(Debug)]
 pub enum DaemonAction {
     Show(Notification),

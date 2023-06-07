@@ -12,18 +12,23 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'bridge_definitions.freezed.dart';
 
 abstract class Native {
+  /// This needs to be called first
   Future<void> setup({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSetupConstMeta;
 
+  /// Starts the daemon
+  /// This can fail if setup was not called before
   Stream<DaemonAction> startDaemon({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartDaemonConstMeta;
 
+  /// Stop the daemon
   Future<void> stopDaemon({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStopDaemonConstMeta;
 
+  /// Sends an event to rust code
   Future<void> sendDaemonAction({required DaemonAction action, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSendDaemonActionConstMeta;
