@@ -1,5 +1,5 @@
 pkgname=notiflut
-pkgver=0.1.3
+pkgver=0.2.0
 pkgrel=1
 pkgdesc="A simple notificaion daemon with a GTK panel for checking previous notifications like other DEs"
 _pkgfoldername=Notiflut-Land
