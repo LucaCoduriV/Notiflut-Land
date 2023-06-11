@@ -4,7 +4,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:notiflut_land/src/widgets/category.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../native.dart' as nati;
@@ -195,84 +197,108 @@ class _NotificationListState extends State<NotificationList> {
     });
   }
 
+  Widget buildNotificationTiles(
+    BuildContext context,
+    nati.Notification notification,
+  ) {
+    ImageData? imageData;
+    notification.appImage?.when(data: (d) {
+      imageData = ImageData(
+        data: d.data,
+        width: d.width,
+        height: d.height,
+        alpha: d.onePointTwoBitAlpha,
+        rowstride: d.rowstride,
+      );
+    }, path: (p) {
+      imageData = ImageData(path: p);
+    });
+
+    ImageData? iconData;
+    notification.appIcon?.when(data: (d) {
+      iconData = ImageData(
+        data: d.data,
+        width: d.width,
+        height: d.height,
+        alpha: d.onePointTwoBitAlpha,
+        rowstride: d.rowstride,
+      );
+    }, path: (p) {
+      iconData = ImageData(path: p);
+    });
+
+    ImageProvider<Object>? imageProvider;
+    if (imageData?.data != null) {
+      imageProvider = createImageIiibiiay(
+        imageData!.width!,
+        imageData!.height!,
+        imageData!.data!,
+        3,
+        imageData!.rowstride!,
+      ).image;
+    } else if (imageData?.path != null && imageData!.path!.isNotEmpty) {
+      imageProvider = Image.file(File(imageData!.path!)).image;
+    }
+
+    ImageProvider<Object>? iconProvider;
+    if (iconData?.data != null) {
+      iconProvider = createImageIiibiiay(
+        iconData!.width!,
+        iconData!.height!,
+        iconData!.data!,
+        3,
+        iconData!.rowstride!,
+      ).image;
+    } else if (iconData?.path != null && iconData!.path!.isNotEmpty) {
+      iconProvider = Image.file(File(iconData!.path!)).image;
+    }
+    return NotificationTile(
+      notification.id,
+      notification.appName,
+      notification.summary,
+      notification.body,
+      createdAt: notification.createdAt,
+      onTileTap: () async {
+        await nati.api.sendDaemonAction(
+            action: nati.DaemonAction.flutterActionInvoked(
+                notification.id, "default"));
+      },
+      closeAction: () async {
+        await nati.api.sendDaemonAction(
+            action: nati.DaemonAction.flutterClose(notification.id));
+      },
+      actions: buildFromActionList(notification.id, actions(0)),
+      imageProvider: imageProvider,
+      iconProvider: iconProvider,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: notifications.length,
-      itemBuilder: (context, index) {
-        final notification = notifications[index];
+    final notificationByCategory =
+        notifications.fold(<String, List<nati.Notification>>{}, (map, element) {
+      map.putIfAbsent(element.appName, () => []);
+      map[element.appName]!.add(element);
+      return map;
+    });
+    final keys = notificationByCategory.keys;
+    final categoryWidgets = keys.map((e) {
+      final notifications = notificationByCategory[e]!;
 
-        ImageData? imageData;
-        notification.appImage?.when(data: (d) {
-          imageData = ImageData(
-            data: d.data,
-            width: d.width,
-            height: d.height,
-            alpha: d.onePointTwoBitAlpha,
-            rowstride: d.rowstride,
-          );
-        }, path: (p) {
-          imageData = ImageData(path: p);
-        });
+      final notificationTiles = notifications.map((e) {
+        final tile = buildNotificationTiles(context, e);
+        return tile;
+      }).toList();
 
-        ImageData? iconData;
-        notification.appIcon?.when(data: (d) {
-          iconData = ImageData(
-            data: d.data,
-            width: d.width,
-            height: d.height,
-            alpha: d.onePointTwoBitAlpha,
-            rowstride: d.rowstride,
-          );
-        }, path: (p) {
-          iconData = ImageData(path: p);
-        });
+      return NotificationCategory(
+        open: true,
+        appName: e,
+        children: notificationTiles,
+      );
+    }).toList();
 
-        ImageProvider<Object>? imageProvider;
-        if (imageData?.data != null) {
-          imageProvider = createImageIiibiiay(
-            imageData!.width!,
-            imageData!.height!,
-            imageData!.data!,
-            3,
-            imageData!.rowstride!,
-          ).image;
-        } else if (imageData?.path != null && imageData!.path!.isNotEmpty) {
-          imageProvider = Image.file(File(imageData!.path!)).image;
-        }
-
-        ImageProvider<Object>? iconProvider;
-        if (iconData?.data != null) {
-          iconProvider = createImageIiibiiay(
-            iconData!.width!,
-            iconData!.height!,
-            iconData!.data!,
-            3,
-            iconData!.rowstride!,
-          ).image;
-        } else if (iconData?.path != null && iconData!.path!.isNotEmpty) {
-          iconProvider = Image.file(File(iconData!.path!)).image;
-        }
-        return NotificationTile(
-          notification.id,
-          notification.appName,
-          notification.summary,
-          notification.body,
-          createdAt: notification.createdAt,
-          onTileTap: () async {
-            await nati.api.sendDaemonAction(
-                action: nati.DaemonAction.flutterActionInvoked(
-                    notification.id, "default"));
-          },
-          closeAction: () async {
-            await nati.api.sendDaemonAction(
-                action: nati.DaemonAction.flutterClose(notification.id));
-          },
-          actions: buildFromActionList(notification.id, actions(index)),
-          imageProvider: imageProvider,
-          iconProvider: iconProvider,
-        );
-      },
+    return ListView(
+      children: categoryWidgets,
     );
   }
 }
