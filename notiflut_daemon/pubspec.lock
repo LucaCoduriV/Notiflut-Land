@@ -295,6 +295,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  flutter_inset_box_shadow:
+    dependency: "direct main"
+    description:
+      name: flutter_inset_box_shadow
+      sha256: "0b1930ed5f4ad84b11b41dda907fbc5d4c12929a4c51455c626e5937b47ffb93"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.8"
   flutter_layout_grid:
     dependency: transitive
     description:

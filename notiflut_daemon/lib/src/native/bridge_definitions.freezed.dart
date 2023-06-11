@@ -25,6 +25,7 @@ mixin _$DaemonAction {
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) =>
       throw _privateConstructorUsedError;
@@ -37,6 +38,7 @@ mixin _$DaemonAction {
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) =>
       throw _privateConstructorUsedError;
@@ -49,6 +51,7 @@ mixin _$DaemonAction {
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) =>
@@ -63,6 +66,8 @@ mixin _$DaemonAction {
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) =>
@@ -76,6 +81,8 @@ mixin _$DaemonAction {
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) =>
@@ -89,6 +96,7 @@ mixin _$DaemonAction {
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),
@@ -185,6 +193,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return show(field0);
@@ -200,6 +209,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return show?.call(field0);
@@ -215,6 +225,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
@@ -235,6 +246,8 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) {
@@ -251,6 +264,8 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) {
@@ -267,6 +282,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),
@@ -333,6 +349,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return showNc();
@@ -348,6 +365,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return showNc?.call();
@@ -363,6 +381,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
@@ -383,6 +402,8 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) {
@@ -399,6 +420,8 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) {
@@ -415,6 +438,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),
@@ -475,6 +499,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return closeNc();
@@ -490,6 +515,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return closeNc?.call();
@@ -505,6 +531,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
@@ -525,6 +552,8 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) {
@@ -541,6 +570,8 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) {
@@ -557,6 +588,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),
@@ -644,6 +676,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return close(field0);
@@ -659,6 +692,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return close?.call(field0);
@@ -674,6 +708,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
@@ -694,6 +729,8 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) {
@@ -710,6 +747,8 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) {
@@ -726,6 +765,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),
@@ -834,6 +874,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return update(field0, field1);
@@ -849,6 +890,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return update?.call(field0, field1);
@@ -864,6 +906,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
@@ -884,6 +927,8 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) {
@@ -900,6 +945,8 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) {
@@ -916,6 +963,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),
@@ -1011,6 +1059,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return flutterClose(field0);
@@ -1026,6 +1075,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return flutterClose?.call(field0);
@@ -1041,6 +1091,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
@@ -1061,6 +1112,8 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) {
@@ -1077,6 +1130,8 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) {
@@ -1093,6 +1148,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),
@@ -1162,6 +1218,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return flutterCloseAll();
@@ -1177,6 +1234,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return flutterCloseAll?.call();
@@ -1192,6 +1250,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
@@ -1212,6 +1271,8 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) {
@@ -1228,6 +1289,8 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) {
@@ -1244,6 +1307,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),
@@ -1257,6 +1321,192 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
 
 abstract class DaemonAction_FlutterCloseAll implements DaemonAction {
   const factory DaemonAction_FlutterCloseAll() = _$DaemonAction_FlutterCloseAll;
+}
+
+/// @nodoc
+abstract class _$$DaemonAction_FlutterCloseAllAppCopyWith<$Res> {
+  factory _$$DaemonAction_FlutterCloseAllAppCopyWith(
+          _$DaemonAction_FlutterCloseAllApp value,
+          $Res Function(_$DaemonAction_FlutterCloseAllApp) then) =
+      __$$DaemonAction_FlutterCloseAllAppCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String field0});
+}
+
+/// @nodoc
+class __$$DaemonAction_FlutterCloseAllAppCopyWithImpl<$Res>
+    extends _$DaemonActionCopyWithImpl<$Res, _$DaemonAction_FlutterCloseAllApp>
+    implements _$$DaemonAction_FlutterCloseAllAppCopyWith<$Res> {
+  __$$DaemonAction_FlutterCloseAllAppCopyWithImpl(
+      _$DaemonAction_FlutterCloseAllApp _value,
+      $Res Function(_$DaemonAction_FlutterCloseAllApp) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$DaemonAction_FlutterCloseAllApp(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$DaemonAction_FlutterCloseAllApp
+    implements DaemonAction_FlutterCloseAllApp {
+  const _$DaemonAction_FlutterCloseAllApp(this.field0);
+
+  @override
+  final String field0;
+
+  @override
+  String toString() {
+    return 'DaemonAction.flutterCloseAllApp(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DaemonAction_FlutterCloseAllApp &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DaemonAction_FlutterCloseAllAppCopyWith<_$DaemonAction_FlutterCloseAllApp>
+      get copyWith => __$$DaemonAction_FlutterCloseAllAppCopyWithImpl<
+          _$DaemonAction_FlutterCloseAllApp>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Notification field0) show,
+    required TResult Function() showNc,
+    required TResult Function() closeNc,
+    required TResult Function(int field0) close,
+    required TResult Function(List<Notification> field0, int? field1) update,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
+  }) {
+    return flutterCloseAllApp(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(Notification field0)? show,
+    TResult? Function()? showNc,
+    TResult? Function()? closeNc,
+    TResult? Function(int field0)? close,
+    TResult? Function(List<Notification> field0, int? field1)? update,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
+  }) {
+    return flutterCloseAllApp?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Notification field0)? show,
+    TResult Function()? showNc,
+    TResult Function()? closeNc,
+    TResult Function(int field0)? close,
+    TResult Function(List<Notification> field0, int? field1)? update,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
+    required TResult orElse(),
+  }) {
+    if (flutterCloseAllApp != null) {
+      return flutterCloseAllApp(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(DaemonAction_Show value) show,
+    required TResult Function(DaemonAction_ShowNc value) showNc,
+    required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_Close value) close,
+    required TResult Function(DaemonAction_Update value) update,
+    required TResult Function(DaemonAction_FlutterClose value) flutterClose,
+    required TResult Function(DaemonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
+    required TResult Function(DaemonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
+  }) {
+    return flutterCloseAllApp(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(DaemonAction_Show value)? show,
+    TResult? Function(DaemonAction_ShowNc value)? showNc,
+    TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_Close value)? close,
+    TResult? Function(DaemonAction_Update value)? update,
+    TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
+    TResult? Function(DaemonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
+  }) {
+    return flutterCloseAllApp?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(DaemonAction_Show value)? show,
+    TResult Function(DaemonAction_ShowNc value)? showNc,
+    TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_Close value)? close,
+    TResult Function(DaemonAction_Update value)? update,
+    TResult Function(DaemonAction_FlutterClose value)? flutterClose,
+    TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
+    TResult Function(DaemonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
+    required TResult orElse(),
+  }) {
+    if (flutterCloseAllApp != null) {
+      return flutterCloseAllApp(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class DaemonAction_FlutterCloseAllApp implements DaemonAction {
+  const factory DaemonAction_FlutterCloseAllApp(final String field0) =
+      _$DaemonAction_FlutterCloseAllApp;
+
+  String get field0;
+  @JsonKey(ignore: true)
+  _$$DaemonAction_FlutterCloseAllAppCopyWith<_$DaemonAction_FlutterCloseAllApp>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -1344,6 +1594,7 @@ class _$DaemonAction_FlutterActionInvoked
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
     required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
     required TResult Function(int field0, String field1) flutterActionInvoked,
   }) {
     return flutterActionInvoked(field0, field1);
@@ -1359,6 +1610,7 @@ class _$DaemonAction_FlutterActionInvoked
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
     TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
     TResult? Function(int field0, String field1)? flutterActionInvoked,
   }) {
     return flutterActionInvoked?.call(field0, field1);
@@ -1374,6 +1626,7 @@ class _$DaemonAction_FlutterActionInvoked
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
     TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
     TResult Function(int field0, String field1)? flutterActionInvoked,
     required TResult orElse(),
   }) {
@@ -1394,6 +1647,8 @@ class _$DaemonAction_FlutterActionInvoked
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
     required TResult Function(DaemonAction_FlutterCloseAll value)
         flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
     required TResult Function(DaemonAction_FlutterActionInvoked value)
         flutterActionInvoked,
   }) {
@@ -1410,6 +1665,8 @@ class _$DaemonAction_FlutterActionInvoked
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
     TResult? Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
   }) {
@@ -1426,6 +1683,7 @@ class _$DaemonAction_FlutterActionInvoked
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
     TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
     TResult Function(DaemonAction_FlutterActionInvoked value)?
         flutterActionInvoked,
     required TResult orElse(),

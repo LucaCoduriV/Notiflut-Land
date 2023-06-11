@@ -1,7 +1,7 @@
 use ::dbus::{message::SignalArgs, Path};
 use flutter_rust_bridge::StreamSink;
 use std::{
-    sync::{mpsc::Receiver, Arc, Mutex, RwLock},
+    sync::{mpsc::Receiver, Arc, Mutex, RwLock, RwLockWriteGuard},
     thread::JoinHandle,
     time::Duration,
 };
@@ -120,114 +120,207 @@ impl NotificationDaemon {
         }
 
         // this vector will handle all notifications received by dbus
-        // and will remain alive till the app is killed
+        // and will remain alive till the app is killed TODO: maybe we can remove the mutex by
+        // putting the notifications in the thread.
         let notifications: Arc<RwLock<Vec<Notification>>> = Arc::new(RwLock::new(Vec::new()));
 
-        let action_join_handler = std::thread::spawn(move || {
-            // let mut notifications: Vec<Notification> = Vec::new();
-            loop {
-                let action = match flutter_and_dbus_recv.recv().unwrap() {
-                    ChannelMessage::Message(m) => m,
-                    ChannelMessage::Stop => {
-                        return Ok(());
-                    }
-                };
+        let action_join_handler = std::thread::spawn(move || loop {
+            let action = match flutter_and_dbus_recv.recv().unwrap() {
+                ChannelMessage::Message(m) => m,
+                ChannelMessage::Stop => {
+                    return Ok(());
+                }
+            };
 
-                match action {
-                    DaemonAction::Show(notification) => {
-                        notifications
-                            .write()
-                            .unwrap()
-                            .retain(|v| v.id != notification.id);
-                        notifications.write().unwrap().push(notification.clone());
-                        let last_index = notifications.read().unwrap().len() as i64 - 1;
-                        let last_index = if last_index < 0 {
-                            None
-                        } else {
-                            Some(last_index as usize)
-                        };
-                        if let false = flutter_sender.add(DaemonAction::Update(
-                            notifications.read().unwrap().clone(),
-                            last_index,
-                        )) {
-                            return Err(DaemonError::Error);
-                        }
-                    }
-                    DaemonAction::Close(id) => {
-                        notifications.write().unwrap().retain(|v| v.id != id);
-                        if let false = flutter_sender.add(DaemonAction::Update(
-                            notifications.read().unwrap().clone(),
-                            None,
-                        )) {
-                            return Err(DaemonError::Error);
-                        }
-                    }
-                    DaemonAction::FlutterClose(id) => {
-                        notifications.write().unwrap().retain(|v| v.id != id);
-                        let message =
-                            dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
-                                id,
-                                reason: 2, // 2 means dismissed by user
-                            };
-                        let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
-                        let _result = signal_sender.send(message.to_emit_message(&path));
+            let result: Result<(), DaemonError> = match action {
+                DaemonAction::Show(notification) => Self::show_notification(
+                    notifications.write().unwrap(),
+                    &flutter_sender,
+                    notification,
+                ),
+                DaemonAction::Close(id) => {
+                    Self::close_notification(notifications.write().unwrap(), &flutter_sender, id)
+                }
+                DaemonAction::FlutterClose(id) => Self::flutter_close_notification(
+                    notifications.write().unwrap(),
+                    &signal_sender,
+                    &flutter_sender,
+                    id,
+                ),
+                DaemonAction::FlutterCloseAll => Self::flutter_close_all_notifications(
+                    notifications.write().unwrap(),
+                    &signal_sender,
+                    &flutter_sender,
+                ),
+                DaemonAction::FlutterActionInvoked(id, action_key) => Self::flutter_action_invoked(
+                    notifications.write().unwrap(),
+                    &signal_sender,
+                    &flutter_sender,
+                    id,
+                    action_key,
+                ),
+                DaemonAction::ShowNc => {
+                    flutter_sender.add(DaemonAction::ShowNc);
+                    Ok(())
+                }
+                DaemonAction::CloseNc => {
+                    flutter_sender.add(DaemonAction::CloseNc);
+                    Ok(())
+                }
+                DaemonAction::FlutterCloseAllApp(app_name) => {
+                    Self::flutter_close_all_app_notifications(
+                        notifications.write().unwrap(),
+                        &signal_sender,
+                        &flutter_sender,
+                        app_name,
+                    )
+                }
+                _ => Err(DaemonError::Error),
+            };
 
-                        if let false = flutter_sender.add(DaemonAction::Update(
-                            notifications.read().unwrap().clone(),
-                            None,
-                        )) {
-                            return Err(DaemonError::Error);
-                        }
-                    }
-                    DaemonAction::FlutterCloseAll => {
-                        let mut notifications_mutex = notifications.write().unwrap();
-
-                        for notification in notifications_mutex.iter() {
-                            let message =
-                                dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
-                                    id: notification.id,
-                                    reason: 2, // 2 means dismissed by user
-                                };
-                            let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
-                            let _result = signal_sender.send(message.to_emit_message(&path));
-                        }
-
-                        notifications_mutex.clear();
-                        if let false = flutter_sender
-                            .add(DaemonAction::Update(notifications_mutex.clone(), None))
-                        {
-                            return Err(DaemonError::Error);
-                        }
-                    }
-                    DaemonAction::FlutterActionInvoked(id, action_key) => {
-                        notifications.write().unwrap().retain(|v| v.id != id);
-                        let message = dbus_definition::OrgFreedesktopNotificationsActionInvoked {
-                            id,
-                            action_key,
-                        };
-                        let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
-                        let _result = signal_sender.send(message.to_emit_message(&path));
-
-                        if let false = flutter_sender.add(DaemonAction::Update(
-                            notifications.read().unwrap().clone(),
-                            None,
-                        )) {
-                            return Err(DaemonError::Error);
-                        }
-                    }
-                    DaemonAction::ShowNc => {
-                        flutter_sender.add(DaemonAction::ShowNc);
-                    }
-                    DaemonAction::CloseNc => {
-                        flutter_sender.add(DaemonAction::CloseNc);
-                    }
-                    _ => {}
-                };
+            if result.is_err() {
+                return result;
             }
         });
         action_join_handler
     }
 
+    /// It tells to flutter to show a new notification
+    pub fn show_notification(
+        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        flutter_sender: &StreamSink<DaemonAction>,
+        notification: Notification,
+    ) -> Result<(), DaemonError> {
+        notifications_mutex.retain(|v| v.id != notification.id);
+        notifications_mutex.push(notification.clone());
+        let last_index = notifications_mutex.len() as i64 - 1;
+        let last_index = if last_index < 0 {
+            None
+        } else {
+            Some(last_index as usize)
+        };
+        if let false = flutter_sender.add(DaemonAction::Update(
+            notifications_mutex.clone(),
+            last_index,
+        )) {
+            Err(DaemonError::Error)
+        } else {
+            Ok(())
+        }
+    }
+
+    pub fn flutter_action_invoked(
+        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
+        flutter_sender: &StreamSink<DaemonAction>,
+        id: u32,
+        action_key: String,
+    ) -> Result<(), DaemonError> {
+        notifications_mutex.retain(|v| v.id != id);
+        let message = dbus_definition::OrgFreedesktopNotificationsActionInvoked { id, action_key };
+        let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
+        let _result = signal_sender.send(message.to_emit_message(&path));
+
+        if let false = flutter_sender.add(DaemonAction::Update(notifications_mutex.clone(), None)) {
+            Err(DaemonError::Error)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// It tells to dbus that a user closed a notification from flutter.
+    /// This allows app to now if a notification was read.
+    pub fn flutter_close_notification(
+        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
+        flutter_sender: &StreamSink<DaemonAction>,
+        id: u32,
+    ) -> Result<(), DaemonError> {
+        notifications_mutex.retain(|v| v.id != id);
+        let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
+            id,
+            reason: 2, // 2 means dismissed by user
+        };
+        let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
+        let _result = signal_sender.send(message.to_emit_message(&path));
+
+        if let false = flutter_sender.add(DaemonAction::Update(notifications_mutex.clone(), None)) {
+            Err(DaemonError::Error)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// It closes a notification.
+    /// Usually this will be called by apps to close their notification when not needed anymore.
+    pub fn close_notification(
+        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        flutter_sender: &StreamSink<DaemonAction>,
+        id: u32,
+    ) -> Result<(), DaemonError> {
+        notifications_mutex.retain(|v| v.id != id);
+        if let false = flutter_sender.add(DaemonAction::Update(notifications_mutex.clone(), None)) {
+            Err(DaemonError::Error)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Allows flutter to close all notifications..
+    /// It removes everthing from the list.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if channel are closed.
+    pub fn flutter_close_all_notifications(
+        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
+        flutter_sender: &StreamSink<DaemonAction>,
+    ) -> Result<(), DaemonError> {
+        for notification in notifications_mutex.iter() {
+            let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
+                id: notification.id,
+                reason: 2, // 2 means dismissed by user
+            };
+            let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
+            let _result = signal_sender.send(message.to_emit_message(&path));
+        }
+
+        notifications_mutex.clear();
+        if let false = flutter_sender.add(DaemonAction::Update(notifications_mutex.clone(), None)) {
+            Err(DaemonError::Error)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// It allow Flutter to close all notification related to a specific app.
+    pub fn flutter_close_all_app_notifications(
+        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
+        flutter_sender: &StreamSink<DaemonAction>,
+        app_name: String,
+    ) -> Result<(), DaemonError> {
+        for notification in notifications_mutex
+            .iter()
+            .filter(|n| n.app_name == app_name)
+        {
+            let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
+                id: notification.id,
+                reason: 2, // 2 means dismissed by user
+            };
+            let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
+            let _result = signal_sender.send(message.to_emit_message(&path));
+        }
+
+        notifications_mutex.retain(|n| n.app_name != app_name);
+        if let false = flutter_sender.add(DaemonAction::Update(notifications_mutex.clone(), None)) {
+            return Err(DaemonError::Error);
+        }
+        Ok(())
+    }
+
+    /// It Stop the daemon. If stopped, notification arn't processed anymore.
     pub fn stop_daemon(&mut self) -> Result<(), DaemonError> {
         *self.stop.lock().unwrap() = true;
         let handle = self.notification_join_handle.take();

@@ -52,6 +52,9 @@ class DaemonAction with _$DaemonAction {
     int field0,
   ) = DaemonAction_FlutterClose;
   const factory DaemonAction.flutterCloseAll() = DaemonAction_FlutterCloseAll;
+  const factory DaemonAction.flutterCloseAllApp(
+    String field0,
+  ) = DaemonAction_FlutterCloseAllApp;
   const factory DaemonAction.flutterActionInvoked(
     int field0,
     String field1,

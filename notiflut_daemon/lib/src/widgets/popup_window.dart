@@ -23,11 +23,12 @@ class PopupWindow extends StatefulWidget {
 }
 
 class _PopupWindowState extends State<PopupWindow> {
+  /// Contains all Notifications that are currently beeing showed.
   List<NotificationPopupData> datas = [];
   final ScrollController controller = ScrollController();
   bool doneByAfterBuild = false;
 
-  // I use this to be sure that the window was resized before showing it.
+  /// I use this to be sure that the window was resized before showing it.
   final timeToWaitBeforeShow = 500;
 
   @override
@@ -44,6 +45,8 @@ class _PopupWindowState extends State<PopupWindow> {
       case "Show":
         final args = NotificationPopupData.fromJson(call.arguments);
         datas.add(args);
+        // The delayed is used to hide the notification automatically after it was
+        // showed.
         Future.delayed(Duration(seconds: 5, milliseconds: timeToWaitBeforeShow), () {
           datas.retainWhere((element) => element.summary != args.summary);
           if (datas.isEmpty) {
@@ -131,6 +134,10 @@ class _PopupWindowState extends State<PopupWindow> {
     );
   }
 
+  /// This function is used to resize the popup notification window to be the
+  /// same height as the notification.
+  /// TODO This function is a bit weird for now because I did not understand how to
+  /// get the real size of a widget before showing it. 
   Future<void> executeAfterBuild() async {
     await Future.delayed(Duration(milliseconds: timeToWaitBeforeShow));
     if (controller.hasClients) {
@@ -201,6 +208,9 @@ class ImageData {
   }
 }
 
+/// This classed is used to transfer data between the main thread and
+/// the thread used to show popups.
+/// TODO transfer data as bytes to be faster.
 class NotificationPopupData {
   int id;
 

@@ -50,6 +50,11 @@ class NotificationTile extends StatelessWidget {
   final Function()? closeAction;
   final List<NotificationAction>? actions;
   final DateTime? createdAt;
+  final EdgeInsetsGeometry? margin;
+
+  factory NotificationTile.empty() {
+    return NotificationTile(0, "", "", "");
+  }
 
   const NotificationTile(
     this.id,
@@ -63,6 +68,7 @@ class NotificationTile extends StatelessWidget {
     this.onTileTap,
     this.actions,
     this.createdAt,
+    this.margin,
   });
   // This widget is the root of your application.
   @override
@@ -84,6 +90,8 @@ class NotificationTile extends StatelessWidget {
       }
     }
     return Card(
+      margin: margin,
+      color: const Color(0xBBE0E0E0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [

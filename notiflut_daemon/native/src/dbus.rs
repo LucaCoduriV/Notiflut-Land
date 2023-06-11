@@ -88,6 +88,7 @@ pub enum DaemonAction {
     Update(Vec<Notification>, Option<usize>),
     FlutterClose(u32),
     FlutterCloseAll,
+    FlutterCloseAllApp(String),
     FlutterActionInvoked(u32, String),
 }
 

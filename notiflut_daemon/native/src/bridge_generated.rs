@@ -164,8 +164,9 @@ impl support::IntoDart for DaemonAction {
             }
             Self::FlutterClose(field0) => vec![5.into_dart(), field0.into_dart()],
             Self::FlutterCloseAll => vec![6.into_dart()],
+            Self::FlutterCloseAllApp(field0) => vec![7.into_dart(), field0.into_dart()],
             Self::FlutterActionInvoked(field0, field1) => {
-                vec![7.into_dart(), field0.into_dart(), field1.into_dart()]
+                vec![8.into_dart(), field0.into_dart(), field1.into_dart()]
             }
         }
         .into_dart()
