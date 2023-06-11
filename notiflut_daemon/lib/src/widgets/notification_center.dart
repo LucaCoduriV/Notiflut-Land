@@ -297,8 +297,13 @@ class _NotificationListState extends State<NotificationList> {
       );
     }).toList();
 
-    return ListView(
-      children: categoryWidgets,
+    return ListView.separated(
+      itemCount: categoryWidgets.length,
+      separatorBuilder: (BuildContext context, int index) =>
+          const SizedBox(height: 10),
+      itemBuilder: (BuildContext context, int index) {
+        return categoryWidgets[index];
+      },
     );
   }
 }
