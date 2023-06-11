@@ -183,6 +183,11 @@ impl Wire2Api<DaemonAction> for wire_DaemonAction {
             6 => DaemonAction::FlutterCloseAll,
             7 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.FlutterCloseAllApp);
+                DaemonAction::FlutterCloseAllApp(ans.field0.wire2api())
+            },
+            8 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.FlutterActionInvoked);
                 DaemonAction::FlutterActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
             },
@@ -357,6 +362,7 @@ pub union DaemonActionKind {
     Update: *mut wire_DaemonAction_Update,
     FlutterClose: *mut wire_DaemonAction_FlutterClose,
     FlutterCloseAll: *mut wire_DaemonAction_FlutterCloseAll,
+    FlutterCloseAllApp: *mut wire_DaemonAction_FlutterCloseAllApp,
     FlutterActionInvoked: *mut wire_DaemonAction_FlutterActionInvoked,
 }
 
@@ -396,6 +402,12 @@ pub struct wire_DaemonAction_FlutterClose {
 #[repr(C)]
 #[derive(Clone)]
 pub struct wire_DaemonAction_FlutterCloseAll {}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_DaemonAction_FlutterCloseAllApp {
+    field0: *mut wire_uint_8_list,
+}
 
 #[repr(C)]
 #[derive(Clone)]
@@ -483,6 +495,15 @@ pub extern "C" fn inflate_DaemonAction_FlutterClose() -> *mut DaemonActionKind {
     support::new_leak_box_ptr(DaemonActionKind {
         FlutterClose: support::new_leak_box_ptr(wire_DaemonAction_FlutterClose {
             field0: Default::default(),
+        }),
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_DaemonAction_FlutterCloseAllApp() -> *mut DaemonActionKind {
+    support::new_leak_box_ptr(DaemonActionKind {
+        FlutterCloseAllApp: support::new_leak_box_ptr(wire_DaemonAction_FlutterCloseAllApp {
+            field0: core::ptr::null_mut(),
         }),
     })
 }

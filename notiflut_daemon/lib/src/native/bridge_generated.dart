@@ -54,6 +54,9 @@ class DaemonAction with _$DaemonAction {
     int field0,
   ) = DaemonAction_FlutterClose;
   const factory DaemonAction.flutterCloseAll() = DaemonAction_FlutterCloseAll;
+  const factory DaemonAction.flutterCloseAllApp(
+    String field0,
+  ) = DaemonAction_FlutterCloseAllApp;
   const factory DaemonAction.flutterActionInvoked(
     int field0,
     String field1,
@@ -299,6 +302,10 @@ class NativeImpl implements Native {
       case 6:
         return DaemonAction_FlutterCloseAll();
       case 7:
+        return DaemonAction_FlutterCloseAllApp(
+          _wire2api_String(raw[1]),
+        );
+      case 8:
         return DaemonAction_FlutterActionInvoked(
           _wire2api_u32(raw[1]),
           _wire2api_String(raw[2]),
@@ -653,10 +660,17 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       wireObj.tag = 6;
       return;
     }
+    if (apiObj is DaemonAction_FlutterCloseAllApp) {
+      var pre_field0 = api2wire_String(apiObj.field0);
+      wireObj.tag = 7;
+      wireObj.kind = inner.inflate_DaemonAction_FlutterCloseAllApp();
+      wireObj.kind.ref.FlutterCloseAllApp.ref.field0 = pre_field0;
+      return;
+    }
     if (apiObj is DaemonAction_FlutterActionInvoked) {
       var pre_field0 = api2wire_u32(apiObj.field0);
       var pre_field1 = api2wire_String(apiObj.field1);
-      wireObj.tag = 7;
+      wireObj.tag = 8;
       wireObj.kind = inner.inflate_DaemonAction_FlutterActionInvoked();
       wireObj.kind.ref.FlutterActionInvoked.ref.field0 = pre_field0;
       wireObj.kind.ref.FlutterActionInvoked.ref.field1 = pre_field1;
@@ -979,6 +993,13 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _inflate_DaemonAction_FlutterClosePtr = _lookup<ffi.NativeFunction<ffi.Pointer<DaemonActionKind> Function()>>('inflate_DaemonAction_FlutterClose');
   late final _inflate_DaemonAction_FlutterClose = _inflate_DaemonAction_FlutterClosePtr.asFunction<ffi.Pointer<DaemonActionKind> Function()>();
 
+  ffi.Pointer<DaemonActionKind> inflate_DaemonAction_FlutterCloseAllApp() {
+    return _inflate_DaemonAction_FlutterCloseAllApp();
+  }
+
+  late final _inflate_DaemonAction_FlutterCloseAllAppPtr = _lookup<ffi.NativeFunction<ffi.Pointer<DaemonActionKind> Function()>>('inflate_DaemonAction_FlutterCloseAllApp');
+  late final _inflate_DaemonAction_FlutterCloseAllApp = _inflate_DaemonAction_FlutterCloseAllAppPtr.asFunction<ffi.Pointer<DaemonActionKind> Function()>();
+
   ffi.Pointer<DaemonActionKind> inflate_DaemonAction_FlutterActionInvoked() {
     return _inflate_DaemonAction_FlutterActionInvoked();
   }
@@ -1156,6 +1177,10 @@ class wire_DaemonAction_FlutterClose extends ffi.Struct {
 
 class wire_DaemonAction_FlutterCloseAll extends ffi.Opaque {}
 
+class wire_DaemonAction_FlutterCloseAllApp extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> field0;
+}
+
 class wire_DaemonAction_FlutterActionInvoked extends ffi.Struct {
   @ffi.Uint32()
   external int field0;
@@ -1177,6 +1202,8 @@ class DaemonActionKind extends ffi.Union {
   external ffi.Pointer<wire_DaemonAction_FlutterClose> FlutterClose;
 
   external ffi.Pointer<wire_DaemonAction_FlutterCloseAll> FlutterCloseAll;
+
+  external ffi.Pointer<wire_DaemonAction_FlutterCloseAllApp> FlutterCloseAllApp;
 
   external ffi.Pointer<wire_DaemonAction_FlutterActionInvoked> FlutterActionInvoked;
 }
