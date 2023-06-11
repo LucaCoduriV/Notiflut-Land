@@ -51,6 +51,10 @@ class NotificationTile extends StatelessWidget {
   final List<NotificationAction>? actions;
   final DateTime? createdAt;
 
+  factory NotificationTile.empty(){
+    return NotificationTile(0, "", "", "");
+    }
+
   const NotificationTile(
     this.id,
     this.appName,

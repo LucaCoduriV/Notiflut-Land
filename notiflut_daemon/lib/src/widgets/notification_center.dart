@@ -197,7 +197,7 @@ class _NotificationListState extends State<NotificationList> {
     });
   }
 
-  Widget buildNotificationTiles(
+  NotificationTile buildNotificationTile(
     BuildContext context,
     nati.Notification notification,
   ) {
@@ -286,7 +286,7 @@ class _NotificationListState extends State<NotificationList> {
       final notifications = notificationByCategory[e]!;
 
       final notificationTiles = notifications.map((e) {
-        final tile = buildNotificationTiles(context, e);
+        final tile = buildNotificationTile(context, e);
         return tile;
       }).toList();
 

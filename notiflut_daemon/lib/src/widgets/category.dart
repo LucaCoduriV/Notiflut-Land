@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:notiflut_land/src/widgets/notification.dart';
 
 class NotificationCategory extends StatefulWidget {
   final String appName;
-  final List<Widget> children;
+  final List<NotificationTile> children;
   final bool defaultState;
 
   const NotificationCategory({
@@ -21,10 +22,10 @@ class _NotificationCategoryState extends State<NotificationCategory> {
   bool _open = false;
 
   @override
-    void initState() {
-      super.initState();
-      _open = widget.defaultState;
-    }
+  void initState() {
+    super.initState();
+    _open = widget.defaultState;
+  }
 
   Widget build(BuildContext context) {
     return Column(
@@ -43,13 +44,34 @@ class _NotificationCategoryState extends State<NotificationCategory> {
           ],
         ),
         AnimatedCrossFade(
-          firstChild: const SizedBox(width: 500),
+          firstChild: NotificationTileStack(widget.children[0]),
           secondChild: Column(children: widget.children),
-          crossFadeState: _open
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
+          crossFadeState:
+              _open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
           duration: const Duration(seconds: 1),
         ),
+      ],
+    );
+  }
+}
+
+class NotificationTileStack extends StatelessWidget {
+  final NotificationTile tile;
+  const NotificationTileStack(this.tile, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+          child: NotificationTile.empty(),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          child: NotificationTile.empty(),
+        ),
+        tile,
       ],
     );
   }
