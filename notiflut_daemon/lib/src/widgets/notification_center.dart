@@ -60,7 +60,7 @@ class Bar extends StatelessWidget {
           ),
         ),
         Card(
-          color: const Color(0xFFEAEAEB),
+          color: Colors.transparent,
           child: SizedBox(
             width: 500,
             child: Padding(
@@ -107,10 +107,10 @@ class _NotificationListState extends State<NotificationList> {
   Timer? timer;
   StreamSubscription<nati.DaemonAction>? notificationStreamSub;
 
-  Map<String, String> actions(int id) {
+  Map<String, String> actions(nati.Notification notification) {
     final Map<String, String> map = HashMap();
-    for (int i = 0; i < notifications[id].actions.length; i += 2) {
-      final actions = notifications[id].actions;
+    for (int i = 0; i < notification.actions.length; i += 2) {
+      final actions = notification.actions;
       map[actions[i]] = actions[i + 1];
     }
 
@@ -267,7 +267,7 @@ class _NotificationListState extends State<NotificationList> {
         await nati.api.sendDaemonAction(
             action: nati.DaemonAction.flutterClose(notification.id));
       },
-      actions: buildFromActionList(notification.id, actions(0)),
+      actions: buildFromActionList(notification.id, actions(notification)),
       imageProvider: imageProvider,
       iconProvider: iconProvider,
     );

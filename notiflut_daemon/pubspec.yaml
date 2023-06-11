@@ -45,6 +45,7 @@ dependencies:
         git:
             url: https://github.com/LucaCoduriV/flutter_gtk_layer_shell.git
             ref: 60686492f6522a96d99e1e2ca9beeec46884347b
+    flutter_inset_box_shadow: ^1.0.8
 
 dependency_overrides:
     flutter_svg: ^1.0.0
