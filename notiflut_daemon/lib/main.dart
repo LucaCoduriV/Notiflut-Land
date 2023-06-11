@@ -44,7 +44,7 @@ void mainNotificationCenter() async {
     center: false,
   );
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
+    await windowManager.hide();
     await windowManager.focus();
     await windowManager.setPosition(const Offset(100, 100));
   });
