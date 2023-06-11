@@ -185,6 +185,7 @@ impl NotificationDaemon {
         action_join_handler
     }
 
+    /// It tells to flutter to show a new notification
     pub fn show_notification(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         flutter_sender: &StreamSink<DaemonAction>,
@@ -227,6 +228,8 @@ impl NotificationDaemon {
         }
     }
 
+    /// It tells to dbus that a user closed a notification from flutter.
+    /// This allows app to now if a notification was read.
     pub fn flutter_close_notification(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
@@ -248,6 +251,8 @@ impl NotificationDaemon {
         }
     }
 
+    /// It closes a notification.
+    /// Usually this will be called by apps to close their notification when not needed anymore.
     pub fn close_notification(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         flutter_sender: &StreamSink<DaemonAction>,
@@ -261,6 +266,12 @@ impl NotificationDaemon {
         }
     }
 
+    /// Allows flutter to close all notifications..
+    /// It removes everthing from the list.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if channel are closed.
     pub fn flutter_close_all_notifications(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
@@ -283,6 +294,7 @@ impl NotificationDaemon {
         }
     }
 
+    /// It allow Flutter to close all notification related to a specific app.
     pub fn flutter_close_all_app_notifications(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
@@ -308,6 +320,7 @@ impl NotificationDaemon {
         Ok(())
     }
 
+    /// It Stop the daemon. If stopped, notification arn't processed anymore.
     pub fn stop_daemon(&mut self) -> Result<(), DaemonError> {
         *self.stop.lock().unwrap() = true;
         let handle = self.notification_join_handle.take();
