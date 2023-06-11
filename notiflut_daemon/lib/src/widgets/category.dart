@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:notiflut_land/src/widgets/notification.dart';
+import '../native.dart' as nati;
+import '../native/bridge_definitions.dart' as nati;
 
 class NotificationCategory extends StatefulWidget {
   final String appName;
@@ -70,7 +72,9 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                       Icons.close,
                       color: Colors.black,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      nati.api.sendDaemonAction(action: nati.DaemonAction.flutterCloseAllApp(widget.appName));
+                    },
                   ),
                 ),
                 SizedBox(width: 5),
@@ -85,7 +89,7 @@ class _NotificationCategoryState extends State<NotificationCategory> {
           secondChild: Column(children: widget.children),
           crossFadeState:
               _open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          duration: const Duration(seconds: 1),
+          duration: const Duration(milliseconds: 300),
         ),
       ],
     );
