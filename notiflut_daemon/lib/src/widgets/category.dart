@@ -1,34 +1,56 @@
 import 'package:flutter/material.dart';
 
-class NotificationCategory extends StatelessWidget {
+class NotificationCategory extends StatefulWidget {
   final String appName;
   final List<Widget> children;
-  final bool open;
-  final void Function(bool)? onOpen;
-
+  final bool defaultState;
 
   const NotificationCategory({
     required this.appName,
-    this.open = false,
-    this.onOpen = null,
+    this.defaultState = false,
     this.children = const [],
     super.key,
   });
 
   @override
+  State<NotificationCategory> createState() => _NotificationCategoryState();
+}
+
+class _NotificationCategoryState extends State<NotificationCategory> {
+  @override
+  bool _open = false;
+
+  @override
+    void initState() {
+      super.initState();
+      _open = widget.defaultState;
+    }
+
   Widget build(BuildContext context) {
     return Column(
       children: [
         Row(
           children: [
-            Text(appName),
+            Text(widget.appName),
             ElevatedButton(
-              onPressed: () => onOpen?.call(!open),
-              child: Text(open ? "Show less" : "See more"),
+              onPressed: () {
+                setState(() {
+                  _open = !_open;
+                });
+              },
+              child: Text(_open ? "Show less" : "See more"),
             ),
           ],
         ),
-      ]..addAll(children),
+        AnimatedCrossFade(
+          firstChild: const SizedBox(width: 500),
+          secondChild: Column(children: widget.children),
+          crossFadeState: _open
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: const Duration(seconds: 1),
+        ),
+      ],
     );
   }
 }

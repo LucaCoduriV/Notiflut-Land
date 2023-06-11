@@ -291,7 +291,7 @@ class _NotificationListState extends State<NotificationList> {
       }).toList();
 
       return NotificationCategory(
-        open: true,
+        key: Key(e),
         appName: e,
         children: notificationTiles,
       );
