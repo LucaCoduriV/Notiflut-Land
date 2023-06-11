@@ -43,43 +43,46 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                 style: const TextStyle(color: Colors.white),
               ),
             ),
-            Row(
-              children: [
-                ElevatedButton(
-                  style: const ButtonStyle(
-                      backgroundColor:
-                          MaterialStatePropertyAll(Color(0xBBE0E0E0)),
-                      shape: MaterialStatePropertyAll(
-                        RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                      )),
-                  onPressed: () {
-                    setState(() {
-                      _open = !_open;
-                    });
-                  },
-                  child: Text(_open ? "Show less" : "See more",
-                      style: const TextStyle(color: Colors.black)),
-                ),
-                SizedBox(width: 20),
-                CircleAvatar(
-                  radius: 15,
-                  backgroundColor: const Color(0xBBE0E0E0),
-                  child: IconButton(
-                    iconSize: 15,
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.black,
-                    ),
+            if (widget.children.length > 1)
+              Row(
+                children: [
+                  ElevatedButton(
+                    style: const ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll(Color(0xBBE0E0E0)),
+                        shape: MaterialStatePropertyAll(
+                          RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                        )),
                     onPressed: () {
-                      nati.api.sendDaemonAction(action: nati.DaemonAction.flutterCloseAllApp(widget.appName));
+                      setState(() {
+                        _open = !_open;
+                      });
                     },
+                    child: Text(_open ? "Show less" : "See more",
+                        style: const TextStyle(color: Colors.black)),
                   ),
-                ),
-                SizedBox(width: 5),
-              ],
-            ),
+                  SizedBox(width: 20),
+                  CircleAvatar(
+                    radius: 15,
+                    backgroundColor: const Color(0xBBE0E0E0),
+                    child: IconButton(
+                      iconSize: 15,
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        nati.api.sendDaemonAction(
+                            action: nati.DaemonAction.flutterCloseAllApp(
+                                widget.appName));
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                ],
+              ),
           ],
         ),
         AnimatedCrossFade(
@@ -87,8 +90,11 @@ class _NotificationCategoryState extends State<NotificationCategory> {
               ? NotificationTile.empty()
               : NotificationTileStack(widget.children[0]),
           secondChild: Column(children: widget.children),
-          crossFadeState:
-              _open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          crossFadeState: widget.children.length == 1
+              ? CrossFadeState.showSecond
+              : _open
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 300),
         ),
       ],
