@@ -52,3 +52,16 @@ impl DesktopFileManager {
 pub struct DesktopFile {
     pub icon: Option<String>,
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test() {
+        let d = DesktopFileManager::new();
+        let entry = d.get("google-chrome.desktop");
+        println!("{entry:?}");
+        println!("{d:?}");
+    }
+}
