@@ -44,9 +44,9 @@ void mainNotificationCenter() async {
     center: false,
   );
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.hide();
     await windowManager.focus();
     await windowManager.setPosition(const Offset(100, 100));
+    await windowManager.hide();
   });
   await nati.api.setup();
   final notificationStream = nati.api.startDaemon();
