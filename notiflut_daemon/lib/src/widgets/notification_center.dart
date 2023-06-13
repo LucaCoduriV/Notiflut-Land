@@ -277,8 +277,9 @@ class _NotificationListState extends State<NotificationList> {
   Widget build(BuildContext context) {
     final notificationByCategory =
         notifications.fold(<String, List<nati.Notification>>{}, (map, element) {
-      map.putIfAbsent(element.appName, () => []);
-      map[element.appName]!.add(element);
+      final key = element.appName.isNotEmpty ? element.appName : element.summary;
+      map.putIfAbsent(key, () => []);
+      map[key]!.add(element);
       return map;
     });
     final keys = notificationByCategory.keys;
