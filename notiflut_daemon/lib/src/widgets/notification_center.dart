@@ -233,7 +233,7 @@ class _NotificationListState extends State<NotificationList> {
         imageData!.width!,
         imageData!.height!,
         imageData!.data!,
-        3,
+        imageData!.alpha! ? 4 : 3,
         imageData!.rowstride!,
       ).image;
     } else if (imageData?.path != null && imageData!.path!.isNotEmpty) {
@@ -246,7 +246,7 @@ class _NotificationListState extends State<NotificationList> {
         iconData!.width!,
         iconData!.height!,
         iconData!.data!,
-        3,
+        iconData!.alpha! ? 4 : 3,
         iconData!.rowstride!,
       ).image;
     } else if (iconData?.path != null && iconData!.path!.isNotEmpty) {
