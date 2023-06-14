@@ -160,10 +160,12 @@ class NotificationTile extends StatelessWidget {
               backgroundImage: imageProvider,
             ),
           ),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: buttons ?? [],
           ),
+          const SizedBox(height: 5),
         ],
       ),
     );
