@@ -34,7 +34,9 @@ ImageRender _fileUriRenderer() => (context, attributes, element) {
       String src = attributes["src"]!.replaceFirst("file://", "");
       var image = Image.file(
         File(src),
+        fit: BoxFit.cover,
         width: double.infinity,
+        height: 200.0,
       );
       return image;
     };
@@ -53,7 +55,7 @@ class NotificationTile extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
 
   factory NotificationTile.empty() {
-    return NotificationTile(0, "", "", "");
+    return const NotificationTile(0, "", "", "");
   }
 
   const NotificationTile(
@@ -132,7 +134,7 @@ class NotificationTile extends StatelessWidget {
             title: Text(title),
             onTap: onTileTap,
             subtitle: Html(
-              data: body,
+              data: body.replaceAll("\\n", "</br>"),
               customImageRenders: {
                 _fileUriMatcher(): _fileUriRenderer(),
                 assetUriMatcher(): assetImageRender(),
@@ -146,7 +148,11 @@ class NotificationTile extends StatelessWidget {
                 "body": Style(
                   margin: const EdgeInsets.all(0),
                   padding: const EdgeInsets.all(0),
-                )
+                ),
+                "img": Style(
+                  display: Display.BLOCK,
+                  width: double.infinity,
+                ),
               },
             ),
             leading: CircleAvatar(
