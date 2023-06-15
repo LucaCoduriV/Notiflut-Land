@@ -33,7 +33,7 @@ This project is a notification center designed specifically for Wayland, impleme
 
 
 ## Installation
-Users that can not wait to test it and are on Arch can build it using `makepkg -d` with the build_script and install it using `pacman -U "zst path"`
+People that can not wait to test it and are on Arch, can build it using `makepkg -d` with the build_script and install it using `pacman -U "zst path"`
     
 ## how to use
 
