@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:notiflut_land/src/utils.dart';
 import 'package:notiflut_land/src/widgets/notification.dart';
 import '../native.dart' as nati;
 import '../native/bridge_definitions.dart' as nati;
@@ -162,8 +163,3 @@ class NotificationTileStack extends StatelessWidget {
   }
 }
 
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1)}";
-  }
-}

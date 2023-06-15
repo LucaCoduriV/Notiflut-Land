@@ -252,9 +252,12 @@ class _NotificationListState extends State<NotificationList> {
     } else if (iconData?.path != null && iconData!.path!.isNotEmpty) {
       iconProvider = Image.file(File(iconData!.path!)).image;
     }
+
+    final appName = notification.appName.capitalize();
+
     return NotificationTile(
       notification.id,
-      notification.appName,
+      appName,
       notification.summary,
       notification.body,
       createdAt: notification.createdAt,
@@ -277,11 +280,13 @@ class _NotificationListState extends State<NotificationList> {
   Widget build(BuildContext context) {
     final notificationByCategory =
         notifications.fold(<String, List<nati.Notification>>{}, (map, element) {
-      final key = element.appName.isNotEmpty ? element.appName : element.summary;
+      final key = element.appName;
+
       map.putIfAbsent(key, () => []);
       map[key]!.add(element);
       return map;
     });
+
     final keys = notificationByCategory.keys;
     final categoryWidgets = keys.map((e) {
       final notifications = notificationByCategory[e]!;

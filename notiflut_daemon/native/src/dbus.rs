@@ -218,6 +218,23 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
 
         let hints = Hints::from(&hints);
 
+        let app_name = if app_name.is_empty() {
+            hints
+                .desktop_entry
+                .as_ref()
+                .map(|e| {
+                    e.clone()
+                        .replace("org", "")
+                        .replace(".desktop", "")
+                        .replace("com", "")
+                        .replace(".", "")
+                        .replace("freedesktop", "")
+                })
+                .unwrap_or(String::from("Unknown"))
+        } else {
+            app_name
+        };
+
         let (app_icon, app_image) = DbusNotification::get_icon_and_image(
             app_name.clone(),            // TODO should not clone
             hints.clone().desktop_entry, // TODO should not clone
