@@ -122,6 +122,7 @@ impl DbusNotification {
                 .starts_with("file://")
                 .then(|| ImageSource::Path(app_icon.replace("file://", "")))
                 .or(freedesktop_icons::lookup(&app_icon)
+                    .with_size(48)
                     .find()
                     .and_then(|p| Some(p.to_str().unwrap().to_string()))
                     .and_then(|p| Some(ImageSource::Path(p))))
@@ -135,6 +136,7 @@ impl DbusNotification {
                 icon.starts_with("file://")
                     .then(|| ImageSource::Path(icon.replace("file://", "")))
                     .or(freedesktop_icons::lookup(&icon)
+                        .with_size(48)
                         .find()
                         .and_then(|p| Some(p.to_str().unwrap().to_string()))
                         .and_then(|p| Some(ImageSource::Path(p))))
@@ -148,6 +150,7 @@ impl DbusNotification {
                 .starts_with("file://")
                 .then(|| ImageSource::Path(image.replace("file://", "")))
                 .or(freedesktop_icons::lookup(&image)
+                    .with_size(48)
                     .find()
                     .and_then(|p| Some(p.to_str().unwrap().to_string()))
                     .and_then(|p| Some(ImageSource::Path(p))))
@@ -218,6 +221,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
 
         let hints = Hints::from(&hints);
 
+        // If there is no app name we try to define one
         let app_name = if app_name.is_empty() {
             hints
                 .desktop_entry

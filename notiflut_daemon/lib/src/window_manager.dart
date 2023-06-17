@@ -3,12 +3,13 @@ import 'dart:convert';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/services.dart';
+import './native.dart' as nati;
+import './native/bridge_definitions.dart' as nati;
 
 class PopUpWindowManager {
   late LayerShellController window;
 
-  static final PopUpWindowManager _singleton =
-      PopUpWindowManager._internal();
+  static final PopUpWindowManager _singleton = PopUpWindowManager._internal();
 
   PopUpWindowManager._internal();
 
@@ -29,11 +30,18 @@ class PopUpWindowManager {
   }
 
   Future<void> showPopUp(dynamic message) async {
-    DesktopMultiWindow.invokeMethod(window.windowId, "Show", message);
+    DesktopMultiWindow.invokeMethod(
+      window.windowId,
+      PopupWindowAction.showPopup.toString(),
+      message,
+    );
   }
 
-  Future<dynamic> invokemethod(int windowId, String method,
-      [dynamic args]) async {
+  Future<dynamic> invokemethod(
+    int windowId,
+    String method, [
+    dynamic args,
+  ]) async {
     DesktopMultiWindow.invokeMethod(windowId, method, args);
   }
 
@@ -41,12 +49,31 @@ class PopUpWindowManager {
     MethodCall call,
     int fromWindowId,
   ) async {
-    switch (call.method) {
-      case "hided":
+    final action = PopupWindowAction.fromString(call.method);
+    switch (action) {
+      case PopupWindowAction.notificationAction:
+        await nati.api.sendDaemonAction(
+            action: nati.DaemonAction.flutterActionInvoked(
+                call.arguments["id"], call.arguments["action"]));
         break;
+      case PopupWindowAction.closeNotification:
+        await nati.api.sendDaemonAction(
+            action: nati.DaemonAction.flutterClose(call.arguments));
+      break;
       default:
         {}
     }
+  }
+}
+
+enum PopupWindowAction {
+  showPopup,
+  closeNotification,
+  notificationAction;
+
+  factory PopupWindowAction.fromString(String value) {
+    return PopupWindowAction.values
+        .firstWhere((element) => element.toString() == value);
   }
 }
 

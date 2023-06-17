@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -12,14 +13,26 @@ class NotificationAction {
   const NotificationAction(this.label, this.action);
 }
 
+Map<String, String> actions(List<String> actionsList) {
+  final Map<String, String> map = HashMap();
+  for (int i = 0; i < actionsList.length; i += 2) {
+    final actions = actionsList;
+    map[actions[i]] = actions[i + 1];
+  }
+
+  return map;
+}
+
 List<NotificationAction> buildFromActionList(
     int id, Map<String, String> actions) {
   return actions.entries
       .where((element) => element.key != "default")
-      .map((entry) => NotificationAction(entry.value, () async {
-            await nati.api.sendDaemonAction(
-                action: nati.DaemonAction.flutterActionInvoked(id, entry.key));
-          }))
+      .map(
+        (entry) => NotificationAction(entry.value, () async {
+          await nati.api.sendDaemonAction(
+              action: nati.DaemonAction.flutterActionInvoked(id, entry.key));
+        })
+      )
       .toList();
 }
 

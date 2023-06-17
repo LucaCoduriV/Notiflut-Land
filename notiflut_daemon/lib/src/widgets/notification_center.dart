@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
 
@@ -107,16 +106,6 @@ class _NotificationListState extends State<NotificationList> {
   Timer? timer;
   StreamSubscription<nati.DaemonAction>? notificationStreamSub;
 
-  Map<String, String> actions(nati.Notification notification) {
-    final Map<String, String> map = HashMap();
-    for (int i = 0; i < notification.actions.length; i += 2) {
-      final actions = notification.actions;
-      map[actions[i]] = actions[i + 1];
-    }
-
-    return map;
-  }
-
   @override
   void dispose() {
     timer?.cancel();
@@ -185,6 +174,7 @@ class _NotificationListState extends State<NotificationList> {
                 timeout: 5,
                 icon: iconData,
                 image: imageData,
+                actions: notification.actions,
               );
               PopUpWindowManager().showPopUp(args.toJson());
             } catch (e) {
@@ -270,7 +260,7 @@ class _NotificationListState extends State<NotificationList> {
         await nati.api.sendDaemonAction(
             action: nati.DaemonAction.flutterClose(notification.id));
       },
-      actions: buildFromActionList(notification.id, actions(notification)),
+      actions: buildFromActionList(notification.id, actions(notification.actions)),
       imageProvider: imageProvider,
       iconProvider: iconProvider,
     );
@@ -278,12 +268,13 @@ class _NotificationListState extends State<NotificationList> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO sort notification by date
     final notificationByCategory =
-        notifications.fold(<String, List<nati.Notification>>{}, (map, element) {
-      final key = element.appName;
+        notifications.fold(<String, List<nati.Notification>>{}, (map, notification) {
+      final key = notification.appName;
 
       map.putIfAbsent(key, () => []);
-      map[key]!.add(element);
+      map[key]!.add(notification);
       return map;
     });
 

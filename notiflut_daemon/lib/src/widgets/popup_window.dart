@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:notiflut_land/src/window_manager.dart';
 
 import '../utils.dart';
 import 'notification.dart';
@@ -41,13 +42,15 @@ class _PopupWindowState extends State<PopupWindow> {
     MethodCall call,
     int fromWindowId,
   ) async {
-    switch (call.method) {
-      case "Show":
+    final action = PopupWindowAction.fromString(call.method);
+    switch (action) {
+      case PopupWindowAction.showPopup:
         final args = NotificationPopupData.fromJson(call.arguments);
         datas.add(args);
         // The delayed is used to hide the notification automatically after it was
         // showed.
-        Future.delayed(Duration(seconds: 5, milliseconds: timeToWaitBeforeShow), () {
+        Future.delayed(Duration(seconds: 5, milliseconds: timeToWaitBeforeShow),
+            () {
           datas.retainWhere((element) => element.summary != args.summary);
           if (datas.isEmpty) {
             widget.layerController.hide();
@@ -102,7 +105,45 @@ class _PopupWindowState extends State<PopupWindow> {
       body,
       imageProvider: imageProvider,
       iconProvider: iconProvider,
+      actions: buildFromActionList(data.id, actions(data.actions)),
+      onTileTap: () {
+        DesktopMultiWindow.invokeMethod(
+          0,
+          PopupWindowAction.notificationAction.toString(),
+          {
+            "id": data.id,
+            "action": "default",
+          },
+        );
+      },
+      closeAction: () {
+        DesktopMultiWindow.invokeMethod(
+          0,
+          PopupWindowAction.closeNotification.toString(),
+          data.id,
+        );
+      },
     );
+  }
+
+  List<NotificationAction> buildFromActionList(
+      int id, Map<String, String> actions) {
+    return actions.entries
+        .where((element) => element.key != "default")
+        .map(
+          (entry) => NotificationAction(entry.value, () async {
+            print("${entry.key}: ${entry.value}");
+            DesktopMultiWindow.invokeMethod(
+              0,
+              PopupWindowAction.notificationAction.toString(),
+              {
+                "id": id,
+                "action": entry.key,
+              },
+            );
+          }),
+        )
+        .toList();
   }
 
   @override
@@ -137,7 +178,7 @@ class _PopupWindowState extends State<PopupWindow> {
   /// This function is used to resize the popup notification window to be the
   /// same height as the notification.
   /// TODO This function is a bit weird for now because I did not understand how to
-  /// get the real size of a widget before showing it. 
+  /// get the real size of a widget before showing it.
   Future<void> executeAfterBuild() async {
     await Future.delayed(Duration(milliseconds: timeToWaitBeforeShow));
     if (controller.hasClients) {
@@ -220,6 +261,7 @@ class NotificationPopupData {
   int timeout;
   ImageData? icon;
   ImageData? image;
+  List<String> actions;
 
   NotificationPopupData({
     required this.id,
@@ -227,6 +269,7 @@ class NotificationPopupData {
     required this.appName,
     required this.body,
     required this.timeout,
+    required this.actions,
     this.icon,
     this.image,
   });
@@ -240,6 +283,7 @@ class NotificationPopupData {
       "timeout": timeout,
       "image": image?.toJson(),
       "icon": icon?.toJson(),
+      "actions": actions,
     });
   }
 
@@ -253,6 +297,7 @@ class NotificationPopupData {
     int timeOut = args['timeout'];
     ImageData? icon = ImageData.fromJson(args['icon']);
     ImageData? image = ImageData.fromJson(args['image']);
+    List<String> actions = (args['actions'] as List).map((e) => e as String).toList();
 
     return NotificationPopupData(
       id: id,
@@ -262,6 +307,7 @@ class NotificationPopupData {
       body: body,
       image: image,
       icon: icon,
+      actions: actions,
     );
   }
 }
