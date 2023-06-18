@@ -117,6 +117,11 @@ class _PopupWindowState extends State<PopupWindow> {
         );
       },
       closeAction: () {
+        datas.removeWhere((element) => element.id == data.id);
+        if (datas.isEmpty) {
+          widget.layerController.hide();
+        }
+        setState(() {});
         DesktopMultiWindow.invokeMethod(
           0,
           PopupWindowAction.closeNotification.toString(),
@@ -297,7 +302,7 @@ class NotificationPopupData {
     int timeOut = args['timeout'];
     ImageData? icon = ImageData.fromJson(args['icon']);
     ImageData? image = ImageData.fromJson(args['image']);
-    List<String> actions = (args['actions'] as List).map((e) => e as String).toList();
+    List<String> actions = (args['actions'] as List).cast<String>();
 
     return NotificationPopupData(
       id: id,
