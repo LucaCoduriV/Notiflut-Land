@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/services.dart';
+import 'package:notiflut_land/src/widgets/popup_window.dart';
 import './native.dart' as nati;
 import './native/bridge_definitions.dart' as nati;
 
@@ -36,6 +37,14 @@ class PopUpWindowManager {
       message,
     );
   }
+  
+  Future<void> ncStateUpdate(NotificationCenterState state) async {
+    DesktopMultiWindow.invokeMethod(
+      window.windowId,
+      PopupWindowAction.ncStateChanged.toString(),
+      state.toString(),
+    );
+  }
 
   Future<dynamic> invokemethod(
     int windowId,
@@ -59,7 +68,7 @@ class PopUpWindowManager {
       case PopupWindowAction.closeNotification:
         await nati.api.sendDaemonAction(
             action: nati.DaemonAction.flutterClose(call.arguments));
-      break;
+        break;
       default:
         {}
     }
@@ -68,6 +77,7 @@ class PopUpWindowManager {
 
 enum PopupWindowAction {
   showPopup,
+  ncStateChanged,
   closeNotification,
   notificationAction;
 

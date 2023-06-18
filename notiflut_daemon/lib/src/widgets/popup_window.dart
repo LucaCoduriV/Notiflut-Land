@@ -9,6 +9,16 @@ import 'package:notiflut_land/src/window_manager.dart';
 import '../utils.dart';
 import 'notification.dart';
 
+enum NotificationCenterState {
+  open,
+  close;
+
+  factory NotificationCenterState.fromString(String value) {
+    return NotificationCenterState.values
+        .firstWhere((element) => element.toString() == value);
+  }
+}
+
 class PopupWindow extends StatefulWidget {
   const PopupWindow({
     Key? key,
@@ -24,10 +34,11 @@ class PopupWindow extends StatefulWidget {
 }
 
 class _PopupWindowState extends State<PopupWindow> {
-  /// Contains all Notifications that are currently beeing showed.
+  /// Contains all Notifications that are currently beeing shown.
   List<NotificationPopupData> datas = [];
   final ScrollController controller = ScrollController();
   bool doneByAfterBuild = false;
+  NotificationCenterState ncState = NotificationCenterState.close;
 
   /// I use this to be sure that the window was resized before showing it.
   final timeToWaitBeforeShow = 500;
@@ -45,10 +56,13 @@ class _PopupWindowState extends State<PopupWindow> {
     final action = PopupWindowAction.fromString(call.method);
     switch (action) {
       case PopupWindowAction.showPopup:
+        if (ncState == NotificationCenterState.open) {
+          return;
+        }
         final args = NotificationPopupData.fromJson(call.arguments);
         datas.add(args);
         // The delayed is used to hide the notification automatically after it was
-        // showed.
+        // shown.
         Future.delayed(Duration(seconds: 5, milliseconds: timeToWaitBeforeShow),
             () {
           datas.retainWhere((element) => element.summary != args.summary);
@@ -61,8 +75,12 @@ class _PopupWindowState extends State<PopupWindow> {
         await Future.delayed(Duration(milliseconds: timeToWaitBeforeShow));
         widget.layerController.show();
         break;
+      case PopupWindowAction.ncStateChanged:
+        ncState = NotificationCenterState.fromString(call.arguments as String);
+        print(ncState);
+        break;
       default:
-        {}
+        break;
     }
   }
 
@@ -75,18 +93,26 @@ class _PopupWindowState extends State<PopupWindow> {
     ImageProvider<Object>? iconProvider;
     if (data.icon?.width != null) {
       final icon = data.icon;
-      iconProvider = createImageIiibiiay(icon!.width!, icon.height!, icon.data!,
-              icon.alpha! ? 4 : 3, icon.rowstride!)
-          .image;
+      iconProvider = createImageIiibiiay(
+        icon!.width!,
+        icon.height!,
+        icon.data!,
+        icon.alpha! ? 4 : 3,
+        icon.rowstride!,
+      ).image;
     } else if (data.icon?.path != null && data.icon!.path!.isNotEmpty) {
       iconProvider = Image.file(File(data.icon!.path!)).image;
     }
     ImageProvider<Object>? imageProvider;
     if (data.image?.width != null) {
       final image = data.image;
-      imageProvider = createImageIiibiiay(image!.width!, image.height!,
-              image.data!, image.alpha! ? 4 : 3, image.rowstride!)
-          .image;
+      imageProvider = createImageIiibiiay(
+        image!.width!,
+        image.height!,
+        image.data!,
+        image.alpha! ? 4 : 3,
+        image.rowstride!,
+      ).image;
     } else if (data.image?.path != null && data.image!.path!.isNotEmpty) {
       imageProvider = Image.file(File(data.image!.path!)).image;
     }
@@ -107,6 +133,7 @@ class _PopupWindowState extends State<PopupWindow> {
       iconProvider: iconProvider,
       actions: buildFromActionList(data.id, actions(data.actions)),
       onTileTap: () {
+        //Send message to main window
         DesktopMultiWindow.invokeMethod(
           0,
           PopupWindowAction.notificationAction.toString(),
@@ -122,6 +149,7 @@ class _PopupWindowState extends State<PopupWindow> {
           widget.layerController.hide();
         }
         setState(() {});
+        //Send message to main window
         DesktopMultiWindow.invokeMethod(
           0,
           PopupWindowAction.closeNotification.toString(),

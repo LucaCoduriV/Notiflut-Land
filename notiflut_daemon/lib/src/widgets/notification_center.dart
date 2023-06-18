@@ -55,6 +55,7 @@ class Bar extends StatelessWidget {
           child: GestureDetector(
             onTap: () {
               LayerShellController.main().hide();
+              PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
             },
           ),
         ),
@@ -116,6 +117,9 @@ class _NotificationListState extends State<NotificationList> {
   @override
   void initState() {
     super.initState();
+
+    // Used to refresh notification up duration. 
+    // TODO stop the timer when the Notification center is hidden.
     timer = Timer.periodic(const Duration(seconds: 30), (timer) {
       setState(() {});
     });
@@ -124,12 +128,14 @@ class _NotificationListState extends State<NotificationList> {
       event.whenOrNull(
         showNc: () {
           print("show window");
-          final layerController = LayerShellController.fromWindowId(0);
+          final layerController = LayerShellController.main();
+          PopUpWindowManager().ncStateUpdate(NotificationCenterState.open);
           layerController.show();
         },
         closeNc: () {
           print("hide window");
-          final layerController = LayerShellController.fromWindowId(0);
+          final layerController = LayerShellController.main();
+          PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
           layerController.hide();
         },
         update: (notificationsNew, index) {
@@ -192,30 +198,36 @@ class _NotificationListState extends State<NotificationList> {
     nati.Notification notification,
   ) {
     ImageData? imageData;
-    notification.appImage?.when(data: (d) {
-      imageData = ImageData(
-        data: d.data,
-        width: d.width,
-        height: d.height,
-        alpha: d.onePointTwoBitAlpha,
-        rowstride: d.rowstride,
-      );
-    }, path: (p) {
-      imageData = ImageData(path: p);
-    });
+    notification.appImage?.when(
+      data: (d) {
+        imageData = ImageData(
+          data: d.data,
+          width: d.width,
+          height: d.height,
+          alpha: d.onePointTwoBitAlpha,
+          rowstride: d.rowstride,
+        );
+      },
+      path: (p) {
+        imageData = ImageData(path: p);
+      },
+    );
 
     ImageData? iconData;
-    notification.appIcon?.when(data: (d) {
-      iconData = ImageData(
-        data: d.data,
-        width: d.width,
-        height: d.height,
-        alpha: d.onePointTwoBitAlpha,
-        rowstride: d.rowstride,
-      );
-    }, path: (p) {
-      iconData = ImageData(path: p);
-    });
+    notification.appIcon?.when(
+      data: (d) {
+        iconData = ImageData(
+          data: d.data,
+          width: d.width,
+          height: d.height,
+          alpha: d.onePointTwoBitAlpha,
+          rowstride: d.rowstride,
+        );
+      },
+      path: (p) {
+        iconData = ImageData(path: p);
+      },
+    );
 
     ImageProvider<Object>? imageProvider;
     if (imageData?.data != null) {
@@ -260,7 +272,8 @@ class _NotificationListState extends State<NotificationList> {
         await nati.api.sendDaemonAction(
             action: nati.DaemonAction.flutterClose(notification.id));
       },
-      actions: buildFromActionList(notification.id, actions(notification.actions)),
+      actions:
+          buildFromActionList(notification.id, actions(notification.actions)),
       imageProvider: imageProvider,
       iconProvider: iconProvider,
     );
@@ -269,8 +282,8 @@ class _NotificationListState extends State<NotificationList> {
   @override
   Widget build(BuildContext context) {
     // TODO sort notification by date
-    final notificationByCategory =
-        notifications.fold(<String, List<nati.Notification>>{}, (map, notification) {
+    final notificationByCategory = notifications
+        .fold(<String, List<nati.Notification>>{}, (map, notification) {
       final key = notification.appName;
 
       map.putIfAbsent(key, () => []);
