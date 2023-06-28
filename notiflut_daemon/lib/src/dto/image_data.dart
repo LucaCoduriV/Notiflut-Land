@@ -1,59 +1,34 @@
-import 'dart:convert';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'dart:typed_data';
 
-class ImageData {
-  final String? path;
+part 'image_data.freezed.dart';
+part 'image_data.g.dart';
 
-  final Uint8List? data;
-  final int? height;
-  final int? width;
-  final int? rowstride;
-  final bool? alpha;
-  const ImageData({
-    this.path,
-    this.data,
-    this.height,
-    this.width,
-    this.rowstride,
-    this.alpha,
-  });
+class Uint8ListConverter implements JsonConverter<Uint8List?, List<int>?> {
+  const Uint8ListConverter();
 
-  String toJson() {
-    return jsonEncode({
-      "image-data": data,
-      "image-height": height,
-      "image-width": width,
-      "image-rowstride": rowstride,
-      "image-alpha": alpha,
-      "image-path": path,
-    });
+  @override
+  Uint8List? fromJson(List<int>? json) {
+    return json == null ? null : Uint8List.fromList(json);
   }
 
-  static ImageData? fromJson(String? json) {
-    if (json == null) {
-      return null;
-    }
-    final args = jsonDecode(json) as Map<String, dynamic>;
-
-    List<dynamic>? imageDataDyn = (args['image-data'] as List<dynamic>?);
-    String? imagePath = args['image-path'];
-
-    Uint8List? imageData;
-    if (imageDataDyn != null) {
-      imageData = Uint8List.fromList(imageDataDyn.cast<int>().toList());
-    }
-    int? imageWidth = args['image-width'] as int?;
-    int? imageHeight = args['image-height'] as int?;
-    int? imageRowstride = args['image-rowstride'] as int?;
-    bool? iconAlpha = args['image-alpha'] as bool?;
-
-    return ImageData(
-      data: imageData,
-      width: imageWidth,
-      height: imageHeight,
-      rowstride: imageRowstride,
-      alpha: iconAlpha,
-      path: imagePath,
-    );
+  @override
+  List<int>? toJson(Uint8List? object) {
+    return object?.toList();
   }
+}
+
+@freezed
+// @JsonSerializable(explicitToJson: true)
+class ImageData with _$ImageData {
+  factory ImageData({
+    final String? path,
+    @Uint8ListConverter() final Uint8List? data,
+    final int? height,
+    final int? width,
+    final int? rowstride,
+    final bool? alpha,
+  }) = _ImageData;
+
+factory ImageData.fromJson(Map<String, dynamic> json) => _$ImageDataFromJson(json);
 }

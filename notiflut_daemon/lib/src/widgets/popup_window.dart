@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:notiflut_land/src/window_manager.dart';
 
-import '../dto/image_data.dart';
 import '../dto/notification_popup_data.dart';
 import '../utils.dart';
 import 'notification.dart';
