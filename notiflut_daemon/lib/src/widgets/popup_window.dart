@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:notiflut_land/src/window_manager.dart';
 
+import '../dto/image_data.dart';
+import '../dto/notification_popup_data.dart';
 import '../utils.dart';
 import 'notification.dart';
 
@@ -225,122 +227,4 @@ class _PopupWindowState extends State<PopupWindow> {
   }
 }
 
-class ImageData {
-  final String? path;
 
-  final Uint8List? data;
-  final int? height;
-  final int? width;
-  final int? rowstride;
-  final bool? alpha;
-  const ImageData({
-    this.path,
-    this.data,
-    this.height,
-    this.width,
-    this.rowstride,
-    this.alpha,
-  });
-
-  String toJson() {
-    return jsonEncode({
-      "image-data": data,
-      "image-height": height,
-      "image-width": width,
-      "image-rowstride": rowstride,
-      "image-alpha": alpha,
-      "image-path": path,
-    });
-  }
-
-  static ImageData? fromJson(String? json) {
-    if (json == null) {
-      return null;
-    }
-    final args = jsonDecode(json) as Map<String, dynamic>;
-
-    List<dynamic>? imageDataDyn = (args['image-data'] as List<dynamic>?);
-    String? imagePath = args['image-path'];
-
-    Uint8List? imageData;
-    if (imageDataDyn != null) {
-      imageData = Uint8List.fromList(imageDataDyn.cast<int>().toList());
-    }
-    int? imageWidth = args['image-width'] as int?;
-    int? imageHeight = args['image-height'] as int?;
-    int? imageRowstride = args['image-rowstride'] as int?;
-    bool? iconAlpha = args['image-alpha'] as bool?;
-
-    return ImageData(
-      data: imageData,
-      width: imageWidth,
-      height: imageHeight,
-      rowstride: imageRowstride,
-      alpha: iconAlpha,
-      path: imagePath,
-    );
-  }
-}
-
-/// This classed is used to transfer data between the main thread and
-/// the thread used to show popups.
-/// TODO transfer data as bytes to be faster.
-class NotificationPopupData {
-  int id;
-
-  String summary;
-  String appName;
-  String body;
-  int timeout;
-  ImageData? icon;
-  ImageData? image;
-  List<String> actions;
-
-  NotificationPopupData({
-    required this.id,
-    required this.summary,
-    required this.appName,
-    required this.body,
-    required this.timeout,
-    required this.actions,
-    this.icon,
-    this.image,
-  });
-
-  String toJson() {
-    return jsonEncode({
-      "id": id,
-      "summary": summary,
-      "appName": appName,
-      "body": body,
-      "timeout": timeout,
-      "image": image?.toJson(),
-      "icon": icon?.toJson(),
-      "actions": actions,
-    });
-  }
-
-  factory NotificationPopupData.fromJson(String json) {
-    final args = jsonDecode(json) as Map<String, dynamic>;
-
-    int id = args['id'];
-    String title = args['summary'];
-    String body = args['body'];
-    String appName = args['appName'];
-    int timeOut = args['timeout'];
-    ImageData? icon = ImageData.fromJson(args['icon']);
-    ImageData? image = ImageData.fromJson(args['image']);
-    List<String> actions = (args['actions'] as List).cast<String>();
-
-    return NotificationPopupData(
-      id: id,
-      timeout: timeOut,
-      summary: title,
-      appName: appName,
-      body: body,
-      image: image,
-      icon: icon,
-      actions: actions,
-    );
-  }
-}

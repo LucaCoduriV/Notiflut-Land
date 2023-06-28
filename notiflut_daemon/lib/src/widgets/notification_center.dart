@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:notiflut_land/src/widgets/category.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../dto/image_data.dart';
 import '../native.dart' as nati;
 import '../native/bridge_definitions.dart' as nati;
 import '../utils.dart';
