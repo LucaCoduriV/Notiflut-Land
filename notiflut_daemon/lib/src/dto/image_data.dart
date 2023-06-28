@@ -19,7 +19,6 @@ class Uint8ListConverter implements JsonConverter<Uint8List?, List<int>?> {
 }
 
 @freezed
-// @JsonSerializable(explicitToJson: true)
 class ImageData with _$ImageData {
   factory ImageData({
     final String? path,
