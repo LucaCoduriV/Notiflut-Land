@@ -217,63 +217,73 @@ class _NotificationListState extends State<NotificationList> {
     BuildContext context,
     nati.Notification notification,
   ) {
-    ImageData? imageData;
-    notification.appImage?.when(
-      data: (d) {
-        imageData = ImageData(
-          data: d.data,
-          width: d.width,
-          height: d.height,
-          alpha: d.onePointTwoBitAlpha,
-          rowstride: d.rowstride,
-        );
-      },
-      path: (p) {
-        imageData = ImageData(path: p);
-      },
-    );
+    ImageData? imageData = switch (notification.appImage) {
+      nati.ImageSource_Data(
+        field0: nati.ImageData(
+          :final data,
+          :final width,
+          :final height,
+          :final onePointTwoBitAlpha,
+          :final rowstride
+        )
+      ) =>
+        ImageData(
+          data: data,
+          width: width,
+          height: height,
+          alpha: onePointTwoBitAlpha,
+          rowstride: rowstride,
+        ),
+      nati.ImageSource_Path(field0: final path) => ImageData(path: path),
+      null => null,
+    };
 
-    ImageData? iconData;
-    notification.appIcon?.when(
-      data: (d) {
-        iconData = ImageData(
-          data: d.data,
-          width: d.width,
-          height: d.height,
-          alpha: d.onePointTwoBitAlpha,
-          rowstride: d.rowstride,
-        );
-      },
-      path: (p) {
-        iconData = ImageData(path: p);
-      },
-    );
+    ImageData? iconData = switch (notification.appIcon) {
+      nati.ImageSource_Data(
+        field0: nati.ImageData(
+          :final data,
+          :final width,
+          :final height,
+          :final onePointTwoBitAlpha,
+          :final rowstride
+        )
+      ) =>
+        ImageData(
+          data: data,
+          width: width,
+          height: height,
+          alpha: onePointTwoBitAlpha,
+          rowstride: rowstride,
+        ),
+      nati.ImageSource_Path(field0: final path) => ImageData(path: path),
+      null => null,
+    };
 
-    ImageProvider<Object>? imageProvider;
-    if (imageData?.data != null) {
-      imageProvider = createImageIiibiiay(
-        imageData!.width!,
-        imageData!.height!,
-        imageData!.data!,
-        imageData!.alpha! ? 4 : 3,
-        imageData!.rowstride!,
-      ).image;
-    } else if (imageData?.path != null && imageData!.path!.isNotEmpty) {
-      imageProvider = Image.file(File(imageData!.path!)).image;
-    }
+    ImageProvider<Object>? imageProvider =
+        switch ((imageData?.data, imageData?.path)) {
+      (null, final path?) when path.isNotEmpty => Image.file(File(path)).image,
+      (final _?, final _) => createImageIiibiiay(
+          imageData!.width!,
+          imageData.height!,
+          imageData.data!,
+          imageData.alpha! ? 4 : 3,
+          imageData.rowstride!,
+        ).image,
+      (_, _) => null,
+    };
 
-    ImageProvider<Object>? iconProvider;
-    if (iconData?.data != null) {
-      iconProvider = createImageIiibiiay(
-        iconData!.width!,
-        iconData!.height!,
-        iconData!.data!,
-        iconData!.alpha! ? 4 : 3,
-        iconData!.rowstride!,
-      ).image;
-    } else if (iconData?.path != null && iconData!.path!.isNotEmpty) {
-      iconProvider = Image.file(File(iconData!.path!)).image;
-    }
+    ImageProvider<Object>? iconProvider =
+        switch ((imageData?.data, imageData?.path)) {
+      (null, final path?) when path.isNotEmpty => Image.file(File(path)).image,
+      (final _?, final _) => createImageIiibiiay(
+          imageData!.width!,
+          imageData.height!,
+          imageData.data!,
+          imageData.alpha! ? 4 : 3,
+          imageData.rowstride!,
+        ).image,
+      (_, _) => null,
+    };
 
     final appName = notification.appName.capitalize();
 
