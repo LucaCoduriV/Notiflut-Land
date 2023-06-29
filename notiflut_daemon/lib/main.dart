@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:notiflut_land/src/services/notification_center_service.dart';
+import 'package:notiflut_land/src/services/popup_window_service.dart';
 import './src/widgets/notification_center.dart';
 import './src/widgets/popup_window.dart';
 import './src/window_manager.dart';
@@ -29,6 +30,12 @@ void mainPopup(List<String> args) async {
   final windowController = LayerShellController.fromWindowId(windowId);
   final argument =
       args[2].isEmpty ? const {} : jsonDecode(args[2]) as Map<String, dynamic>;
+
+  final popupWindowService =
+      PopupWindowService(layerController: windowController);
+  popupWindowService.init();
+  GetIt.I.registerSingleton(popupWindowService);
+
   runApp(PopupWindow(
     layerController: windowController,
     args: argument,

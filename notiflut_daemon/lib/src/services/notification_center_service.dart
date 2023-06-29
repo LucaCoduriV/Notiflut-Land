@@ -8,8 +8,8 @@ import '../dto/image_data.dart';
 import '../dto/notification_popup_data.dart';
 import '../native.dart' as nati;
 import '../native/bridge_definitions.dart' as nati;
-import '../widgets/popup_window.dart';
 import '../window_manager.dart';
+import 'popup_window_service.dart';
 
 class NotificationCenterService extends ChangeNotifier {
   List<nati.Notification> _notifications = [];

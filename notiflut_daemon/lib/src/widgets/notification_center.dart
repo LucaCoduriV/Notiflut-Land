@@ -11,10 +11,10 @@ import 'package:window_manager/window_manager.dart';
 import '../dto/image_data.dart';
 import '../native.dart' as nati;
 import '../native/bridge_definitions.dart' as nati;
+import '../services/popup_window_service.dart';
 import '../utils.dart';
 import '../window_manager.dart';
 import 'notification.dart';
-import 'popup_window.dart';
 
 class NotificationCenter extends StatelessWidget {
   const NotificationCenter({super.key});
@@ -29,7 +29,7 @@ class NotificationCenter extends StatelessWidget {
       theme: ThemeData(
         colorScheme: const ColorScheme.light(background: Colors.transparent),
       ),
-      home: Scaffold(
+      home: const Scaffold(
         backgroundColor: Colors.transparent,
         body: Bar(),
       ),
@@ -41,7 +41,6 @@ class Bar extends StatelessWidget {
   const Bar({
     super.key,
   });
-
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +98,8 @@ class NotificationList extends StatefulWidget with GetItStatefulWidgetMixin {
   State<NotificationList> createState() => _NotificationListState();
 }
 
-class _NotificationListState extends State<NotificationList> with GetItStateMixin {
+class _NotificationListState extends State<NotificationList>
+    with GetItStateMixin {
   Timer? timer;
 
   @override
@@ -218,7 +218,8 @@ class _NotificationListState extends State<NotificationList> with GetItStateMixi
 
   @override
   Widget build(BuildContext context) {
-    final notifications = watchOnly((NotificationCenterService s) => s.notifications);
+    final notifications =
+        watchOnly((NotificationCenterService s) => s.notifications);
     // TODO sort notification by date
     final notificationByCategory = notifications
         .fold(<String, List<nati.Notification>>{}, (map, notification) {
