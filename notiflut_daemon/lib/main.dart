@@ -17,10 +17,6 @@ void main(List<String> args) async {
   log("App Starting...");
   WidgetsFlutterBinding.ensureInitialized();
 
-  final notificationCenterService = NotificationCenterService();
-  notificationCenterService.init();
-  GetIt.I.registerSingleton(notificationCenterService);
-
   if (args.isNotEmpty && args.first == 'multi_window') {
     mainPopup(args);
   } else {
@@ -55,7 +51,12 @@ void mainNotificationCenter() async {
     await windowManager.hide();
   });
   await nati.api.setup();
+
+  final notificationCenterService = NotificationCenterService();
+  notificationCenterService.init();
+  GetIt.I.registerSingleton(notificationCenterService);
+
   final popUpWindowsManager = PopUpWindowManager();
   await popUpWindowsManager.init();
-  runApp(NotificationCenter());
+  runApp(const NotificationCenter());
 }
