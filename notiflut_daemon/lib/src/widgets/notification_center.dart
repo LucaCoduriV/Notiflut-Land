@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it_mixin/get_it_mixin.dart';
+import 'package:notiflut_land/src/services/notification_center_service.dart';
 import 'package:notiflut_land/src/widgets/category.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../dto/image_data.dart';
-import '../dto/notification_popup_data.dart';
 import '../native.dart' as nati;
 import '../native/bridge_definitions.dart' as nati;
 import '../utils.dart';
@@ -17,8 +17,7 @@ import 'notification.dart';
 import 'popup_window.dart';
 
 class NotificationCenter extends StatelessWidget {
-  final Stream<nati.DaemonAction> notificationStream;
-  const NotificationCenter(this.notificationStream, {super.key});
+  const NotificationCenter({super.key});
 
   // This widget is the root of your application.
   @override
@@ -32,7 +31,7 @@ class NotificationCenter extends StatelessWidget {
       ),
       home: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Bar(notificationStream: notificationStream),
+        body: Bar(),
       ),
     );
   }
@@ -41,10 +40,8 @@ class NotificationCenter extends StatelessWidget {
 class Bar extends StatelessWidget {
   const Bar({
     super.key,
-    required this.notificationStream,
   });
 
-  final Stream<nati.DaemonAction> notificationStream;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +80,7 @@ class Bar extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Expanded(
-                    child: NotificationList(notificationStream),
+                    child: NotificationList(),
                   ),
                 ],
               ),
@@ -95,23 +92,20 @@ class Bar extends StatelessWidget {
   }
 }
 
-class NotificationList extends StatefulWidget {
-  final Stream<nati.DaemonAction> notificationStream;
-  const NotificationList(this.notificationStream, {super.key});
+class NotificationList extends StatefulWidget with GetItStatefulWidgetMixin {
+  NotificationList({super.key});
 
   @override
   State<NotificationList> createState() => _NotificationListState();
 }
 
-class _NotificationListState extends State<NotificationList> {
-  List<nati.Notification> notifications = [];
+class _NotificationListState extends State<NotificationList> with GetItStateMixin {
   Timer? timer;
-  StreamSubscription<nati.DaemonAction>? notificationStreamSub;
 
   @override
   void dispose() {
     timer?.cancel();
-    notificationStreamSub?.cancel();
+    get<NotificationCenterService>().dispose();
     super.dispose();
   }
 
@@ -119,96 +113,9 @@ class _NotificationListState extends State<NotificationList> {
   void initState() {
     super.initState();
 
-    // Used to refresh notification up duration.
+    // Used to refresh notification up time.
     // TODO stop the timer when the Notification center is hidden.
     timer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      setState(() {});
-    });
-
-    notificationStreamSub = widget.notificationStream.listen((event) {
-      switch (event) {
-        case nati.DaemonAction_ShowNc():
-          print("show window");
-          final layerController = LayerShellController.main();
-          PopUpWindowManager().ncStateUpdate(NotificationCenterState.open);
-          layerController.show();
-        case nati.DaemonAction_CloseNc():
-          print("hide window");
-          final layerController = LayerShellController.main();
-          PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
-          layerController.hide();
-        case nati.DaemonAction_Update(
-            field0: final notificationsNew,
-            field1: final index
-          ):
-          notifications = notificationsNew;
-
-          // Send notification to popup manager
-          if (index != null) {
-            final notification = notifications[index];
-
-            ImageData? imageData = switch (notification.appImage) {
-              nati.ImageSource_Data(
-                field0: nati.ImageData(
-                  :final data,
-                  :final width,
-                  :final height,
-                  :final onePointTwoBitAlpha,
-                  :final rowstride
-                )
-              ) =>
-                ImageData(
-                  data: data,
-                  width: width,
-                  height: height,
-                  alpha: onePointTwoBitAlpha,
-                  rowstride: rowstride,
-                ),
-              nati.ImageSource_Path(field0: final path) =>
-                ImageData(path: path),
-              null => null,
-            };
-
-            ImageData? iconData = switch (notification.appIcon) {
-              nati.ImageSource_Data(
-                field0: nati.ImageData(
-                  :final data,
-                  :final width,
-                  :final height,
-                  :final onePointTwoBitAlpha,
-                  :final rowstride
-                )
-              ) =>
-                ImageData(
-                  data: data,
-                  width: width,
-                  height: height,
-                  alpha: onePointTwoBitAlpha,
-                  rowstride: rowstride,
-                ),
-              nati.ImageSource_Path(field0: final path) =>
-                ImageData(path: path),
-              null => null,
-            };
-
-            try {
-              final args = NotificationPopupData(
-                id: notification.id,
-                summary: notification.summary,
-                appName: notification.appName,
-                body: notification.body,
-                timeout: 5,
-                icon: iconData,
-                image: imageData,
-                actions: notification.actions,
-              );
-              PopUpWindowManager().showPopUp(args.toJson());
-            } catch (e) {
-              log("error while parsing notification: $e");
-            }
-          }
-        default:
-      }
       setState(() {});
     });
   }
@@ -311,6 +218,7 @@ class _NotificationListState extends State<NotificationList> {
 
   @override
   Widget build(BuildContext context) {
+    final notifications = watchOnly((NotificationCenterService s) => s.notifications);
     // TODO sort notification by date
     final notificationByCategory = notifications
         .fold(<String, List<nati.Notification>>{}, (map, notification) {

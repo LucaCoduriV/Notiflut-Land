@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:notiflut_land/src/services/notification_center_service.dart';
 import './src/widgets/notification_center.dart';
 import './src/widgets/popup_window.dart';
 import './src/window_manager.dart';
@@ -14,6 +16,10 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 void main(List<String> args) async {
   log("App Starting...");
   WidgetsFlutterBinding.ensureInitialized();
+
+  final notificationCenterService = NotificationCenterService();
+  notificationCenterService.init();
+  GetIt.I.registerSingleton(notificationCenterService);
 
   if (args.isNotEmpty && args.first == 'multi_window') {
     mainPopup(args);
@@ -49,8 +55,7 @@ void mainNotificationCenter() async {
     await windowManager.hide();
   });
   await nati.api.setup();
-  final notificationStream = nati.api.startDaemon();
   final popUpWindowsManager = PopUpWindowManager();
   await popUpWindowsManager.init();
-  runApp(NotificationCenter(notificationStream));
+  runApp(NotificationCenter());
 }
