@@ -262,7 +262,7 @@ class _NotificationListState extends State<NotificationList> {
     ImageProvider<Object>? imageProvider =
         switch ((imageData?.data, imageData?.path)) {
       (null, final path?) when path.isNotEmpty => Image.file(File(path)).image,
-      (final _?, final _) => createImageIiibiiay(
+      (_?, _) => createImageIiibiiay(
           imageData!.width!,
           imageData.height!,
           imageData.data!,
@@ -273,14 +273,14 @@ class _NotificationListState extends State<NotificationList> {
     };
 
     ImageProvider<Object>? iconProvider =
-        switch ((imageData?.data, imageData?.path)) {
+        switch ((iconData?.data, iconData?.path)) {
       (null, final path?) when path.isNotEmpty => Image.file(File(path)).image,
-      (final _?, final _) => createImageIiibiiay(
-          imageData!.width!,
-          imageData.height!,
-          imageData.data!,
-          imageData.alpha! ? 4 : 3,
-          imageData.rowstride!,
+      (_?, _) => createImageIiibiiay(
+          iconData!.width!,
+          iconData.height!,
+          iconData.data!,
+          iconData.alpha! ? 4 : 3,
+          iconData.rowstride!,
         ).image,
       (_, _) => null,
     };
