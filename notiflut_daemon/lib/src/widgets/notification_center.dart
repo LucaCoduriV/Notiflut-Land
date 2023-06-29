@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:notiflut_land/src/widgets/category.dart';
 import 'package:window_manager/window_manager.dart';
@@ -120,58 +119,77 @@ class _NotificationListState extends State<NotificationList> {
   void initState() {
     super.initState();
 
-    // Used to refresh notification up duration. 
+    // Used to refresh notification up duration.
     // TODO stop the timer when the Notification center is hidden.
     timer = Timer.periodic(const Duration(seconds: 30), (timer) {
       setState(() {});
     });
 
     notificationStreamSub = widget.notificationStream.listen((event) {
-      event.whenOrNull(
-        showNc: () {
+      switch (event) {
+        case nati.DaemonAction_ShowNc():
           print("show window");
           final layerController = LayerShellController.main();
           PopUpWindowManager().ncStateUpdate(NotificationCenterState.open);
           layerController.show();
-        },
-        closeNc: () {
+        case nati.DaemonAction_CloseNc():
           print("hide window");
           final layerController = LayerShellController.main();
           PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
           layerController.hide();
-        },
-        update: (notificationsNew, index) {
+        case nati.DaemonAction_Update(
+            field0: final notificationsNew,
+            field1: final index
+          ):
           notifications = notificationsNew;
 
           // Send notification to popup manager
           if (index != null) {
             final notification = notifications[index];
 
-            ImageData? imageData;
-            notification.appImage?.when(data: (d) {
-              imageData = ImageData(
-                data: d.data,
-                width: d.width,
-                height: d.height,
-                alpha: d.onePointTwoBitAlpha,
-                rowstride: d.rowstride,
-              );
-            }, path: (p) {
-              imageData = ImageData(path: p);
-            });
+            ImageData? imageData = switch (notification.appImage) {
+              nati.ImageSource_Data(
+                field0: nati.ImageData(
+                  :final data,
+                  :final width,
+                  :final height,
+                  :final onePointTwoBitAlpha,
+                  :final rowstride
+                )
+              ) =>
+                ImageData(
+                  data: data,
+                  width: width,
+                  height: height,
+                  alpha: onePointTwoBitAlpha,
+                  rowstride: rowstride,
+                ),
+              nati.ImageSource_Path(field0: final path) =>
+                ImageData(path: path),
+              null => null,
+            };
 
-            ImageData? iconData;
-            notification.appIcon?.when(data: (d) {
-              iconData = ImageData(
-                data: d.data,
-                width: d.width,
-                height: d.height,
-                alpha: d.onePointTwoBitAlpha,
-                rowstride: d.rowstride,
-              );
-            }, path: (p) {
-              iconData = ImageData(path: p);
-            });
+            ImageData? iconData = switch (notification.appIcon) {
+              nati.ImageSource_Data(
+                field0: nati.ImageData(
+                  :final data,
+                  :final width,
+                  :final height,
+                  :final onePointTwoBitAlpha,
+                  :final rowstride
+                )
+              ) =>
+                ImageData(
+                  data: data,
+                  width: width,
+                  height: height,
+                  alpha: onePointTwoBitAlpha,
+                  rowstride: rowstride,
+                ),
+              nati.ImageSource_Path(field0: final path) =>
+                ImageData(path: path),
+              null => null,
+            };
 
             try {
               final args = NotificationPopupData(
@@ -189,8 +207,8 @@ class _NotificationListState extends State<NotificationList> {
               log("error while parsing notification: $e");
             }
           }
-        },
-      );
+        default:
+      }
       setState(() {});
     });
   }

@@ -29,10 +29,10 @@ packages:
     dependency: transitive
     description:
       name: args
-      sha256: c372bb384f273f0c2a8aaaa226dad84dc27c8519a691b888725dec59518ad53a
+      sha256: eef6c46b622e0494a36c5a12d10d77fb4e855501a91c1b9ef9339326e58f0596
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.4.2"
   async:
     dependency: transitive
     description:
@@ -93,18 +93,18 @@ packages:
     dependency: "direct dev"
     description:
       name: build_runner
-      sha256: "220ae4553e50d7c21a17c051afc7b183d28a24a420502e842f303f8e4e6edced"
+      sha256: "5e1929ad37d48bd382b124266cb8e521de5548d406a45a5ae6656c13dab73e37"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.4"
+    version: "2.4.5"
   build_runner_core:
     dependency: transitive
     description:
       name: build_runner_core
-      sha256: "88a57f2ac99849362e73878334caa9f06ee25f31d2adced882b8337838c84e1e"
+      sha256: "6d6ee4276b1c5f34f21fdf39425202712d2be82019983d52f351c94aafbc2c41"
       url: "https://pub.dev"
     source: hosted
-    version: "7.2.9"
+    version: "7.2.10"
   built_collection:
     dependency: transitive
     description:
@@ -262,10 +262,10 @@ packages:
     dependency: "direct dev"
     description:
       name: ffigen
-      sha256: "4bbf1fa19723a90578e991b9a95afca43bea856809890a26609618fa29087427"
+      sha256: d3e76c2ad48a4e7f93a29a162006f00eba46ce7c08194a77bb5c5e97d1b5ff0a
       url: "https://pub.dev"
     source: hosted
-    version: "7.2.11"
+    version: "8.0.2"
   file:
     dependency: transitive
     description:
@@ -315,10 +315,10 @@ packages:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: aeb0b80a8b3709709c9cc496cdc027c5b3216796bc0af0ce1007eaf24464fd4c
+      sha256: "2118df84ef0c3ca93f96123a616ae8540879991b8b57af2f81b76a7ada49b2a4"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   flutter_math_fork:
     dependency: transitive
     description:
@@ -331,10 +331,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_rust_bridge
-      sha256: c039cb7b21d11665591557c1bf1d558f8db549a260cc69d455f30443a883f95c
+      sha256: "6960d0843f6f7b4eac28f2531eb0024f01c49bf9eec798327fbbafa084c1f535"
       url: "https://pub.dev"
     source: hosted
-    version: "1.77.1"
+    version: "1.78.0"
   flutter_svg:
     dependency: "direct overridden"
     description:
@@ -421,18 +421,18 @@ packages:
     dependency: transitive
     description:
       name: html
-      sha256: "58e3491f7bf0b6a4ea5110c0c688877460d1a6366731155c4a4580e7ded773e8"
+      sha256: "3a7812d5bcd2894edf53dfaf8cd640876cf6cef50a8f238745c8b8120ea74d3a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.3"
+    version: "0.15.4"
   http:
     dependency: transitive
     description:
       name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.6"
+    version: "1.1.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -653,10 +653,10 @@ packages:
     dependency: transitive
     description:
       name: puppeteer
-      sha256: dd49117259867d0ce0de33ddd95628fb70cff94581a6432c08272447b8dd1d27
+      sha256: f00b54703dc22af04eaace8f23a33c56008870f990684c2ad8c4115ac51b0a38
       url: "https://pub.dev"
     source: hosted
-    version: "2.24.0"
+    version: "3.1.1"
   quiver:
     dependency: transitive
     description:
@@ -786,10 +786,10 @@ packages:
     dependency: transitive
     description:
       name: tuple
-      sha256: "0ea99cd2f9352b2586583ab2ce6489d1f95a5f6de6fb9492faaf97ae2060f0aa"
+      sha256: a97ce2013f240b2f3807bcbaf218765b6f301c3eff91092bcfa23a039e7dd151
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   typed_data:
     dependency: transitive
     description:
@@ -826,10 +826,10 @@ packages:
     dependency: transitive
     description:
       name: video_player_android
-      sha256: ae1c7d9a71c236a1bf9e567bd7ed4c90887e389a5f233b2192593f7f7395005c
+      sha256: f338a5a396c845f4632959511cad3542cdf3167e1b2a1a948ef07f7123c03608
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.8"
+    version: "2.4.9"
   video_player_avfoundation:
     dependency: transitive
     description:

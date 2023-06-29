@@ -453,6 +453,12 @@ impl<T> NewWithNullPtr for *mut T {
     }
 }
 
+impl Default for wire_DaemonAction {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_DaemonAction {
     fn new_with_null_ptr() -> Self {
         Self {
@@ -557,6 +563,12 @@ impl NewWithNullPtr for wire_ImageData {
 }
 
 impl Default for wire_ImageData {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl Default for wire_ImageSource {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }
