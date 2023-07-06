@@ -27,18 +27,21 @@ class NotificationCenter extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Notification Center',
       theme: ThemeData(
-        colorScheme: const ColorScheme.light(background: Colors.transparent),
+        useMaterial3: true,
+        colorScheme: const ColorScheme.light(
+          background: Colors.transparent,
+        ),
       ),
       home: const Scaffold(
         backgroundColor: Colors.transparent,
-        body: Bar(),
+        body: _Content(),
       ),
     );
   }
 }
 
-class Bar extends StatelessWidget {
-  const Bar({
+class _Content extends StatelessWidget {
+  const _Content({
     super.key,
   });
 
@@ -56,33 +59,16 @@ class Bar extends StatelessWidget {
             },
           ),
         ),
-        Card(
-          color: Colors.transparent,
-          child: SizedBox(
-            width: 500,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  OutlinedButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50), // NEW
-                    ),
-                    child: const Text("Close all"),
-                    onPressed: () {
-                      print("Notifications closed");
-
-                      nati.api.sendDaemonAction(
-                        action: const nati.DaemonAction.flutterCloseAll(),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: NotificationList(),
-                  ),
-                ],
-              ),
+        SizedBox(
+          width: 500,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: NotificationList(),
+                ),
+              ],
             ),
           ),
         ),
