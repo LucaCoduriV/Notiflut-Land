@@ -141,18 +141,18 @@ impl NotificationDaemon {
                 DaemonAction::Close(id) => {
                     Self::close_notification(notifications.write().unwrap(), &flutter_sender, id)
                 }
-                DaemonAction::FlutterClose(id) => Self::flutter_close_notification(
+                DaemonAction::FlutterClose(id) => Self::on_notification_closed(
                     notifications.write().unwrap(),
                     &signal_sender,
                     &flutter_sender,
                     id,
                 ),
-                DaemonAction::FlutterCloseAll => Self::flutter_close_all_notifications(
+                DaemonAction::FlutterCloseAll => Self::on_all_notifications_closed(
                     notifications.write().unwrap(),
                     &signal_sender,
                     &flutter_sender,
                 ),
-                DaemonAction::FlutterActionInvoked(id, action_key) => Self::flutter_action_invoked(
+                DaemonAction::FlutterActionInvoked(id, action_key) => Self::on_action_invoked(
                     notifications.write().unwrap(),
                     &signal_sender,
                     &flutter_sender,
@@ -168,7 +168,7 @@ impl NotificationDaemon {
                     Ok(())
                 }
                 DaemonAction::FlutterCloseAllApp(app_name) => {
-                    Self::flutter_close_all_app_notifications(
+                    Self::on_all_app_notifications_closed(
                         notifications.write().unwrap(),
                         &signal_sender,
                         &flutter_sender,
@@ -209,7 +209,7 @@ impl NotificationDaemon {
         }
     }
 
-    pub fn flutter_action_invoked(
+    pub fn on_action_invoked(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &StreamSink<DaemonAction>,
@@ -230,7 +230,7 @@ impl NotificationDaemon {
 
     /// It tells to dbus that a user closed a notification from flutter.
     /// This allows app to now if a notification was read.
-    pub fn flutter_close_notification(
+    pub fn on_notification_closed(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &StreamSink<DaemonAction>,
@@ -272,7 +272,7 @@ impl NotificationDaemon {
     /// # Errors
     ///
     /// This function will return an error if channel are closed.
-    pub fn flutter_close_all_notifications(
+    pub fn on_all_notifications_closed(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &StreamSink<DaemonAction>,
@@ -295,7 +295,7 @@ impl NotificationDaemon {
     }
 
     /// It allow Flutter to close all notification related to a specific app.
-    pub fn flutter_close_all_app_notifications(
+    pub fn on_all_app_notifications_closed(
         mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &StreamSink<DaemonAction>,
