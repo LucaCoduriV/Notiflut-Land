@@ -51,13 +51,8 @@ class _Content extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         // all the remaning left space hides the Notification center
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              LayerShellController.main().hide();
-              PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
-            },
-          ),
+        const Expanded(
+          child: LeftPanel(),
         ),
         SizedBox(
           width: 500,
@@ -65,8 +60,39 @@ class _Content extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Expanded(
-                  child: NotificationList(),
+                RightPanel(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class LeftPanel extends StatelessWidget {
+  const LeftPanel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () {
+            LayerShellController.main().hide();
+            PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
+          },
+        ),
+        const Padding(
+          padding: EdgeInsets.all(30.0),
+          child: Card(
+            child: Row(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text("coucou"),
+                  ],
                 ),
               ],
             ),
@@ -77,15 +103,14 @@ class _Content extends StatelessWidget {
   }
 }
 
-class NotificationList extends StatefulWidget with GetItStatefulWidgetMixin {
-  NotificationList({super.key});
+class RightPanel extends StatefulWidget with GetItStatefulWidgetMixin {
+  RightPanel({super.key});
 
   @override
-  State<NotificationList> createState() => _NotificationListState();
+  State<RightPanel> createState() => _RightPanelState();
 }
 
-class _NotificationListState extends State<NotificationList>
-    with GetItStateMixin {
+class _RightPanelState extends State<RightPanel> with GetItStateMixin {
   Timer? timer;
 
   @override
@@ -233,7 +258,7 @@ class _NotificationListState extends State<NotificationList>
     }).toList();
 
     return switch (categoryWidgets.length) {
-      == 0 => const SingleChildScrollView(child: EmptyMessage()),
+      == 0 => const EmptyMessage(),
       _ => ListView.separated(
           itemCount: categoryWidgets.length,
           separatorBuilder: (BuildContext context, int index) =>
@@ -252,7 +277,7 @@ class EmptyMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Card(
-    color: Color(0xBBE0E0E0),
+      color: Color(0xBBE0E0E0),
       child: Padding(
         padding: EdgeInsets.all(8.0),
         child: Text("No Notifications", style: TextStyle(color: Colors.white)),
