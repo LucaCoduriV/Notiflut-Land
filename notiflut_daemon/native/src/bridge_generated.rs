@@ -158,15 +158,16 @@ impl support::IntoDart for DaemonAction {
             Self::Show(field0) => vec![0.into_dart(), field0.into_dart()],
             Self::ShowNc => vec![1.into_dart()],
             Self::CloseNc => vec![2.into_dart()],
-            Self::Close(field0) => vec![3.into_dart(), field0.into_dart()],
+            Self::ToggleNc => vec![3.into_dart()],
+            Self::Close(field0) => vec![4.into_dart(), field0.into_dart()],
             Self::Update(field0, field1) => {
-                vec![4.into_dart(), field0.into_dart(), field1.into_dart()]
+                vec![5.into_dart(), field0.into_dart(), field1.into_dart()]
             }
-            Self::FlutterClose(field0) => vec![5.into_dart(), field0.into_dart()],
-            Self::FlutterCloseAll => vec![6.into_dart()],
-            Self::FlutterCloseAllApp(field0) => vec![7.into_dart(), field0.into_dart()],
+            Self::FlutterClose(field0) => vec![6.into_dart(), field0.into_dart()],
+            Self::FlutterCloseAll => vec![7.into_dart()],
+            Self::FlutterCloseAllApp(field0) => vec![8.into_dart(), field0.into_dart()],
             Self::FlutterActionInvoked(field0, field1) => {
-                vec![8.into_dart(), field0.into_dart(), field1.into_dart()]
+                vec![9.into_dart(), field0.into_dart(), field1.into_dart()]
             }
         }
         .into_dart()

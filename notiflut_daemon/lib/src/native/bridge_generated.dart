@@ -151,25 +151,27 @@ class NativeImpl implements Native {
       case 2:
         return DaemonAction_CloseNc();
       case 3:
+        return DaemonAction_ToggleNc();
+      case 4:
         return DaemonAction_Close(
           _wire2api_u32(raw[1]),
         );
-      case 4:
+      case 5:
         return DaemonAction_Update(
           _wire2api_list_notification(raw[1]),
           _wire2api_opt_box_autoadd_usize(raw[2]),
         );
-      case 5:
+      case 6:
         return DaemonAction_FlutterClose(
           _wire2api_u32(raw[1]),
         );
-      case 6:
-        return DaemonAction_FlutterCloseAll();
       case 7:
+        return DaemonAction_FlutterCloseAll();
+      case 8:
         return DaemonAction_FlutterCloseAllApp(
           _wire2api_String(raw[1]),
         );
-      case 8:
+      case 9:
         return DaemonAction_FlutterActionInvoked(
           _wire2api_u32(raw[1]),
           _wire2api_String(raw[2]),
@@ -510,9 +512,13 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       wireObj.tag = 2;
       return;
     }
+    if (apiObj is DaemonAction_ToggleNc) {
+      wireObj.tag = 3;
+      return;
+    }
     if (apiObj is DaemonAction_Close) {
       var pre_field0 = api2wire_u32(apiObj.field0);
-      wireObj.tag = 3;
+      wireObj.tag = 4;
       wireObj.kind = inner.inflate_DaemonAction_Close();
       wireObj.kind.ref.Close.ref.field0 = pre_field0;
       return;
@@ -520,7 +526,7 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     if (apiObj is DaemonAction_Update) {
       var pre_field0 = api2wire_list_notification(apiObj.field0);
       var pre_field1 = api2wire_opt_box_autoadd_usize(apiObj.field1);
-      wireObj.tag = 4;
+      wireObj.tag = 5;
       wireObj.kind = inner.inflate_DaemonAction_Update();
       wireObj.kind.ref.Update.ref.field0 = pre_field0;
       wireObj.kind.ref.Update.ref.field1 = pre_field1;
@@ -528,18 +534,18 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     }
     if (apiObj is DaemonAction_FlutterClose) {
       var pre_field0 = api2wire_u32(apiObj.field0);
-      wireObj.tag = 5;
+      wireObj.tag = 6;
       wireObj.kind = inner.inflate_DaemonAction_FlutterClose();
       wireObj.kind.ref.FlutterClose.ref.field0 = pre_field0;
       return;
     }
     if (apiObj is DaemonAction_FlutterCloseAll) {
-      wireObj.tag = 6;
+      wireObj.tag = 7;
       return;
     }
     if (apiObj is DaemonAction_FlutterCloseAllApp) {
       var pre_field0 = api2wire_String(apiObj.field0);
-      wireObj.tag = 7;
+      wireObj.tag = 8;
       wireObj.kind = inner.inflate_DaemonAction_FlutterCloseAllApp();
       wireObj.kind.ref.FlutterCloseAllApp.ref.field0 = pre_field0;
       return;
@@ -547,7 +553,7 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     if (apiObj is DaemonAction_FlutterActionInvoked) {
       var pre_field0 = api2wire_u32(apiObj.field0);
       var pre_field1 = api2wire_String(apiObj.field1);
-      wireObj.tag = 8;
+      wireObj.tag = 9;
       wireObj.kind = inner.inflate_DaemonAction_FlutterActionInvoked();
       wireObj.kind.ref.FlutterActionInvoked.ref.field0 = pre_field0;
       wireObj.kind.ref.FlutterActionInvoked.ref.field1 = pre_field1;
@@ -1133,6 +1139,8 @@ final class wire_DaemonAction_ShowNc extends ffi.Opaque {}
 
 final class wire_DaemonAction_CloseNc extends ffi.Opaque {}
 
+final class wire_DaemonAction_ToggleNc extends ffi.Opaque {}
+
 final class wire_DaemonAction_Close extends ffi.Struct {
   @ffi.Uint32()
   external int field0;
@@ -1175,6 +1183,8 @@ final class DaemonActionKind extends ffi.Union {
   external ffi.Pointer<wire_DaemonAction_ShowNc> ShowNc;
 
   external ffi.Pointer<wire_DaemonAction_CloseNc> CloseNc;
+
+  external ffi.Pointer<wire_DaemonAction_ToggleNc> ToggleNc;
 
   external ffi.Pointer<wire_DaemonAction_Close> Close;
 

@@ -167,6 +167,10 @@ impl NotificationDaemon {
                     flutter_sender.add(DaemonAction::CloseNc);
                     Ok(())
                 }
+                DaemonAction::ToggleNc => {
+                    flutter_sender.add(DaemonAction::ToggleNc);
+                    Ok(())
+                }
                 DaemonAction::FlutterCloseAllApp(app_name) => {
                     Self::on_all_app_notifications_closed(
                         notifications.write().unwrap(),

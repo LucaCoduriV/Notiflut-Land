@@ -165,28 +165,29 @@ impl Wire2Api<DaemonAction> for wire_DaemonAction {
             },
             1 => DaemonAction::ShowNc,
             2 => DaemonAction::CloseNc,
-            3 => unsafe {
+            3 => DaemonAction::ToggleNc,
+            4 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.Close);
                 DaemonAction::Close(ans.field0.wire2api())
             },
-            4 => unsafe {
+            5 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.Update);
                 DaemonAction::Update(ans.field0.wire2api(), ans.field1.wire2api())
             },
-            5 => unsafe {
+            6 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.FlutterClose);
                 DaemonAction::FlutterClose(ans.field0.wire2api())
             },
-            6 => DaemonAction::FlutterCloseAll,
-            7 => unsafe {
+            7 => DaemonAction::FlutterCloseAll,
+            8 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.FlutterCloseAllApp);
                 DaemonAction::FlutterCloseAllApp(ans.field0.wire2api())
             },
-            8 => unsafe {
+            9 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
                 let ans = support::box_from_leak_ptr(ans.FlutterActionInvoked);
                 DaemonAction::FlutterActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
@@ -358,6 +359,7 @@ pub union DaemonActionKind {
     Show: *mut wire_DaemonAction_Show,
     ShowNc: *mut wire_DaemonAction_ShowNc,
     CloseNc: *mut wire_DaemonAction_CloseNc,
+    ToggleNc: *mut wire_DaemonAction_ToggleNc,
     Close: *mut wire_DaemonAction_Close,
     Update: *mut wire_DaemonAction_Update,
     FlutterClose: *mut wire_DaemonAction_FlutterClose,
@@ -379,6 +381,10 @@ pub struct wire_DaemonAction_ShowNc {}
 #[repr(C)]
 #[derive(Clone)]
 pub struct wire_DaemonAction_CloseNc {}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_DaemonAction_ToggleNc {}
 
 #[repr(C)]
 #[derive(Clone)]

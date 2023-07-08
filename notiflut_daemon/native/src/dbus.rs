@@ -84,6 +84,7 @@ pub enum DaemonAction {
     Show(Notification),
     ShowNc,
     CloseNc,
+    ToggleNc,
     Close(u32),
     Update(Vec<Notification>, Option<usize>),
     FlutterClose(u32),
@@ -322,6 +323,14 @@ impl DbusServer {
                     .send(ChannelMessage::Message(DaemonAction::CloseNc))
                     .map_err(|e| MethodErr::failed(&e))?;
                 Ok((String::from("Notification center closed"),))
+            });
+
+            let sender_clonded = sender.clone();
+            builder.method("ToggleNC", (), ("reply",), move |_, _, ()| {
+                sender_clonded
+                    .send(ChannelMessage::Message(DaemonAction::ToggleNc))
+                    .map_err(|e| MethodErr::failed(&e))?;
+                Ok((String::from("Notification center toggled"),))
             });
         });
 

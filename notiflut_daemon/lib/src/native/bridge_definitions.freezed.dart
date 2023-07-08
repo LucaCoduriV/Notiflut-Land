@@ -21,6 +21,7 @@ mixin _$DaemonAction {
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -34,6 +35,7 @@ mixin _$DaemonAction {
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -47,6 +49,7 @@ mixin _$DaemonAction {
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -61,6 +64,7 @@ mixin _$DaemonAction {
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -77,6 +81,7 @@ mixin _$DaemonAction {
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -92,6 +97,7 @@ mixin _$DaemonAction {
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -189,6 +195,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -205,6 +212,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -221,6 +229,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -241,6 +250,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -260,6 +270,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -278,6 +289,7 @@ class _$DaemonAction_Show implements DaemonAction_Show {
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -345,6 +357,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -361,6 +374,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -377,6 +391,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -397,6 +412,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -416,6 +432,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -434,6 +451,7 @@ class _$DaemonAction_ShowNc implements DaemonAction_ShowNc {
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -495,6 +513,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -511,6 +530,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -527,6 +547,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -547,6 +568,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -566,6 +588,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -584,6 +607,7 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -602,6 +626,162 @@ class _$DaemonAction_CloseNc implements DaemonAction_CloseNc {
 
 abstract class DaemonAction_CloseNc implements DaemonAction {
   const factory DaemonAction_CloseNc() = _$DaemonAction_CloseNc;
+}
+
+/// @nodoc
+abstract class _$$DaemonAction_ToggleNcCopyWith<$Res> {
+  factory _$$DaemonAction_ToggleNcCopyWith(_$DaemonAction_ToggleNc value,
+          $Res Function(_$DaemonAction_ToggleNc) then) =
+      __$$DaemonAction_ToggleNcCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$DaemonAction_ToggleNcCopyWithImpl<$Res>
+    extends _$DaemonActionCopyWithImpl<$Res, _$DaemonAction_ToggleNc>
+    implements _$$DaemonAction_ToggleNcCopyWith<$Res> {
+  __$$DaemonAction_ToggleNcCopyWithImpl(_$DaemonAction_ToggleNc _value,
+      $Res Function(_$DaemonAction_ToggleNc) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$DaemonAction_ToggleNc implements DaemonAction_ToggleNc {
+  const _$DaemonAction_ToggleNc();
+
+  @override
+  String toString() {
+    return 'DaemonAction.toggleNc()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$DaemonAction_ToggleNc);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Notification field0) show,
+    required TResult Function() showNc,
+    required TResult Function() closeNc,
+    required TResult Function() toggleNc,
+    required TResult Function(int field0) close,
+    required TResult Function(List<Notification> field0, int? field1) update,
+    required TResult Function(int field0) flutterClose,
+    required TResult Function() flutterCloseAll,
+    required TResult Function(String field0) flutterCloseAllApp,
+    required TResult Function(int field0, String field1) flutterActionInvoked,
+  }) {
+    return toggleNc();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(Notification field0)? show,
+    TResult? Function()? showNc,
+    TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
+    TResult? Function(int field0)? close,
+    TResult? Function(List<Notification> field0, int? field1)? update,
+    TResult? Function(int field0)? flutterClose,
+    TResult? Function()? flutterCloseAll,
+    TResult? Function(String field0)? flutterCloseAllApp,
+    TResult? Function(int field0, String field1)? flutterActionInvoked,
+  }) {
+    return toggleNc?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Notification field0)? show,
+    TResult Function()? showNc,
+    TResult Function()? closeNc,
+    TResult Function()? toggleNc,
+    TResult Function(int field0)? close,
+    TResult Function(List<Notification> field0, int? field1)? update,
+    TResult Function(int field0)? flutterClose,
+    TResult Function()? flutterCloseAll,
+    TResult Function(String field0)? flutterCloseAllApp,
+    TResult Function(int field0, String field1)? flutterActionInvoked,
+    required TResult orElse(),
+  }) {
+    if (toggleNc != null) {
+      return toggleNc();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(DaemonAction_Show value) show,
+    required TResult Function(DaemonAction_ShowNc value) showNc,
+    required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
+    required TResult Function(DaemonAction_Close value) close,
+    required TResult Function(DaemonAction_Update value) update,
+    required TResult Function(DaemonAction_FlutterClose value) flutterClose,
+    required TResult Function(DaemonAction_FlutterCloseAll value)
+        flutterCloseAll,
+    required TResult Function(DaemonAction_FlutterCloseAllApp value)
+        flutterCloseAllApp,
+    required TResult Function(DaemonAction_FlutterActionInvoked value)
+        flutterActionInvoked,
+  }) {
+    return toggleNc(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(DaemonAction_Show value)? show,
+    TResult? Function(DaemonAction_ShowNc value)? showNc,
+    TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
+    TResult? Function(DaemonAction_Close value)? close,
+    TResult? Function(DaemonAction_Update value)? update,
+    TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
+    TResult? Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult? Function(DaemonAction_FlutterCloseAllApp value)?
+        flutterCloseAllApp,
+    TResult? Function(DaemonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
+  }) {
+    return toggleNc?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(DaemonAction_Show value)? show,
+    TResult Function(DaemonAction_ShowNc value)? showNc,
+    TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
+    TResult Function(DaemonAction_Close value)? close,
+    TResult Function(DaemonAction_Update value)? update,
+    TResult Function(DaemonAction_FlutterClose value)? flutterClose,
+    TResult Function(DaemonAction_FlutterCloseAll value)? flutterCloseAll,
+    TResult Function(DaemonAction_FlutterCloseAllApp value)? flutterCloseAllApp,
+    TResult Function(DaemonAction_FlutterActionInvoked value)?
+        flutterActionInvoked,
+    required TResult orElse(),
+  }) {
+    if (toggleNc != null) {
+      return toggleNc(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class DaemonAction_ToggleNc implements DaemonAction {
+  const factory DaemonAction_ToggleNc() = _$DaemonAction_ToggleNc;
 }
 
 /// @nodoc
@@ -672,6 +852,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -688,6 +869,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -704,6 +886,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -724,6 +907,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -743,6 +927,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -761,6 +946,7 @@ class _$DaemonAction_Close implements DaemonAction_Close {
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -870,6 +1056,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -886,6 +1073,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -902,6 +1090,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -922,6 +1111,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -941,6 +1131,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -959,6 +1150,7 @@ class _$DaemonAction_Update implements DaemonAction_Update {
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -1055,6 +1247,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -1071,6 +1264,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -1087,6 +1281,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -1107,6 +1302,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -1126,6 +1322,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -1144,6 +1341,7 @@ class _$DaemonAction_FlutterClose implements DaemonAction_FlutterClose {
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -1214,6 +1412,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -1230,6 +1429,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -1246,6 +1446,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -1266,6 +1467,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -1285,6 +1487,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -1303,6 +1506,7 @@ class _$DaemonAction_FlutterCloseAll implements DaemonAction_FlutterCloseAll {
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -1394,6 +1598,7 @@ class _$DaemonAction_FlutterCloseAllApp
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -1410,6 +1615,7 @@ class _$DaemonAction_FlutterCloseAllApp
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -1426,6 +1632,7 @@ class _$DaemonAction_FlutterCloseAllApp
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -1446,6 +1653,7 @@ class _$DaemonAction_FlutterCloseAllApp
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -1465,6 +1673,7 @@ class _$DaemonAction_FlutterCloseAllApp
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -1483,6 +1692,7 @@ class _$DaemonAction_FlutterCloseAllApp
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -1590,6 +1800,7 @@ class _$DaemonAction_FlutterActionInvoked
     required TResult Function(Notification field0) show,
     required TResult Function() showNc,
     required TResult Function() closeNc,
+    required TResult Function() toggleNc,
     required TResult Function(int field0) close,
     required TResult Function(List<Notification> field0, int? field1) update,
     required TResult Function(int field0) flutterClose,
@@ -1606,6 +1817,7 @@ class _$DaemonAction_FlutterActionInvoked
     TResult? Function(Notification field0)? show,
     TResult? Function()? showNc,
     TResult? Function()? closeNc,
+    TResult? Function()? toggleNc,
     TResult? Function(int field0)? close,
     TResult? Function(List<Notification> field0, int? field1)? update,
     TResult? Function(int field0)? flutterClose,
@@ -1622,6 +1834,7 @@ class _$DaemonAction_FlutterActionInvoked
     TResult Function(Notification field0)? show,
     TResult Function()? showNc,
     TResult Function()? closeNc,
+    TResult Function()? toggleNc,
     TResult Function(int field0)? close,
     TResult Function(List<Notification> field0, int? field1)? update,
     TResult Function(int field0)? flutterClose,
@@ -1642,6 +1855,7 @@ class _$DaemonAction_FlutterActionInvoked
     required TResult Function(DaemonAction_Show value) show,
     required TResult Function(DaemonAction_ShowNc value) showNc,
     required TResult Function(DaemonAction_CloseNc value) closeNc,
+    required TResult Function(DaemonAction_ToggleNc value) toggleNc,
     required TResult Function(DaemonAction_Close value) close,
     required TResult Function(DaemonAction_Update value) update,
     required TResult Function(DaemonAction_FlutterClose value) flutterClose,
@@ -1661,6 +1875,7 @@ class _$DaemonAction_FlutterActionInvoked
     TResult? Function(DaemonAction_Show value)? show,
     TResult? Function(DaemonAction_ShowNc value)? showNc,
     TResult? Function(DaemonAction_CloseNc value)? closeNc,
+    TResult? Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult? Function(DaemonAction_Close value)? close,
     TResult? Function(DaemonAction_Update value)? update,
     TResult? Function(DaemonAction_FlutterClose value)? flutterClose,
@@ -1679,6 +1894,7 @@ class _$DaemonAction_FlutterActionInvoked
     TResult Function(DaemonAction_Show value)? show,
     TResult Function(DaemonAction_ShowNc value)? showNc,
     TResult Function(DaemonAction_CloseNc value)? closeNc,
+    TResult Function(DaemonAction_ToggleNc value)? toggleNc,
     TResult Function(DaemonAction_Close value)? close,
     TResult Function(DaemonAction_Update value)? update,
     TResult Function(DaemonAction_FlutterClose value)? flutterClose,

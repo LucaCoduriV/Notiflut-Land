@@ -14,6 +14,7 @@ import 'popup_window_service.dart';
 class NotificationCenterService extends ChangeNotifier {
   List<nati.Notification> _notifications = [];
   late StreamSubscription<nati.DaemonAction> notificationStreamSub;
+  bool _isHidden = false;
 
   List<nati.Notification> get notifications => _notifications;
 
@@ -26,18 +27,34 @@ class NotificationCenterService extends ChangeNotifier {
     notificationStreamSub.cancel();
   }
 
+  void _showWindow(){
+        print("show window");
+        final layerController = LayerShellController.main();
+        _isHidden = false;
+        PopUpWindowManager().ncStateUpdate(NotificationCenterState.open);
+        layerController.show();
+  }
+
+  void _hideWindow(){
+        print("hide window");
+        final layerController = LayerShellController.main();
+        _isHidden = true;
+        PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
+        layerController.hide();
+  }
+
   void _notificationHandler(nati.DaemonAction action) {
     switch (action) {
       case nati.DaemonAction_ShowNc():
-        print("show window");
-        final layerController = LayerShellController.main();
-        PopUpWindowManager().ncStateUpdate(NotificationCenterState.open);
-        layerController.show();
+        _showWindow();
       case nati.DaemonAction_CloseNc():
-        print("hide window");
-        final layerController = LayerShellController.main();
-        PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
-        layerController.hide();
+        _hideWindow();
+      case nati.DaemonAction_ToggleNc():
+        if(_isHidden){
+          _showWindow();
+        }else {
+          _hideWindow();
+        }
       case nati.DaemonAction_Update(
           field0: final notificationsNew,
           field1: final index

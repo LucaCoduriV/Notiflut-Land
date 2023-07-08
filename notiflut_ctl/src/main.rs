@@ -11,6 +11,7 @@ fn main() -> anyhow::Result<()> {
     let result = match &cli.command {
         Commands::Show => dbus_client.show_nc()?,
         Commands::Hide => dbus_client.hide_nc()?,
+        Commands::Toggle => dbus_client.toggle_nc()?,
     };
 
     println!("{}", result);

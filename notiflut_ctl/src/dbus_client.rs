@@ -32,6 +32,19 @@ impl DbusClient {
         Ok(result.0)
     }
 
+    pub fn toggle_nc(&self) -> Result<String> {
+        let proxy = Proxy::new(
+            NOTIFICATION_INTERFACE,
+            format!("{NOTIFICATION_PATH}/ctl"),
+            Duration::from_millis(1000),
+            &self.connection,
+        );
+
+        let result: (String,) = proxy.method_call(NOTIFICATION_INTERFACE, "ToggleNC", ())?;
+
+        Ok(result.0)
+    }
+
     pub fn hide_nc(&self) -> Result<String> {
         let proxy = Proxy::new(
             NOTIFICATION_INTERFACE,

@@ -14,4 +14,6 @@ pub enum Commands {
     Show,
     /// Hides the notification center
     Hide,
+    /// Toggle the notification center
+    Toggle,
 }

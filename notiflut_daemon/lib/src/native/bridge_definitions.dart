@@ -41,6 +41,7 @@ sealed class DaemonAction with _$DaemonAction {
   ) = DaemonAction_Show;
   const factory DaemonAction.showNc() = DaemonAction_ShowNc;
   const factory DaemonAction.closeNc() = DaemonAction_CloseNc;
+  const factory DaemonAction.toggleNc() = DaemonAction_ToggleNc;
   const factory DaemonAction.close(
     int field0,
   ) = DaemonAction_Close;
