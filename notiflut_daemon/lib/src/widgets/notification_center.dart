@@ -232,13 +232,31 @@ class _NotificationListState extends State<NotificationList>
       );
     }).toList();
 
-    return ListView.separated(
-      itemCount: categoryWidgets.length,
-      separatorBuilder: (BuildContext context, int index) =>
-          const SizedBox(height: 10),
-      itemBuilder: (BuildContext context, int index) {
-        return categoryWidgets[index];
-      },
+    return switch (categoryWidgets.length) {
+      == 0 => const SingleChildScrollView(child: EmptyMessage()),
+      _ => ListView.separated(
+          itemCount: categoryWidgets.length,
+          separatorBuilder: (BuildContext context, int index) =>
+              const SizedBox(height: 10),
+          itemBuilder: (BuildContext context, int index) {
+            return categoryWidgets[index];
+          },
+        )
+    };
+  }
+}
+
+class EmptyMessage extends StatelessWidget {
+  const EmptyMessage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Card(
+    color: Color(0xBBE0E0E0),
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text("No Notifications", style: TextStyle(color: Colors.white)),
+      ),
     );
   }
 }
