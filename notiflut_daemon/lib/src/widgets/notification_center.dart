@@ -83,18 +83,26 @@ class LeftPanel extends StatelessWidget {
             PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
           },
         ),
-        const Padding(
-          padding: EdgeInsets.all(30.0),
-          child: Card(
-            child: Row(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text("coucou"),
-                  ],
-                ),
-              ],
+        Center(
+          child: SizedBox(
+          width: 500,
+          height: 500,
+            child: Card(
+              child: Row(
+              mainAxisSize: MainAxisSize.max,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Container(
+                        color: Colors.red,
+                        width: 400,
+                      ),
+                      Text("coucou"),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
