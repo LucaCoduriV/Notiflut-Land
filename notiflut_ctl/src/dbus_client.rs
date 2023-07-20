@@ -11,7 +11,6 @@ pub const NOTIFICATION_INTERFACE: &str = "org.freedesktop.Notifications";
 pub const NOTIFICATION_PATH: &str = "/org/freedesktop/Notifications";
 
 pub struct DbusClient<'a> {
-    connection: Rc<Connection>,
     proxy: Proxy<'a, Rc<Connection>>,
 }
 
@@ -20,7 +19,6 @@ impl<'a> DbusClient<'a> {
         let connection = Connection::new_session()?;
         let ref_counter = Rc::new(connection);
         let dc: DbusClient = Self {
-            connection: ref_counter.clone(),
             proxy: Proxy::new(
                 NOTIFICATION_INTERFACE,
                 format!("{NOTIFICATION_PATH}/ctl"),
