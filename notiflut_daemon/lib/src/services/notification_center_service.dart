@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import '../dto/image_data.dart';
 import '../dto/notification_popup_data.dart';
 import '../native.dart' as nati;
-import '../native/bridge_definitions.dart' as nati;
 import '../window_manager.dart';
 import 'popup_window_service.dart';
 
@@ -83,7 +82,7 @@ class NotificationCenterService extends ChangeNotifier {
                 rowstride: rowstride,
               ),
             nati.ImageSource_Path(field0: final path) => ImageData(path: path),
-            null => null,
+            _ => null,
           };
 
           ImageData? iconData = switch (notification.appIcon) {
@@ -104,7 +103,7 @@ class NotificationCenterService extends ChangeNotifier {
                 rowstride: rowstride,
               ),
             nati.ImageSource_Path(field0: final path) => ImageData(path: path),
-            null => null,
+            _ => null,
           };
 
           try {

@@ -3,7 +3,6 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:notiflut_land/src/utils.dart';
 import 'package:notiflut_land/src/widgets/notification.dart';
 import '../native.dart' as nati;
-import '../native/bridge_definitions.dart' as nati;
 
 class NotificationCategory extends StatefulWidget {
   final String appName;

@@ -10,7 +10,6 @@ import 'package:window_manager/window_manager.dart';
 
 import '../dto/image_data.dart';
 import '../native.dart' as nati;
-import '../native/bridge_definitions.dart' as nati;
 import '../services/popup_window_service.dart';
 import '../utils.dart';
 import '../window_manager.dart';
@@ -161,7 +160,7 @@ class _RightPanelState extends State<RightPanel> with GetItStateMixin {
           rowstride: rowstride,
         ),
       nati.ImageSource_Path(field0: final path) => ImageData(path: path),
-      null => null,
+      _ => null,
     };
 
     ImageData? iconData = switch (notification.appIcon) {
@@ -182,7 +181,7 @@ class _RightPanelState extends State<RightPanel> with GetItStateMixin {
           rowstride: rowstride,
         ),
       nati.ImageSource_Path(field0: final path) => ImageData(path: path),
-      null => null,
+      _ => null,
     };
 
     ImageProvider<Object>? imageProvider =
