@@ -29,5 +29,6 @@ class ImageData with _$ImageData {
     final bool? alpha,
   }) = _ImageData;
 
-factory ImageData.fromJson(Map<String, dynamic> json) => _$ImageDataFromJson(json);
+  factory ImageData.fromJson(Map<String, Object?> json) =>
+      _$ImageDataFromJson(json);
 }

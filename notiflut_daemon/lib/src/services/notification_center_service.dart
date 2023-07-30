@@ -117,9 +117,10 @@ class NotificationCenterService extends ChangeNotifier {
               image: imageData,
               actions: notification.actions,
             );
-            // PopUpWindowManager().showPopUp(args.toJson());
+
+            PopUpWindowManager().showPopUp(args.toJson());
           } catch (e) {
-            log("error while parsing notification: $e");
+            print("error while parsing notification: $e");
           }
         }
       default:

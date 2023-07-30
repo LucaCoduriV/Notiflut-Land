@@ -26,6 +26,7 @@ class PopupWindowService extends ChangeNotifier {
     int fromWindowId,
   ) async {
     final action = PopupWindowAction.fromString(call.method);
+    print("LETS GO !");
     switch (action) {
       case PopupWindowAction.showPopup:
         if (ncState == NotificationCenterState.open) {
@@ -55,6 +56,7 @@ class PopupWindowService extends ChangeNotifier {
       default:
         break;
     }
+    print("DONE !!!");
   }
 }
 

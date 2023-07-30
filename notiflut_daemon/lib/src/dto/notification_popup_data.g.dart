@@ -33,6 +33,6 @@ Map<String, dynamic> _$$_NotificationPopupDataToJson(
       'body': instance.body,
       'timeout': instance.timeout,
       'actions': instance.actions,
-      'icon': instance.icon,
-      'image': instance.image,
+      'icon': instance.icon?.toJson(),
+      'image': instance.image?.toJson(),
     };

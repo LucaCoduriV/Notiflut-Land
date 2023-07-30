@@ -57,11 +57,7 @@ class _Content extends StatelessWidget {
           width: 500,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                RightPanel(),
-              ],
-            ),
+            child: RightPanel(),
           ),
         ),
       ],
