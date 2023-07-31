@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:developer';
+import 'dart:convert';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +118,7 @@ class NotificationCenterService extends ChangeNotifier {
               actions: notification.actions,
             );
 
-            PopUpWindowManager().showPopUp(args.toJson());
+            PopUpWindowManager().showPopUp(jsonEncode(args.toJson()));
           } catch (e) {
             print("error while parsing notification: $e");
           }

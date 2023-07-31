@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,13 +28,13 @@ class PopupWindowService extends ChangeNotifier {
     int fromWindowId,
   ) async {
     final action = PopupWindowAction.fromString(call.method);
-    print("LETS GO !");
     switch (action) {
       case PopupWindowAction.showPopup:
         if (ncState == NotificationCenterState.open) {
           return;
         }
-        final args = NotificationPopupData.fromJson(call.arguments);
+        final arguments = jsonDecode(call.arguments);
+        final args = NotificationPopupData.fromJson(arguments);
         _notifications.add(args);
         // The delayed is used to hide the notification automatically after it was
         // shown.
@@ -56,7 +58,6 @@ class PopupWindowService extends ChangeNotifier {
       default:
         break;
     }
-    print("DONE !!!");
   }
 }
 

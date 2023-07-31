@@ -21,5 +21,5 @@ class NotificationPopupData with _$NotificationPopupData {
     ImageData? image,
   }) = _NotificationPopupData;
 
-factory NotificationPopupData.fromJson(Map<String, Object?> json) => _$NotificationPopupDataFromJson(json);
+factory NotificationPopupData.fromJson(Map<String, dynamic> json) => _$NotificationPopupDataFromJson(json);
 }

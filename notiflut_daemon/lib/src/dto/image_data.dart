@@ -8,8 +8,9 @@ class Uint8ListConverter implements JsonConverter<Uint8List?, List<int>?> {
   const Uint8ListConverter();
 
   @override
-  Uint8List? fromJson(List<int>? json) {
-    return json == null ? null : Uint8List.fromList(json);
+  Uint8List? fromJson(List<dynamic>? json) {
+    final list = json?.cast<int>();
+    return json == null ? null : Uint8List.fromList(list!);
   }
 
   @override
@@ -29,6 +30,6 @@ class ImageData with _$ImageData {
     final bool? alpha,
   }) = _ImageData;
 
-  factory ImageData.fromJson(Map<String, Object?> json) =>
+  factory ImageData.fromJson(Map<String, dynamic> json) =>
       _$ImageDataFromJson(json);
 }
