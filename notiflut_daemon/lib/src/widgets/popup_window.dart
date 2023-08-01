@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
@@ -134,8 +135,8 @@ class _PopupWindowState extends State<PopupWindow> with GetItStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final datas = watchOnly((PopupWindowService s) => s.notifications);
-    print("REBUILDING !!");
+    final service = watchOnly<PopupWindowService, PopupWindowService >(null);
+    final datas = service.notifications;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

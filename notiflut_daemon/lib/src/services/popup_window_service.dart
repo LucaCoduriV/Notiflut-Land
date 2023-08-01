@@ -35,12 +35,7 @@ class PopupWindowService extends ChangeNotifier {
         }
         final arguments = jsonDecode(call.arguments);
         final args = NotificationPopupData.fromJson(arguments);
-        final List<NotificationPopupData> newArray = [];
-        for (var element in _notifications) {
-          newArray.add(element);
-        }
-        newArray.add(args);
-        _notifications = newArray;
+        _notifications.add(args);
         // The delayed is used to hide the notification automatically after it was
         // shown.
         Future.delayed(Duration(seconds: 5, milliseconds: timeToWaitBeforeShow),
