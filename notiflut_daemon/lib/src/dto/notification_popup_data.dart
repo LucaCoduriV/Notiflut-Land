@@ -38,6 +38,6 @@ factory NotificationPopupData.fromJson(Map<String, dynamic> json) => _$Notificat
 
   @override
   // TODO: implement hashCode
-  int get hashCode => id.hashCode;
+  int get hashCode => Object.hash(id, summary, appName, body, timeout);
 
 }

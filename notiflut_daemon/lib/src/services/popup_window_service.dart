@@ -8,7 +8,7 @@ import '../dto/notification_popup_data.dart';
 import '../window_manager.dart';
 
 class PopupWindowService extends ChangeNotifier {
-  List<NotificationPopupData> _notifications = [];
+  final List<NotificationPopupData> _notifications = [];
   NotificationCenterState ncState = NotificationCenterState.close;
   final LayerShellController layerController;
 
