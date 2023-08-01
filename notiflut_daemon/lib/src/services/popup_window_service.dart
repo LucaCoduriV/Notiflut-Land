@@ -8,7 +8,7 @@ import '../dto/notification_popup_data.dart';
 import '../window_manager.dart';
 
 class PopupWindowService extends ChangeNotifier {
-  final List<NotificationPopupData> _notifications = [];
+  List<NotificationPopupData> _notifications = [];
   NotificationCenterState ncState = NotificationCenterState.close;
   final LayerShellController layerController;
 
@@ -35,7 +35,12 @@ class PopupWindowService extends ChangeNotifier {
         }
         final arguments = jsonDecode(call.arguments);
         final args = NotificationPopupData.fromJson(arguments);
-        _notifications.add(args);
+        final List<NotificationPopupData> newArray = [];
+        for (var element in _notifications) {
+          newArray.add(element);
+        }
+        newArray.add(args);
+        _notifications = newArray;
         // The delayed is used to hide the notification automatically after it was
         // shown.
         Future.delayed(Duration(seconds: 5, milliseconds: timeToWaitBeforeShow),
@@ -47,6 +52,7 @@ class PopupWindowService extends ChangeNotifier {
           }
           notifyListeners();
         });
+        print("Show popup !");
         notifyListeners();
         await Future.delayed(Duration(milliseconds: timeToWaitBeforeShow));
         layerController.show();

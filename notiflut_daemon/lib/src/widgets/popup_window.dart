@@ -135,6 +135,7 @@ class _PopupWindowState extends State<PopupWindow> with GetItStateMixin {
   @override
   Widget build(BuildContext context) {
     final datas = watchOnly((PopupWindowService s) => s.notifications);
+    print("REBUILDING !!");
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
