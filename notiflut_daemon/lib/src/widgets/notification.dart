@@ -9,10 +9,11 @@ import 'package:flutter_html/flutter_html.dart';
 class NotificationAction {
   final Function() action;
   final String label;
+
   const NotificationAction(this.label, this.action);
 }
 
-Map<String, String> actions(List<String> actionsList) {
+Map<String, String> actionsListToMap(List<String> actionsList) {
   final Map<String, String> map = HashMap();
   for (int i = 0; i < actionsList.length; i += 2) {
     final actions = actionsList;
@@ -22,7 +23,7 @@ Map<String, String> actions(List<String> actionsList) {
   return map;
 }
 
-List<NotificationAction> buildFromActionList(
+List<NotificationAction> buildNotificationActionsFromMap(
     int id, Map<String, String> actions) {
   return actions.entries
       .where((element) => element.key != "default")

@@ -224,7 +224,7 @@ class _RightPanelState extends State<RightPanel> with GetItStateMixin {
             action: nati.DaemonAction.flutterClose(notification.id));
       },
       actions:
-          buildFromActionList(notification.id, actions(notification.actions)),
+          buildNotificationActionsFromMap(notification.id, actionsListToMap(notification.actions)),
       imageProvider: imageProvider,
       iconProvider: iconProvider,
     );

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
@@ -85,7 +84,7 @@ class _PopupWindowState extends State<PopupWindow> with GetItStateMixin {
       body,
       imageProvider: imageProvider,
       iconProvider: iconProvider,
-      actions: buildFromActionList(data.id, actions(data.actions)),
+      actions: buildFromActionList(data.id, actionsListToMap(data.actions)),
       onTileTap: () {
         //Send message to main window
         DesktopMultiWindow.invokeMethod(
