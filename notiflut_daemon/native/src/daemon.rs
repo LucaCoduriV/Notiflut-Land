@@ -1,7 +1,7 @@
 use ::dbus::{message::SignalArgs, Path};
 use flutter_rust_bridge::StreamSink;
 use std::{
-    sync::{mpsc::Receiver, Arc, Mutex, RwLock, RwLockWriteGuard},
+    sync::{mpsc::Receiver, Arc, Mutex},
     thread::JoinHandle,
     time::Duration,
 };
@@ -119,71 +119,68 @@ impl NotificationDaemon {
             *sr = Some(signal_recv);
         }
 
-        // this vector will handle all notifications received by dbus
-        // and will remain alive till the app is killed TODO: maybe we can remove the mutex by
-        // putting the notifications in the thread.
-        let notifications: Arc<RwLock<Vec<Notification>>> = Arc::new(RwLock::new(Vec::new()));
+        let action_join_handler = std::thread::spawn(move || {
+            let mut notifications: Vec<Notification> = Vec::new();
 
-        let action_join_handler = std::thread::spawn(move || loop {
-            let action = match flutter_and_dbus_recv.recv().unwrap() {
-                ChannelMessage::Message(m) => m,
-                ChannelMessage::Stop => {
-                    return Ok(());
-                }
-            };
+            loop {
+                let action = match flutter_and_dbus_recv.recv().unwrap() {
+                    ChannelMessage::Message(m) => m,
+                    ChannelMessage::Stop => {
+                        return Ok(());
+                    }
+                };
 
-            let result: Result<(), DaemonError> = match action {
-                DaemonAction::Show(notification) => Self::show_notification(
-                    notifications.write().unwrap(),
-                    &flutter_sender,
-                    notification,
-                ),
-                DaemonAction::Close(id) => {
-                    Self::close_notification(notifications.write().unwrap(), &flutter_sender, id)
-                }
-                DaemonAction::FlutterClose(id) => Self::on_notification_closed(
-                    notifications.write().unwrap(),
-                    &signal_sender,
-                    &flutter_sender,
-                    id,
-                ),
-                DaemonAction::FlutterCloseAll => Self::on_all_notifications_closed(
-                    notifications.write().unwrap(),
-                    &signal_sender,
-                    &flutter_sender,
-                ),
-                DaemonAction::FlutterActionInvoked(id, action_key) => Self::on_action_invoked(
-                    notifications.write().unwrap(),
-                    &signal_sender,
-                    &flutter_sender,
-                    id,
-                    action_key,
-                ),
-                DaemonAction::ShowNc => {
-                    flutter_sender.add(DaemonAction::ShowNc);
-                    Ok(())
-                }
-                DaemonAction::CloseNc => {
-                    flutter_sender.add(DaemonAction::CloseNc);
-                    Ok(())
-                }
-                DaemonAction::ToggleNc => {
-                    flutter_sender.add(DaemonAction::ToggleNc);
-                    Ok(())
-                }
-                DaemonAction::FlutterCloseAllApp(app_name) => {
-                    Self::on_all_app_notifications_closed(
-                        notifications.write().unwrap(),
+                let result: Result<(), DaemonError> = match action {
+                    DaemonAction::Show(notification) => {
+                        Self::show_notification(&mut notifications, &flutter_sender, notification)
+                    }
+                    DaemonAction::Close(id) => {
+                        Self::close_notification(&mut notifications, &flutter_sender, id)
+                    }
+                    DaemonAction::FlutterClose(id) => Self::on_notification_closed(
+                        &mut notifications,
                         &signal_sender,
                         &flutter_sender,
-                        app_name,
-                    )
-                }
-                _ => Err(DaemonError::Error),
-            };
+                        id,
+                    ),
+                    DaemonAction::FlutterCloseAll => Self::on_all_notifications_closed(
+                        &mut notifications,
+                        &signal_sender,
+                        &flutter_sender,
+                    ),
+                    DaemonAction::FlutterActionInvoked(id, action_key) => Self::on_action_invoked(
+                        &mut notifications,
+                        &signal_sender,
+                        &flutter_sender,
+                        id,
+                        action_key,
+                    ),
+                    DaemonAction::ShowNc => {
+                        flutter_sender.add(DaemonAction::ShowNc);
+                        Ok(())
+                    }
+                    DaemonAction::CloseNc => {
+                        flutter_sender.add(DaemonAction::CloseNc);
+                        Ok(())
+                    }
+                    DaemonAction::ToggleNc => {
+                        flutter_sender.add(DaemonAction::ToggleNc);
+                        Ok(())
+                    }
+                    DaemonAction::FlutterCloseAllApp(app_name) => {
+                        Self::on_all_app_notifications_closed(
+                            &mut notifications,
+                            &signal_sender,
+                            &flutter_sender,
+                            app_name,
+                        )
+                    }
+                    _ => Err(DaemonError::Error),
+                };
 
-            if result.is_err() {
-                return result;
+                if result.is_err() {
+                    return result;
+                }
             }
         });
         action_join_handler
@@ -191,7 +188,7 @@ impl NotificationDaemon {
 
     /// It tells to flutter to show a new notification
     pub fn show_notification(
-        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        notifications_mutex: &mut Vec<Notification>,
         flutter_sender: &StreamSink<DaemonAction>,
         notification: Notification,
     ) -> Result<(), DaemonError> {
@@ -214,7 +211,7 @@ impl NotificationDaemon {
     }
 
     pub fn on_action_invoked(
-        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        notifications_mutex: &mut Vec<Notification>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &StreamSink<DaemonAction>,
         id: u32,
@@ -235,7 +232,7 @@ impl NotificationDaemon {
     /// It tells to dbus that a user closed a notification from flutter.
     /// This allows app to now if a notification was read.
     pub fn on_notification_closed(
-        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        notifications_mutex: &mut Vec<Notification>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &StreamSink<DaemonAction>,
         id: u32,
@@ -258,7 +255,7 @@ impl NotificationDaemon {
     /// It closes a notification.
     /// Usually this will be called by apps to close their notification when not needed anymore.
     pub fn close_notification(
-        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        notifications_mutex: &mut Vec<Notification>,
         flutter_sender: &StreamSink<DaemonAction>,
         id: u32,
     ) -> Result<(), DaemonError> {
@@ -277,7 +274,7 @@ impl NotificationDaemon {
     ///
     /// This function will return an error if channel are closed.
     pub fn on_all_notifications_closed(
-        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        notifications_mutex: &mut Vec<Notification>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &StreamSink<DaemonAction>,
     ) -> Result<(), DaemonError> {
@@ -300,7 +297,7 @@ impl NotificationDaemon {
 
     /// It allow Flutter to close all notification related to a specific app.
     pub fn on_all_app_notifications_closed(
-        mut notifications_mutex: RwLockWriteGuard<Vec<Notification>>,
+        notifications_mutex: &mut Vec<Notification>,
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &StreamSink<DaemonAction>,
         app_name: String,
