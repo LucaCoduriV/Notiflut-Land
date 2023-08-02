@@ -4,7 +4,6 @@ import 'image_data.dart';
 part 'notification_popup_data.freezed.dart';
 part 'notification_popup_data.g.dart';
 
-
 /// This classed is used to transfer data between the main thread and
 /// the thread used to show popups.
 /// TODO transfer data as bytes to be faster.
@@ -21,23 +20,24 @@ class NotificationPopupData with _$NotificationPopupData {
     ImageData? image,
   }) = _NotificationPopupData;
 
-factory NotificationPopupData.fromJson(Map<String, dynamic> json) => _$NotificationPopupDataFromJson(json);
+  factory NotificationPopupData.fromJson(Map<String, dynamic> json) =>
+      _$NotificationPopupDataFromJson(json);
 
-  // @override
-  // bool operator ==(Object other) {
-  //   return other is NotificationPopupData 
-  //   && other.id == id 
-  //   && other.summary == summary
-  //   && other.appName == appName
-  //   && other.body == body
-  //   && other.timeout == timeout
-  //   && other.actions == actions
-  //   && other.icon == icon
-  //   && other.image == image;
-  // }
-  //
-  // @override
-  // // TODO: implement hashCode
-  // int get hashCode => Object.hash(id, summary, appName, body, timeout);
+  NotificationPopupData._();
 
+  @override
+  bool operator ==(Object other) {
+    return other is NotificationPopupData &&
+        other.id == id &&
+        other.summary == summary &&
+        other.appName == appName &&
+        other.body == body &&
+        other.timeout == timeout &&
+        other.actions == actions &&
+        other.icon == icon &&
+        other.image == image;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, summary, appName, body, timeout);
 }

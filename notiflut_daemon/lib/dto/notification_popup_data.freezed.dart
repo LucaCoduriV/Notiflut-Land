@@ -223,7 +223,7 @@ class __$$_NotificationPopupDataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_NotificationPopupData implements _NotificationPopupData {
+class _$_NotificationPopupData extends _NotificationPopupData {
   _$_NotificationPopupData(
       {required this.id,
       required this.summary,
@@ -233,7 +233,8 @@ class _$_NotificationPopupData implements _NotificationPopupData {
       required final List<String> actions,
       this.icon,
       this.image})
-      : _actions = actions;
+      : _actions = actions,
+        super._();
 
   factory _$_NotificationPopupData.fromJson(Map<String, dynamic> json) =>
       _$$_NotificationPopupDataFromJson(json);
@@ -266,26 +267,6 @@ class _$_NotificationPopupData implements _NotificationPopupData {
     return 'NotificationPopupData(id: $id, summary: $summary, appName: $appName, body: $body, timeout: $timeout, actions: $actions, icon: $icon, image: $image)';
   }
 
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$_NotificationPopupData &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.summary, summary) || other.summary == summary) &&
-            (identical(other.appName, appName) || other.appName == appName) &&
-            (identical(other.body, body) || other.body == body) &&
-            (identical(other.timeout, timeout) || other.timeout == timeout) &&
-            const DeepCollectionEquality().equals(other._actions, _actions) &&
-            (identical(other.icon, icon) || other.icon == icon) &&
-            (identical(other.image, image) || other.image == image));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, summary, appName, body,
-      timeout, const DeepCollectionEquality().hash(_actions), icon, image);
-
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
@@ -301,7 +282,7 @@ class _$_NotificationPopupData implements _NotificationPopupData {
   }
 }
 
-abstract class _NotificationPopupData implements NotificationPopupData {
+abstract class _NotificationPopupData extends NotificationPopupData {
   factory _NotificationPopupData(
       {required final int id,
       required final String summary,
@@ -311,6 +292,7 @@ abstract class _NotificationPopupData implements NotificationPopupData {
       required final List<String> actions,
       final ImageData? icon,
       final ImageData? image}) = _$_NotificationPopupData;
+  _NotificationPopupData._() : super._();
 
   factory _NotificationPopupData.fromJson(Map<String, dynamic> json) =
       _$_NotificationPopupData.fromJson;
