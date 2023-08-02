@@ -8,7 +8,7 @@ use lib_flutter_rust_bridge_codegen::*;
 
 // const INTROSPECTION_PATH: &str = "dbus/introspection.xml";
 const RUST_INPUT: &str = "src/api.rs";
-const DART_OUTPUT: &str = "../lib/src/native/bridge_generated.dart";
+const DART_OUTPUT: &str = "../lib/native/bridge_generated.dart";
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Only rerun when the API file changes.

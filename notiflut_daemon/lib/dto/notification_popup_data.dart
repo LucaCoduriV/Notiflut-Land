@@ -23,21 +23,21 @@ class NotificationPopupData with _$NotificationPopupData {
 
 factory NotificationPopupData.fromJson(Map<String, dynamic> json) => _$NotificationPopupDataFromJson(json);
 
-  @override
-  bool operator ==(Object other) {
-    return other is NotificationPopupData 
-    && other.id == id 
-    && other.summary == summary
-    && other.appName == appName
-    && other.body == body
-    && other.timeout == timeout
-    && other.actions == actions
-    && other.icon == icon
-    && other.image == image;
-  }
-
-  @override
-  // TODO: implement hashCode
-  int get hashCode => Object.hash(id, summary, appName, body, timeout);
+  // @override
+  // bool operator ==(Object other) {
+  //   return other is NotificationPopupData 
+  //   && other.id == id 
+  //   && other.summary == summary
+  //   && other.appName == appName
+  //   && other.body == body
+  //   && other.timeout == timeout
+  //   && other.actions == actions
+  //   && other.icon == icon
+  //   && other.image == image;
+  // }
+  //
+  // @override
+  // // TODO: implement hashCode
+  // int get hashCode => Object.hash(id, summary, appName, body, timeout);
 
 }

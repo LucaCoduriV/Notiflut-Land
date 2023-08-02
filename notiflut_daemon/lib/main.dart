@@ -3,12 +3,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:notiflut_land/src/services/notification_center_service.dart';
-import 'package:notiflut_land/src/services/popup_window_service.dart';
-import './src/widgets/notification_center.dart';
-import './src/widgets/popup_window.dart';
-import './src/window_manager.dart';
-import './src/native.dart' as nati;
+import 'services/notification_center_service.dart';
+import 'services/popup_window_service.dart';
+import './widgets/notification_center.dart';
+import './widgets/popup_window.dart';
+import './window_manager.dart';
+import './native.dart' as nati;
 // import './src/native/bridge_definitions.dart' as nati;
 
 import 'package:window_manager/window_manager.dart';

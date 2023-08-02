@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
-import 'package:notiflut_land/src/services/notification_center_service.dart';
-import 'package:notiflut_land/src/widgets/category.dart';
+import '../services/notification_center_service.dart';
+import 'category.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../dto/image_data.dart';

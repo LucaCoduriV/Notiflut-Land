@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:notiflut_land/src/utils.dart';
-import 'package:notiflut_land/src/widgets/notification.dart';
+import 'package:notiflut_land/utils.dart';
+import 'package:notiflut_land/widgets/notification.dart';
 import '../native.dart' as nati;
 
 class NotificationCategory extends StatefulWidget {

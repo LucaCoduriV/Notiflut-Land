@@ -8,7 +8,7 @@ part of 'image_data.dart';
 
 _$_ImageData _$$_ImageDataFromJson(Map<String, dynamic> json) => _$_ImageData(
       path: json['path'] as String?,
-      data: const Uint8ListConverter().fromJson(json['data'] as List<dynamic>?),
+      data: const Uint8ListConverter().fromJson(json['data'] as List<int>?),
       height: json['height'] as int?,
       width: json['width'] as int?,
       rowstride: json['rowstride'] as int?,
