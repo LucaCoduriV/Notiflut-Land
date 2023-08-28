@@ -39,7 +39,7 @@ dependencies:
     freezed_annotation: ^2.4.1
     image: ^4.0.16
     window_manager: ^0.3.2
-    flutter_html: ^2.2.1
+    flutter_html: ^3.0.0-beta.2
     open_url: ^2.0.1
     desktop_multi_window:
         git:
@@ -49,6 +49,7 @@ dependencies:
     get_it: ^7.6.0
     get_it_mixin: ^4.2.0
     json_annotation: ^4.8.1
+    flutter_layout_grid: ^2.0.4
 
 dependency_overrides:
     flutter_svg: ^1.0.0

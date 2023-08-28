@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:open_url/open_url.dart';
@@ -27,32 +26,30 @@ List<NotificationAction> buildNotificationActionsFromMap(
     int id, Map<String, String> actions) {
   return actions.entries
       .where((element) => element.key != "default")
-      .map(
-        (entry) => NotificationAction(entry.value, () async {
-          await nati.api.sendDaemonAction(
-              action: nati.DaemonAction.flutterActionInvoked(id, entry.key));
-        })
-      )
+      .map((entry) => NotificationAction(entry.value, () async {
+            await nati.api.sendDaemonAction(
+                action: nati.DaemonAction.flutterActionInvoked(id, entry.key));
+          }))
       .toList();
 }
 
-/// This function is used to render html images
-ImageSourceMatcher _fileUriMatcher() => (attributes, element) {
-      return attributes['src'] != null &&
-          attributes['src']!.startsWith("file://");
-    };
-
-/// This function is used to render html images
-ImageRender _fileUriRenderer() => (context, attributes, element) {
-      String src = attributes["src"]!.replaceFirst("file://", "");
-      var image = Image.file(
-        File(src),
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: 200.0,
-      );
-      return image;
-    };
+// /// This function is used to render html images
+// ImageSourceMatcher _fileUriMatcher() => (attributes, element) {
+//       return attributes['src'] != null &&
+//           attributes['src']!.startsWith("file://");
+//     };
+//
+// /// This function is used to render html images
+// ImageRender _fileUriRenderer() => (context, attributes, element) {
+//       String src = attributes["src"]!.replaceFirst("file://", "");
+//       var image = Image.file(
+//         File(src),
+//         fit: BoxFit.cover,
+//         width: double.infinity,
+//         height: 200.0,
+//       );
+//       return image;
+//     };
 
 class NotificationTile extends StatelessWidget {
   final int id;
@@ -148,25 +145,37 @@ class NotificationTile extends StatelessWidget {
             onTap: onTileTap,
             subtitle: Html(
               data: body.replaceAll("\\n", "</br>"),
-              customImageRenders: {
-                _fileUriMatcher(): _fileUriRenderer(),
-                assetUriMatcher(): assetImageRender(),
-                networkSourceMatcher(extension: "svg"): svgNetworkImageRender(),
-                networkSourceMatcher(): networkImageRender(),
-              },
-              onLinkTap: (link, context, _, element) {
+              extensions: [
+                ImageExtension(
+                    networkSchemas: {"file://"},
+                    builder: (extensionContext) {
+                      final element = extensionContext.styledElement;
+                      return Image.network(
+                        element!.attributes["src"]!.replaceAll("file://", ""),
+                        width: double.infinity,
+                        height: 200.0,
+                      );
+                    }),
+              ],
+              // customImageRenders: {
+              //   _fileUriMatcher(): _fileUriRenderer(),
+              //   assetUriMatcher(): assetImageRender(),
+              //   networkSourceMatcher(extension: "svg"): svgNetworkImageRender(),
+              //   networkSourceMatcher(): networkImageRender(),
+              // },
+              onLinkTap: (link, context, element) {
                 openUrl(link!);
               },
-              style: {
-                "body": Style(
-                  margin: const EdgeInsets.all(0),
-                  padding: const EdgeInsets.all(0),
-                ),
-                "img": Style(
-                  display: Display.BLOCK,
-                  width: double.infinity,
-                ),
-              },
+              // style: {
+              //   "body": Style(
+              //     margin: const EdgeInsets.all(0),
+              //     padding: const EdgeInsets.all(0),
+              //   ),
+              //   "img": Style(
+              //     display: Display.BLOCK,
+              //     width: double.infinity,
+              //   ),
+              // },
             ),
             leading: CircleAvatar(
               backgroundColor: Colors.transparent,
