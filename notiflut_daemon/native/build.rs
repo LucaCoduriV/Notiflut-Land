@@ -1,21 +1,20 @@
-// use dbus_codegen::{ConnectionType, GenOpts, ServerAccess};
-// use std::env;
-use std::error::Error;
-// use std::fs;
-// use std::path::Path;
-
 use lib_flutter_rust_bridge_codegen::*;
+use std::error::Error;
 
-// const INTROSPECTION_PATH: &str = "dbus/introspection.xml";
-const RUST_INPUT: &str = "src/api.rs";
 const DART_OUTPUT: &str = "../lib/native/bridge_generated.dart";
+const DART_DECL_OUTPUT: &str = "lib/native/bridge_definitions.dart";
+const RUST_INPUT: &str = "src/api.rs";
+const RUST_OUTPUT: &str = "src/bridge_generated/mod.rs";
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Only rerun when the API file changes.
     println!("cargo:rerun-if-changed={}", RUST_INPUT);
     let configs = config_parse(RawOpts {
+        skip_add_mod_to_lib: true,
         rust_input: vec![RUST_INPUT.to_string()],
+        rust_output: Some(vec![RUST_OUTPUT.to_string()]),
         dart_output: vec![DART_OUTPUT.to_string()],
+        dart_decl_output: None,
         wasm: false,
 
         c_output: None,
@@ -26,28 +25,5 @@ fn main() -> Result<(), Box<dyn Error>> {
             frb_codegen(config, &symbols).unwrap();
         }
     }
-
-    // let introspection = fs::read_to_string(INTROSPECTION_PATH)?;
-    // let out_dir = env::var_os("OUT_DIR").ok_or("OUT_DIR is not set")?;
-    //
-    // let gen_path = Path::new(&out_dir).join("introspection.rs");
-    // let gen_opts = GenOpts {
-    //     methodtype: None,
-    //     crossroads: true,
-    //     skipprefix: None,
-    //     serveraccess: ServerAccess::RefClosure,
-    //     genericvariant: false,
-    //     connectiontype: ConnectionType::Blocking,
-    //     propnewtype: false,
-    //     interfaces: None,
-    //     ..Default::default()
-    // };
-    //
-    // let code = dbus_codegen::generate(&introspection, &gen_opts)?;
-    // fs::write(&gen_path, code)?;
-    //
-    // println!("D-Bus code generated at {gen_path:?}");
-    // println!("cargo:rerun-if-changed={INTROSPECTION_PATH}");
-    // println!("cargo:rerun-if-changed=build.rs");
     Ok(())
 }
