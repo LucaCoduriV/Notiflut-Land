@@ -76,30 +76,8 @@ class LeftPanel extends StatelessWidget {
           onTap: () {
             LayerShellController.main().hide();
             PopUpWindowManager().ncStateUpdate(NotificationCenterState.close);
+            ffi.api.sendDaemonAction(action: ffi.DaemonAction.flutterClosedNc());
           },
-        ),
-        Center(
-          child: SizedBox(
-          width: 500,
-          height: 500,
-            child: Card(
-              child: Row(
-              mainAxisSize: MainAxisSize.max,
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container(
-                        color: Colors.red,
-                        width: 400,
-                      ),
-                      Text("coucou"),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
         ),
       ],
     );

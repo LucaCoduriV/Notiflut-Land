@@ -62,6 +62,7 @@ class DaemonAction with _$DaemonAction {
     int field0,
     String field1,
   ) = DaemonAction_FlutterActionInvoked;
+  const factory DaemonAction.flutterClosedNc() = DaemonAction_FlutterClosedNc;
 }
 
 class Hints {
@@ -313,6 +314,8 @@ class NativeImpl implements Native {
           _wire2api_u32(raw[1]),
           _wire2api_String(raw[2]),
         );
+      case 10:
+        return DaemonAction_FlutterClosedNc();
       default:
         throw Exception("unreachable");
     }
@@ -681,6 +684,10 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       wireObj.kind = inner.inflate_DaemonAction_FlutterActionInvoked();
       wireObj.kind.ref.FlutterActionInvoked.ref.field0 = pre_field0;
       wireObj.kind.ref.FlutterActionInvoked.ref.field1 = pre_field1;
+      return;
+    }
+    if (apiObj is DaemonAction_FlutterClosedNc) {
+      wireObj.tag = 10;
       return;
     }
   }
@@ -1197,6 +1204,8 @@ final class wire_DaemonAction_FlutterActionInvoked extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> field1;
 }
 
+final class wire_DaemonAction_FlutterClosedNc extends ffi.Opaque {}
+
 final class DaemonActionKind extends ffi.Union {
   external ffi.Pointer<wire_DaemonAction_Show> Show;
 
@@ -1217,6 +1226,8 @@ final class DaemonActionKind extends ffi.Union {
   external ffi.Pointer<wire_DaemonAction_FlutterCloseAllApp> FlutterCloseAllApp;
 
   external ffi.Pointer<wire_DaemonAction_FlutterActionInvoked> FlutterActionInvoked;
+
+  external ffi.Pointer<wire_DaemonAction_FlutterClosedNc> FlutterClosedNc;
 }
 
 final class wire_DaemonAction extends ffi.Struct {

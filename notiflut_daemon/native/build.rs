@@ -2,7 +2,7 @@ use lib_flutter_rust_bridge_codegen::*;
 use std::error::Error;
 
 const DART_OUTPUT: &str = "../lib/native/bridge_generated.dart";
-const DART_DECL_OUTPUT: &str = "lib/native/bridge_definitions.dart";
+// const DART_DECL_OUTPUT: &str = "lib/native/bridge_definitions.dart";
 const RUST_INPUT: &str = "src/api.rs";
 const RUST_OUTPUT: &str = "src/bridge_generated/mod.rs";
 

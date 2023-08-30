@@ -91,6 +91,7 @@ pub enum DaemonAction {
     FlutterCloseAll,
     FlutterCloseAllApp(String),
     FlutterActionInvoked(u32, String),
+    FlutterClosedNc,
 }
 
 /// DbusNotification is responsible to react to dbus callbacks by sending

@@ -121,6 +121,7 @@ impl NotificationDaemon {
 
         let action_join_handler = std::thread::spawn(move || {
             let mut notifications: Vec<Notification> = Vec::new();
+            let mut is_open = false;
 
             loop {
                 let action = match flutter_and_dbus_recv.recv().unwrap() {
@@ -155,16 +156,31 @@ impl NotificationDaemon {
                         id,
                         action_key,
                     ),
+                    DaemonAction::FlutterClosedNc => {
+                        is_open = false;
+                        Ok(())
+                    }
                     DaemonAction::ShowNc => {
                         flutter_sender.add(DaemonAction::ShowNc);
+                        is_open = true;
                         Ok(())
                     }
                     DaemonAction::CloseNc => {
                         flutter_sender.add(DaemonAction::CloseNc);
+                        is_open = false;
                         Ok(())
                     }
                     DaemonAction::ToggleNc => {
-                        flutter_sender.add(DaemonAction::ToggleNc);
+                        match is_open {
+                            true => {
+                                flutter_sender.add(DaemonAction::CloseNc);
+                                is_open = false;
+                            }
+                            false => {
+                                flutter_sender.add(DaemonAction::ShowNc);
+                                is_open = true;
+                            }
+                        }
                         Ok(())
                     }
                     DaemonAction::FlutterCloseAllApp(app_name) => {

@@ -192,6 +192,7 @@ impl Wire2Api<DaemonAction> for wire_DaemonAction {
                 let ans = support::box_from_leak_ptr(ans.FlutterActionInvoked);
                 DaemonAction::FlutterActionInvoked(ans.field0.wire2api(), ans.field1.wire2api())
             },
+            10 => DaemonAction::FlutterClosedNc,
             _ => unreachable!(),
         }
     }
@@ -366,6 +367,7 @@ pub union DaemonActionKind {
     FlutterCloseAll: *mut wire_DaemonAction_FlutterCloseAll,
     FlutterCloseAllApp: *mut wire_DaemonAction_FlutterCloseAllApp,
     FlutterActionInvoked: *mut wire_DaemonAction_FlutterActionInvoked,
+    FlutterClosedNc: *mut wire_DaemonAction_FlutterClosedNc,
 }
 
 #[repr(C)]
@@ -421,6 +423,10 @@ pub struct wire_DaemonAction_FlutterActionInvoked {
     field0: u32,
     field1: *mut wire_uint_8_list,
 }
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_DaemonAction_FlutterClosedNc {}
 
 #[repr(C)]
 #[derive(Clone)]

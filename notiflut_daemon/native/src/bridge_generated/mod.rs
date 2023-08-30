@@ -169,6 +169,7 @@ impl support::IntoDart for DaemonAction {
             Self::FlutterActionInvoked(field0, field1) => {
                 vec![9.into_dart(), field0.into_dart(), field1.into_dart()]
             }
+            Self::FlutterClosedNc => vec![10.into_dart()],
         }
         .into_dart()
     }
