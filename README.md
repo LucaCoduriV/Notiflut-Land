@@ -32,9 +32,9 @@ This project is a notification center designed specifically for Wayland, impleme
 - [ ] Media player controller
 
 ## requirement
-- Flutter v. > 3.0 ![Download](https://docs.flutter.dev/get-started/install)
-- Rust ![Download](https://rustup.rs/)
-- Flutter-rust-bridge ![Tutorial](https://cjycode.com/flutter_rust_bridge/quickstart.html)
+- Flutter v. > 3.0 [Download](https://docs.flutter.dev/get-started/install)
+- Rust [Download](https://rustup.rs/)
+- Flutter-rust-bridge [Tutorial](https://cjycode.com/flutter_rust_bridge/quickstart.html)
 - gtk-layer-shell
 
 
