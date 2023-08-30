@@ -16,4 +16,6 @@ pub enum Commands {
     Hide,
     /// Toggle the notification center
     Toggle,
+    /// Get notifications status
+    Status,
 }
