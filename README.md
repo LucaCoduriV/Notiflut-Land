@@ -31,11 +31,18 @@ This project is a notification center designed specifically for Wayland, impleme
 - [ ] Widgets
 - [ ] Media player controller
 
+## requirement
+- Flutter v. > 3.0 ![Download](https://docs.flutter.dev/get-started/install)
+- Rust ![Download](https://rustup.rs/)
+- Flutter-rust-bridge ![Tutorial](https://cjycode.com/flutter_rust_bridge/quickstart.html)
+- gtk-layer-shell
+
 
 ## Installation
 People that can not wait to test it and are on Arch, can build it using `makepkg -d` with the build_script and install it using `pacman -U "zst path"`
     
 ## how to use
 
-bla bla bla
+Once notiflut is running, use notiflut_ctl to control it.
+For help menu use notiflut_ctl -h
 
