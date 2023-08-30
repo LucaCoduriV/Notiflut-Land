@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:open_url/open_url.dart';
 import '../native.dart' as ffi;
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/flutter_html.dart' show Margin, HtmlPadding;
 
 class NotificationAction {
   final Function() action;
@@ -142,16 +143,16 @@ class NotificationTile extends StatelessWidget {
               onLinkTap: (link, context, element) {
                 openUrl(link!);
               },
-              // style: {
-              //   "body": Style(
-              //     margin: const EdgeInsets.all(0),
-              //     padding: const EdgeInsets.all(0),
-              //   ),
-              //   "img": Style(
-              //     display: Display.BLOCK,
-              //     width: double.infinity,
-              //   ),
-              // },
+              style: {
+                "body": Style(
+                  margin: Margins.all(0.0),
+                  padding: HtmlPaddings.all(0.0),
+                ),
+                "img": Style(
+                  display: Display.block,
+                  width: Width.auto(),
+                ),
+              },
             ),
             leading: CircleAvatar(
               backgroundColor: Colors.transparent,
