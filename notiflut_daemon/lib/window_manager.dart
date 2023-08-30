@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/services.dart';
-import './native.dart' as nati;
+import './native.dart' as ffi;
 import 'services/popup_window_service.dart';
 
 class PopUpWindowManager {
@@ -60,13 +60,13 @@ class PopUpWindowManager {
     final action = PopupWindowAction.fromString(call.method);
     switch (action) {
       case PopupWindowAction.notificationAction:
-        await nati.api.sendDaemonAction(
-            action: nati.DaemonAction.flutterActionInvoked(
+        await ffi.api.sendDaemonAction(
+            action: ffi.DaemonAction.flutterActionInvoked(
                 call.arguments["id"], call.arguments["action"]));
         break;
       case PopupWindowAction.closeNotification:
-        await nati.api.sendDaemonAction(
-            action: nati.DaemonAction.flutterClose(call.arguments));
+        await ffi.api.sendDaemonAction(
+            action: ffi.DaemonAction.flutterClose(call.arguments));
         break;
       default:
         {}

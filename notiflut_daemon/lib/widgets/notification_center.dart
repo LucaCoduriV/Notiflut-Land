@@ -9,7 +9,7 @@ import 'category.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../dto/image_data.dart';
-import '../native.dart' as nati;
+import '../native.dart' as ffi;
 import '../services/popup_window_service.dart';
 import '../utils.dart';
 import '../window_manager.dart';
@@ -136,11 +136,11 @@ class _RightPanelState extends State<RightPanel> with GetItStateMixin {
 
   NotificationTile buildNotificationTile(
     BuildContext context,
-    nati.Notification notification,
+    ffi.Notification notification,
   ) {
     ImageData? imageData = switch (notification.appImage) {
-      nati.ImageSource_Data(
-        field0: nati.ImageData(
+      ffi.ImageSource_Data(
+        field0: ffi.ImageData(
           :final data,
           :final width,
           :final height,
@@ -155,13 +155,13 @@ class _RightPanelState extends State<RightPanel> with GetItStateMixin {
           alpha: onePointTwoBitAlpha,
           rowstride: rowstride,
         ),
-      nati.ImageSource_Path(field0: final path) => ImageData(path: path),
+      ffi.ImageSource_Path(field0: final path) => ImageData(path: path),
       _ => null,
     };
 
     ImageData? iconData = switch (notification.appIcon) {
-      nati.ImageSource_Data(
-        field0: nati.ImageData(
+      ffi.ImageSource_Data(
+        field0: ffi.ImageData(
           :final data,
           :final width,
           :final height,
@@ -176,7 +176,7 @@ class _RightPanelState extends State<RightPanel> with GetItStateMixin {
           alpha: onePointTwoBitAlpha,
           rowstride: rowstride,
         ),
-      nati.ImageSource_Path(field0: final path) => ImageData(path: path),
+      ffi.ImageSource_Path(field0: final path) => ImageData(path: path),
       _ => null,
     };
 
@@ -215,13 +215,13 @@ class _RightPanelState extends State<RightPanel> with GetItStateMixin {
       notification.body,
       createdAt: notification.createdAt,
       onTileTap: () async {
-        await nati.api.sendDaemonAction(
-            action: nati.DaemonAction.flutterActionInvoked(
+        await ffi.api.sendDaemonAction(
+            action: ffi.DaemonAction.flutterActionInvoked(
                 notification.id, "default"));
       },
       closeAction: () async {
-        await nati.api.sendDaemonAction(
-            action: nati.DaemonAction.flutterClose(notification.id));
+        await ffi.api.sendDaemonAction(
+            action: ffi.DaemonAction.flutterClose(notification.id));
       },
       actions:
           buildNotificationActionsFromMap(notification.id, actionsListToMap(notification.actions)),
@@ -236,7 +236,7 @@ class _RightPanelState extends State<RightPanel> with GetItStateMixin {
         watchOnly((NotificationCenterService s) => s.notifications);
     // TODO sort notification by date
     final notificationByCategory = notifications
-        .fold(<String, List<nati.Notification>>{}, (map, notification) {
+        .fold(<String, List<ffi.Notification>>{}, (map, notification) {
       final key = notification.appName;
 
       map.putIfAbsent(key, () => []);

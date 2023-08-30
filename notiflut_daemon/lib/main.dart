@@ -8,8 +8,7 @@ import 'services/popup_window_service.dart';
 import './widgets/notification_center.dart';
 import './widgets/popup_window.dart';
 import './window_manager.dart';
-import './native.dart' as nati;
-// import './src/native/bridge_definitions.dart' as nati;
+import './native.dart' as ffi;
 
 import 'package:window_manager/window_manager.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
@@ -57,7 +56,7 @@ void mainNotificationCenter() async {
     await windowManager.setPosition(const Offset(100, 100));
     await windowManager.hide();
   });
-  await nati.api.setup();
+  await ffi.api.setup();
 
   final notificationCenterService = NotificationCenterService();
   notificationCenterService.init();

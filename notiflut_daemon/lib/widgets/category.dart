@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:notiflut_land/utils.dart';
 import 'package:notiflut_land/widgets/notification.dart';
-import '../native.dart' as nati;
+import '../native.dart' as ffi;
 
 class NotificationCategory extends StatefulWidget {
   final String appName;
@@ -74,8 +74,8 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                         color: Colors.black,
                       ),
                       onPressed: () {
-                        nati.api.sendDaemonAction(
-                            action: nati.DaemonAction.flutterCloseAllApp(
+                        ffi.api.sendDaemonAction(
+                            action: ffi.DaemonAction.flutterCloseAllApp(
                                 widget.appName));
                       },
                     ),
