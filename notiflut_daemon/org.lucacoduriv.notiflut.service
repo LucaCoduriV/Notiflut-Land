@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=org.freedesktop.Notifications
-Exec=/opt/notiflut/notiflut_land
-SystemdService=notiflut.service

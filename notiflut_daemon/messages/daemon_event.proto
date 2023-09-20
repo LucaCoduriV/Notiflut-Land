@@ -1,0 +1,71 @@
+syntax = "proto3";
+package daemon_event;
+
+import "google/protobuf/timestamp.proto";
+
+message SignalAppEvent {
+  enum AppEventType {
+    Update = 0;
+    ShowNotificationCenter = 1;
+    HideNotificationCenter = 2;
+  }
+  AppEventType type = 1;
+  repeated Notification notifications = 2;
+  optional uint64 lastNotificationId = 3;
+}
+
+
+message Notification {
+  uint32 id = 1;
+  string app_name = 2;
+  uint32 replaces_id = 3;
+  string summary = 4;
+  string body = 5;
+  repeated string actions = 6;
+  int32 timeout = 7;
+  google.protobuf.Timestamp created_at = 8;
+  Hints hints = 9;
+  optional ImageSource app_icon = 10;
+  optional ImageSource app_image = 11;
+}
+
+
+message Hints {
+  enum Urgency {
+      Low = 0;
+      Normal = 1;
+      Critical = 2;
+  }
+  optional bool actions_icon = 1;
+  optional string category = 2;
+  optional string desktop_entry = 3;
+  optional bool resident = 4;
+  optional string sound_file = 5;
+  optional string sound_name = 6;
+  optional bool suppress_sound = 7;
+  optional bool transient = 8;
+  optional int32 x = 9;
+  optional int32 y = 10;
+  optional Urgency urgency = 11;
+}
+
+
+message ImageSource {
+  enum ImageSourceType {
+    Data = 0;
+    Path = 1;
+  }
+  ImageSourceType type = 1;
+  optional ImageData image_data = 2;
+  optional string path = 3;
+}
+
+message ImageData {
+  int32 width = 1;
+  int32 height = 2;
+  int32 rowstride = 3;
+  bool one_point_two_bit_alpha = 4;
+  int32 bits_per_sample = 5;
+  int32 channels = 6;
+  repeated uint32 data = 7;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+package app_event;
+
+
+enum AppEventType {
+    Close = 0;
+    CloseAll = 1;
+    CloseAllApp = 2;
+    ActionInvoked = 3;
+    CloseNotification = 4;
+}
+
+message AppEvent {
+  AppEventType type = 1;
+  optional uint32 notification_id = 2;
+  optional string data = 3;
+}

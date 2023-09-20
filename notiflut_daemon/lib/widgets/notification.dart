@@ -1,10 +1,9 @@
+
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:open_url/open_url.dart';
-import '../native.dart' as ffi;
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/flutter_html.dart' show Margin, HtmlPadding;
 
 class NotificationAction {
   final Function() action;
@@ -13,26 +12,27 @@ class NotificationAction {
   const NotificationAction(this.label, this.action);
 }
 
-Map<String, String> actionsListToMap(List<String> actionsList) {
-  final Map<String, String> map = HashMap();
+/// Transforms the list of string to list of tuple
+/// We do this beacause the data received by rust is organized like that.
+List<(String, String)> actionsListToMap(List<String> actionsList) {
+  List<(String, String)> newList = [];
+
   for (int i = 0; i < actionsList.length; i += 2) {
-    final actions = actionsList;
-    map[actions[i]] = actions[i + 1];
+    newList.add((actionsList[i], actionsList[i+1]));
   }
-
-  return map;
+  return newList;
 }
 
-List<NotificationAction> buildNotificationActionsFromMap(
-    int id, Map<String, String> actions) {
-  return actions.entries
-      .where((element) => element.key != "default")
-      .map((entry) => NotificationAction(entry.value, () async {
-            await ffi.api.sendDaemonAction(
-                action: ffi.DaemonAction.flutterActionInvoked(id, entry.key));
-          }))
-      .toList();
-}
+// List<NotificationAction> buildNotificationActionsFromMap(
+//     int id, Map<String, String> actions) {
+//   return actions.entries
+//       .where((element) => element.key != "default")
+//       .map((entry) => NotificationAction(entry.value, () async {
+//             await ffi.api.sendDaemonAction(
+//                 action: ffi.DaemonAction.flutterActionInvoked(id, entry.key));
+//           }))
+//       .toList();
+// }
 
 class NotificationTile extends StatelessWidget {
   final int id;
