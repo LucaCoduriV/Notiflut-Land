@@ -37,26 +37,34 @@ class _NotificationCenterState extends State<NotificationCenter>
   @override
   Widget build(BuildContext context) {
     final notifications = watchOnly((NotificationService s) => s.notifications);
-    return const Placeholder();
-    // return ListView(
-    //   children: notifications.reversed.map((e) {
-    //     ImageProvider<Object>? imageProvider = imageRawToProvider(e.appImage);
-    //     ImageProvider<Object>? iconeProvider = imageRawToProvider(e.appIcon);
-    //     return NotificationTile(
-    //       e.id,
-    //       e.appName,
-    //       e.summary,
-    //       e.body,
-    //       iconProvider: iconeProvider,
-    //       imageProvider: imageProvider,
-    //       createdAt: e.createdAt.toDateTime(),
-    //       actions: actionsListToMap(e.actions)
-    //           .map((e) => NotificationAction(e.$1, () {
-    //                 print(e.$2);
-    //               }))
-    //           .toList(),
-    //     );
-    //   }).toList()
-    // );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Container(
+          width: 500,
+          height: double.infinity,
+          color: Colors.red,
+          child: ListView(
+              children: notifications.reversed.map((e) {
+            ImageProvider<Object>? imageProvider = imageRawToProvider(e.appImage);
+            ImageProvider<Object>? iconeProvider = imageRawToProvider(e.appIcon);
+            return NotificationTile(
+              e.id,
+              e.appName,
+              e.summary,
+              e.body,
+              iconProvider: iconeProvider,
+              imageProvider: imageProvider,
+              createdAt: e.createdAt.toDateTime(),
+              actions: actionsListToMap(e.actions)
+                  .map((e) => NotificationAction(e.$1, () {
+                        print(e.$2);
+                      }))
+                  .toList(),
+            );
+          }).toList()),
+        ),
+      ],
+    );
   }
 }
