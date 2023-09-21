@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
-const SMALL_WINDOW_SIZE = Size(500, 200);
+const SMALL_WINDOW_SIZE = Size(500, 1);
 
 Future<void> initWindowConfig() async {
   WindowOptions windowOptions = const WindowOptions(

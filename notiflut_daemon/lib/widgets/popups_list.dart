@@ -5,14 +5,14 @@ import 'package:notiflutland/utils.dart';
 import 'package:notiflutland/widgets/notification.dart';
 import 'package:notiflutland/window_utils.dart';
 
-class NotificationList extends StatefulWidget with GetItStatefulWidgetMixin {
-  NotificationList({super.key});
+class PopupsList extends StatefulWidget with GetItStatefulWidgetMixin {
+  PopupsList({super.key});
 
   @override
-  State<NotificationList> createState() => _NotificationListState();
+  State<PopupsList> createState() => _PopupsListState();
 }
 
-class _NotificationListState extends State<NotificationList>
+class _PopupsListState extends State<PopupsList>
     with GetItStateMixin {
   final ScrollController scrollController = ScrollController();
 
