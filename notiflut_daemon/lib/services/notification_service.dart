@@ -32,10 +32,23 @@ class NotificationService extends ChangeNotifier{
         case SignalAppEvent_AppEventType.Update:
           notifications = appEvent.notifications;
           final index = appEvent.lastNotificationId.toInt();
-          popups.add(notifications[index]);
+          final notification = notifications[index];
+          schedulePopupCleanUp();
+          popups = List.from(popups..add(notification));
           break;
       }
       notifyListeners();
 
+  }
+
+  Future<void> schedulePopupCleanUp() async {
+    await Future.delayed(const Duration(seconds: 5));
+    popups = List.from(popups..removeLast());
+    notifyListeners();
+
+    // TODO Understand why [PopupsList] does not resize automatically.
+    if(isHidden && popups.isEmpty){
+      setWindowSize(SMALL_WINDOW_SIZE);
+    }
   }
 }

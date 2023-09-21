@@ -19,7 +19,7 @@ class _PopupsListState extends State<PopupsList>
   @override
   Widget build(BuildContext context) {
     final notifications =
-        watchOnly((NotificationService service) => service.notifications);
+        watchOnly((NotificationService service) => service.popups);
     resizeWindowAfterBuild();
     return ListView(
       shrinkWrap: true,
