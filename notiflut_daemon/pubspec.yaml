@@ -20,6 +20,8 @@ dependencies:
       url: https://github.com/LucaCoduriV/window_manager.git
       ref: main 
   open_url: ^2.0.1
+  get_it: ^7.6.4
+  get_it_mixin: ^4.2.2
 
 dev_dependencies:
   flutter_test:

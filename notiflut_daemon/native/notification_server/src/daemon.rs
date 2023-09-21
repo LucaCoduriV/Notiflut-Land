@@ -116,7 +116,7 @@ impl NotificationDaemon {
     /// Handles all messages received from flutter and dbus
     /// * `flutter_sender` - the channel to send data to flutter
     /// * `flutter_and_dbus_recv` - the channel used to get events from flutter and dbus
-    async fn handle_actions_and_events(
+    fn handle_actions_and_events(
         &mut self,
         flutter_sender: std::sync::mpsc::Sender<DaemonEvent>,
         flutter_and_dbus_recv: Receiver<ChannelMessage>,
