@@ -22,6 +22,7 @@ dependencies:
   open_url: ^2.0.1
   get_it: ^7.6.4
   get_it_mixin: ^4.2.2
+  flutter_inset_box_shadow: ^1.0.8
 
 dev_dependencies:
   flutter_test:

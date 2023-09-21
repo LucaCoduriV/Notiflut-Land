@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -37,4 +39,6 @@ Future<void> setWindowFullscreen() async {
     await windowManager.setAnchor(LayerEdge.right, true);
     await windowManager.setAnchor(LayerEdge.left, true);
     await windowManager.setAnchor(LayerEdge.bottom, true);
+    // Random size to be sure the window is rendered
+    await windowManager.setLayerSize(const Size(2,2));
 }
