@@ -16,11 +16,11 @@ Future<void> initWindowConfig() async {
     await windowManager.show();
     await windowManager.focus();
     await windowManager.setLayer(LayerSurface.background);
-    await smallResizeWindow();
+    await setWindowPosTopRight();
   });
 }
 
-Future<void> smallResizeWindow() async {
+Future<void> setWindowPosTopRight() async {
     await windowManager.setAnchor(LayerEdge.top, true);
     await windowManager.setAnchor(LayerEdge.right, true);
     await windowManager.setAnchor(LayerEdge.left, false);
@@ -28,7 +28,11 @@ Future<void> smallResizeWindow() async {
     await windowManager.setLayerSize(SMALL_WINDOW_SIZE);
 }
 
-Future<void> fullscreenResizeWindow() async {
+Future<void> setWindowSize(Size size) async {
+    await windowManager.setLayerSize(size);
+}
+
+Future<void> setWindowFullscreen() async {
     await windowManager.setAnchor(LayerEdge.top, true);
     await windowManager.setAnchor(LayerEdge.right, true);
     await windowManager.setAnchor(LayerEdge.left, true);
