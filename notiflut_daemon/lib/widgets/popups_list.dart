@@ -48,11 +48,11 @@ class _PopupsListState extends State<PopupsList>
   Future<void> resizeWindowAfterBuild() async {
     //This delay is used to be sure that the build function is completed
     await Future.delayed(
-        Duration(milliseconds: 500));
+        const Duration(milliseconds: 500));
     if (scrollController.hasClients) {
       final size =
           scrollController.position.extentAfter + scrollController.position.extentInside;
-      if (size != 0) {
+      if (size > 1) {
         print("New size: $size");
         await setWindowSize(Size(500, size));
       }

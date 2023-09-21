@@ -5,7 +5,7 @@ import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
 import 'package:notiflutland/window_utils.dart';
 import 'package:rust_in_flutter/rust_in_flutter.dart';
 
-class NotificationService extends ChangeNotifier{
+class NotificationService extends ChangeNotifier {
   List<daemon_event.Notification> notifications = [];
   List<daemon_event.Notification> popups = [];
   bool isHidden = true;
@@ -14,31 +14,37 @@ class NotificationService extends ChangeNotifier{
     rustBroadcaster.stream.listen(_handleEvents);
   }
 
-  _handleEvents(RustSignal event){
-      if (event.resource != daemon_event.ID) {
-        return;
-      }
+  _handleEvents(RustSignal event) {
+    if (event.resource != daemon_event.ID) {
+      return;
+    }
 
-      final appEvent = SignalAppEvent.fromBuffer(event.message!.toList());
-      switch (appEvent.type) {
-        case SignalAppEvent_AppEventType.HideNotificationCenter:
-          isHidden = true;
-          setWindowPosTopRight();
-          break;
-        case SignalAppEvent_AppEventType.ShowNotificationCenter:
-          isHidden = false;
-          setWindowFullscreen();
-          break;
-        case SignalAppEvent_AppEventType.Update:
-          notifications = appEvent.notifications;
-          final index = appEvent.lastNotificationId.toInt();
-          final notification = notifications[index];
-          schedulePopupCleanUp();
-          popups = List.from(popups..add(notification));
-          break;
-      }
-      notifyListeners();
+    final appEvent = SignalAppEvent.fromBuffer(event.message!.toList());
+    switch (appEvent.type) {
+      case SignalAppEvent_AppEventType.HideNotificationCenter:
+        isHidden = true;
+        setWindowPosTopRight();
+        hideWindow();
+        break;
+      case SignalAppEvent_AppEventType.ShowNotificationCenter:
+        isHidden = false;
+        showWindow();
+        setWindowFullscreen();
+        break;
+      case SignalAppEvent_AppEventType.Update:
+        notifications = appEvent.notifications;
+        final index = appEvent.lastNotificationId.toInt();
+        final notification = notifications[index];
+        schedulePopupCleanUp();
 
+        if (popups.isEmpty) {
+          showWindow();
+          print("SHOW WINDOW");
+        }
+        popups = List.from(popups..add(notification));
+        break;
+    }
+    notifyListeners();
   }
 
   Future<void> schedulePopupCleanUp() async {
@@ -46,9 +52,14 @@ class NotificationService extends ChangeNotifier{
     popups = List.from(popups..removeLast());
     notifyListeners();
 
-    // TODO Understand why [PopupsList] does not resize automatically.
-    if(isHidden && popups.isEmpty){
-      setWindowSize(SMALL_WINDOW_SIZE);
+    if (popups.isEmpty) {
+      hideWindow();
+      print("HIDE WINDOW");
+
+      // // TODO Understand why [PopupsList] does not resize automatically.
+      // if (isHidden) {
+      //   setWindowSize(SMALL_WINDOW_SIZE);
+      // }
     }
   }
 }

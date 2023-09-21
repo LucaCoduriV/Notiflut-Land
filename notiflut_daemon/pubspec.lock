@@ -372,8 +372,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "4fa474a13d50a8d4e40c7c9b1169053faeab3456"
+      ref: "6f627e825db10d2f45bef0e0bbabdf5d1ecf1cb3"
+      resolved-ref: "6f627e825db10d2f45bef0e0bbabdf5d1ecf1cb3"
       url: "https://github.com/LucaCoduriV/window_manager.git"
     source: git
     version: "0.3.6"
