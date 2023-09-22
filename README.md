@@ -39,8 +39,7 @@ This project is a notification center designed specifically for Wayland, impleme
 
 
 ## Installation
-People that can not wait to test it and are on Arch, can build it using `makepkg -d` with the build_script and install it using `pacman -U "zst path"`
-    
+To be done...    
 ## how to use
 
 Once notiflut is running, use notiflut_ctl to control it.
