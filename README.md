@@ -34,7 +34,7 @@ This project is a notification center designed specifically for Wayland, impleme
 ## requirement
 - Flutter v. > 3.0 [Download](https://docs.flutter.dev/get-started/install)
 - Rust [Download](https://rustup.rs/)
-- Flutter-rust-bridge [Tutorial](https://cjycode.com/flutter_rust_bridge/quickstart.html)
+- Rust in Flutter
 - gtk-layer-shell
 
 
