@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget with GetItMixin {
         useMaterial3: true,
       ),
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         body: isNotiCenterHidden ? PopupsList() : NotificationCenter(),
         ),
     );

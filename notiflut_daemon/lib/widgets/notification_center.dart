@@ -41,9 +41,9 @@ class _NotificationCenterState extends State<NotificationCenter>
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Container(
-          width: 500,
+        constraints: const BoxConstraints(maxWidth: 500),
           height: double.infinity,
-          color: Colors.red,
+          color: Colors.transparent,
           child: ListView(
               children: notifications.reversed.map((e) {
             ImageProvider<Object>? imageProvider = imageRawToProvider(e.appImage);

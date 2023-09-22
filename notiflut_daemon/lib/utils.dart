@@ -27,6 +27,9 @@ Image createImageIiibiiay(
 }
 
 ImageProvider? imageRawToProvider(daemon_event.ImageSource source) {
+  if(!source.hasPath() && !source.hasImageData()){
+   return null;
+  }
   return switch (source.type.value) {
     final value when value == ImageSource_ImageSourceType.Data.value =>
       createImageIiibiiay(

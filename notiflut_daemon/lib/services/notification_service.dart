@@ -25,11 +25,13 @@ class NotificationService extends ChangeNotifier {
         isHidden = true;
         setWindowPosTopRight();
         hideWindow();
+        notifyListeners();
         break;
       case SignalAppEvent_AppEventType.ShowNotificationCenter:
         isHidden = false;
         showWindow();
         setWindowFullscreen();
+        notifyListeners();
         break;
       case SignalAppEvent_AppEventType.Update:
         notifications = appEvent.notifications;
@@ -42,9 +44,9 @@ class NotificationService extends ChangeNotifier {
           print("SHOW WINDOW");
         }
         popups = List.from(popups..add(notification));
+        notifyListeners();
         break;
     }
-    notifyListeners();
   }
 
   Future<void> schedulePopupCleanUp() async {
@@ -53,13 +55,12 @@ class NotificationService extends ChangeNotifier {
     notifyListeners();
 
     if (popups.isEmpty) {
-      hideWindow();
-      print("HIDE WINDOW");
-
-      // // TODO Understand why [PopupsList] does not resize automatically.
-      // if (isHidden) {
-      //   setWindowSize(SMALL_WINDOW_SIZE);
-      // }
+      // TODO Understand why [PopupsList] does not resize automatically.
+      if (isHidden) {
+        hideWindow();
+        print("POPUP CLEAN UP HIDE WINDOW");
+        setWindowSize(const Size(500, 2));
+      }
     }
   }
 }
