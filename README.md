@@ -37,6 +37,18 @@ This project is a notification center designed specifically for Wayland, impleme
 - Rust in Flutter
 - gtk-layer-shell
 
+## Build daemon
+First go to the right folder: `cd ./notiflut_daemon`
+
+Then you need to generates code from protobuf with this command:
+`dart run rust_in_flutter message`
+
+This project also uses well known types for dates.
+`protoc --dart_out=./messages google/protobuf/timestamp.pb.dart`
+
+If you have any trouble running these commands look first for help here: https://docs.cunarist.com/rust-in-flutter/
+
+Now you should be apple to compile the code with: `flutter build linux --release`
 
 ## Installation
 To be done...    
