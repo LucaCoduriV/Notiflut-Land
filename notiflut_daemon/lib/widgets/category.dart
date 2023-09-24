@@ -72,8 +72,7 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                         Icons.close,
                         color: Colors.black,
                       ),
-                      onPressed: () {
-                      },
+                      onPressed: () {},
                     ),
                   ),
                   SizedBox(width: 5),

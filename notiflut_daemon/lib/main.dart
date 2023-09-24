@@ -25,16 +25,16 @@ class MyApp extends StatelessWidget with GetItMixin {
   Widget build(BuildContext context) {
     bool isNotiCenterHidden = watchOnly((NotificationService s) => s.isHidden);
     return MaterialApp(
-    debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
       title: 'Notiflut-Land',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: isNotiCenterHidden ? Colors.transparent: Colors.black.withOpacity(0.1),
         body: isNotiCenterHidden ? PopupsList() : NotificationCenter(),
-        ),
+      ),
     );
   }
 }

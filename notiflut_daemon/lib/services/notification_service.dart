@@ -23,15 +23,18 @@ class NotificationService extends ChangeNotifier {
     switch (appEvent.type) {
       case SignalAppEvent_AppEventType.HideNotificationCenter:
         isHidden = true;
-        setWindowPosTopRight();
         hideWindow();
+        setWindowPosTopRight();
         notifyListeners();
         break;
       case SignalAppEvent_AppEventType.ShowNotificationCenter:
         isHidden = false;
-        showWindow();
+        // popups = [];
         setWindowFullscreen();
         notifyListeners();
+        Future.delayed(Duration(milliseconds: 300), () {
+          showWindow();
+        });
         break;
       case SignalAppEvent_AppEventType.Update:
         notifications = appEvent.notifications;
@@ -43,7 +46,9 @@ class NotificationService extends ChangeNotifier {
           showWindow();
           print("SHOW WINDOW");
         }
-        popups = List.from(popups..add(notification));
+        if (isHidden) {
+          popups = List.from(popups..add(notification));
+        }
         notifyListeners();
         break;
     }
