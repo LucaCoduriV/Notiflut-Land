@@ -48,7 +48,7 @@ This project also uses well known types for dates.
 
 If you have any trouble running these commands look first for help here: https://docs.cunarist.com/rust-in-flutter/
 
-Now you should be apple to compile the code with: `flutter build linux --release`
+Now you should be able to compile the code with: `flutter build linux --release`
 
 ## Installation
 To be done...    
