@@ -1,6 +1,7 @@
 mod api;
 mod daemon;
 mod daemon_data;
+mod db;
 mod dbus;
 mod dbus_definition;
 mod desktop_file_manager;
