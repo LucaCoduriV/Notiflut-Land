@@ -279,10 +279,10 @@ packages:
     dependency: "direct main"
     description:
       name: rust_in_flutter
-      sha256: "3a3884feb9eebcc2062dc1a9c7c52d19a3773e4001d6484e2d4a0b80aa2f0696"
+      sha256: f304218e55c151cbc8baa4e099452953f8ef4de31318abed70911b2238de04df
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.4"
+    version: "4.4.0"
   screen_retriever:
     dependency: transitive
     description:
