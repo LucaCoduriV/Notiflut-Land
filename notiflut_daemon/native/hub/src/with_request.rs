@@ -23,12 +23,14 @@ pub async fn handle_request(request_unique: RustRequestUnique) -> RustResponseUn
                 notification_server::send_app_event(event).unwrap();
                 RustResponse {
                     successful: true,
-                    ..Default::default()
+                    message: None,
+                    blob: None,
                 }
             } else {
                 RustResponse {
                     successful: false,
-                    ..Default::default()
+                    message: None,
+                    blob: None,
                 }
             }
         }
