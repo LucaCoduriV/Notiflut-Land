@@ -12,8 +12,7 @@ class PopupsList extends StatefulWidget with GetItStatefulWidgetMixin {
   State<PopupsList> createState() => _PopupsListState();
 }
 
-class _PopupsListState extends State<PopupsList>
-    with GetItStateMixin {
+class _PopupsListState extends State<PopupsList> with GetItStateMixin {
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -36,8 +35,9 @@ class _PopupsListState extends State<PopupsList>
           imageProvider: imageProvider,
           createdAt: e.createdAt.toDateTime(),
           actions: actionsListToMap(e.actions)
-              .map((e) => NotificationAction(e.$1, () {
-                    print(e.$2);
+              .where((element) => element.$1 != "default")
+              .map((e) => NotificationAction(e.$2, () {
+                    get<NotificationService>().invokeAction(e.$1);
                   }))
               .toList(),
         );
@@ -47,11 +47,10 @@ class _PopupsListState extends State<PopupsList>
 
   Future<void> resizeWindowAfterBuild() async {
     //This delay is used to be sure that the build function is completed
-    await Future.delayed(
-        const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     if (scrollController.hasClients) {
-      final size =
-          scrollController.position.extentAfter + scrollController.position.extentInside;
+      final size = scrollController.position.extentAfter +
+          scrollController.position.extentInside;
       if (size > 1) {
         print("New size: $size");
         await setWindowSize(Size(500, size));

@@ -63,9 +63,9 @@ async fn main() {
 
     // This is `tokio::sync::mpsc::Reciver` that receives the requests from Dart.
     while let Some(request_unique) = request_receiver.recv().await {
-        // tokio::spawn(async {
-        let response_unique = handle_request(request_unique).await;
-        respond_to_dart(response_unique);
-        // });
+        tokio::spawn(async {
+            let response_unique = handle_request(request_unique).await;
+            respond_to_dart(response_unique);
+        });
     }
 }

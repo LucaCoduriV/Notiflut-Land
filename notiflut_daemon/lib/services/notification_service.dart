@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
     show ID, Notification;
+import 'package:notiflutland/messages/app_event.pb.dart' as app_Event;
 import 'package:notiflutland/window_utils.dart';
 import 'package:rust_in_flutter/rust_in_flutter.dart';
 
@@ -51,6 +52,24 @@ class NotificationService extends ChangeNotifier {
         }
         notifyListeners();
         break;
+    }
+  }
+
+  Future<void> invokeAction(String action) async {
+    final event = app_Event.AppEvent(
+      type: app_Event.AppEventType.ActionInvoked,
+      data: action,
+    );
+    final request = RustRequest(
+      resource: app_Event.ID,
+      operation: RustOperation.Create,
+      message: event.writeToBuffer(),
+    );
+    final response = await requestToRust(request);
+    if(response.successful){
+      print("Action invoked with success");
+    } else {
+      print("Action invoked with error");
     }
   }
 

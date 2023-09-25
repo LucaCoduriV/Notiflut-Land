@@ -21,7 +21,10 @@ pub async fn handle_request(request_unique: RustRequestUnique) -> RustResponseUn
             if let Ok(event) = messages::app_event::AppEvent::decode(message_bytes.as_slice()) {
                 let event: AppEvent = event.into();
                 notification_server::send_app_event(event).unwrap();
-                RustResponse::default()
+                RustResponse {
+                    successful: true,
+                    ..Default::default()
+                }
             } else {
                 RustResponse {
                     successful: false,
