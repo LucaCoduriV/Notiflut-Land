@@ -4,6 +4,8 @@ import 'package:notiflutland/services/notification_service.dart';
 import 'package:notiflutland/utils.dart';
 import 'package:notiflutland/widgets/notification.dart';
 import 'package:notiflutland/window_utils.dart';
+import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
+    show Notification;
 
 class PopupsList extends StatefulWidget with GetItStatefulWidgetMixin {
   PopupsList({super.key});
@@ -24,17 +26,18 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
       shrinkWrap: true,
       controller: scrollController,
       children: notifications.reversed.map((e) {
-        ImageProvider<Object>? imageProvider = imageRawToProvider(e.appImage);
-        ImageProvider<Object>? iconeProvider = imageRawToProvider(e.appIcon);
+        final (int _, daemon_event.Notification n) = e;
+        ImageProvider<Object>? imageProvider = imageRawToProvider(n.appImage);
+        ImageProvider<Object>? iconeProvider = imageRawToProvider(n.appIcon);
         return NotificationTile(
-          e.id,
-          e.appName,
-          e.summary,
-          e.body,
+          n.id,
+          n.appName,
+          n.summary,
+          n.body,
           iconProvider: iconeProvider,
           imageProvider: imageProvider,
-          createdAt: e.createdAt.toDateTime(),
-          actions: actionsListToMap(e.actions)
+          createdAt: n.createdAt.toDateTime(),
+          actions: actionsListToMap(n.actions)
               .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
                     get<NotificationService>().invokeAction(e.$1);

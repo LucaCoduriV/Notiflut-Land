@@ -8,7 +8,7 @@ import 'package:rust_in_flutter/rust_in_flutter.dart';
 
 class NotificationService extends ChangeNotifier {
   List<daemon_event.Notification> notifications = [];
-  List<daemon_event.Notification> popups = [];
+  List<(int, daemon_event.Notification)> popups = [];
   bool isHidden = true;
 
   NotificationService() {
@@ -33,7 +33,7 @@ class NotificationService extends ChangeNotifier {
         // popups = [];
         setWindowFullscreen();
         notifyListeners();
-        Future.delayed(Duration(milliseconds: 300), () {
+        Future.delayed(const Duration(milliseconds: 300), () {
           showWindow();
         });
         break;
@@ -41,14 +41,16 @@ class NotificationService extends ChangeNotifier {
         notifications = appEvent.notifications;
         final index = appEvent.lastNotificationId.toInt();
         final notification = notifications[index];
-        schedulePopupCleanUp();
+        final popupId = DateTime.now().millisecondsSinceEpoch;
+        schedulePopupCleanUp(popupId);
 
         if (popups.isEmpty) {
           showWindow();
           print("SHOW WINDOW");
         }
         if (isHidden) {
-          popups = List.from(popups..add(notification));
+          popups.insert(0, (popupId, notification));
+          popups = List.from(popups);
         }
         notifyListeners();
         break;
@@ -66,16 +68,16 @@ class NotificationService extends ChangeNotifier {
       message: event.writeToBuffer(),
     );
     final response = await requestToRust(request);
-    if(response.successful){
+    if (response.successful) {
       print("Action invoked with success");
     } else {
       print("Action invoked with error");
     }
   }
 
-  Future<void> schedulePopupCleanUp() async {
+  Future<void> schedulePopupCleanUp(int id) async {
     await Future.delayed(const Duration(seconds: 5));
-    popups = List.from(popups..removeLast());
+    popups = List.from(popups..removeWhere(((n) => n.$1 == id)));
     notifyListeners();
 
     if (popups.isEmpty) {
