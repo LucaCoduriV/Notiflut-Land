@@ -3,14 +3,17 @@ use surrealdb::{
     engine::local::{Db, File},
     Surreal,
 };
+use tokio::runtime::Runtime;
 
-static DB: Lazy<Surreal<Db>> = Lazy::new(Surreal::init);
+pub static DB: Lazy<Surreal<Db>> = Lazy::new(Surreal::init);
 
-pub async fn init_db() -> anyhow::Result<()> {
-    // Connect to the database
-    DB.connect::<File>("./database.db").await?;
-    // Select a namespace + database
-    DB.use_ns("app").use_db("data").await?;
+pub fn init_db() -> anyhow::Result<()> {
+    Runtime::new().unwrap().block_on(async {
+        // Connect to the database
+        DB.connect::<File>("/tmp/database.db").await.unwrap();
+        // Select a namespace + database
+        DB.use_ns("app").use_db("data").await.unwrap();
+    });
 
     Ok(())
 }

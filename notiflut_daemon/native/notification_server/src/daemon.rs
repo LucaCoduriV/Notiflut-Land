@@ -6,6 +6,7 @@ use std::{
 };
 
 use crate::{
+    db,
     dbus::{self, DaemonEvent, DbusEvent, DbusServer},
     dbus_definition,
     notification::Notification,
@@ -130,9 +131,6 @@ impl NotificationDaemon {
         }
 
         let action_join_handler = std::thread::spawn(move || {
-            // let mut notifications: Vec<Notification> = Vec::new();
-            // let mut is_open = false;
-
             let mut data = crate::daemon_data::DaemonData::new();
 
             loop {
