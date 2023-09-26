@@ -1,12 +1,5 @@
-use std::any;
-
 use crate::db::DB;
 use crate::notification::Notification;
-use once_cell::sync::Lazy;
-use surrealdb::{
-    engine::local::{Db, File},
-    Surreal,
-};
 use tokio::runtime::Runtime;
 
 static TABLE_NOTIFICATION: &'static str = "notification";
@@ -52,6 +45,39 @@ impl DaemonData {
     pub fn delete_notification(id: u32) -> anyhow::Result<()> {
         let result: anyhow::Result<()> = Runtime::new().unwrap().block_on(async {
             let _result: Option<()> = DB.delete((TABLE_NOTIFICATION, id as i64)).await?;
+            Ok(())
+        });
+
+        result
+    }
+
+    pub fn delete_notifications_with_app_name(app_name: &str) -> anyhow::Result<()> {
+        let result: anyhow::Result<()> = Runtime::new().unwrap().block_on(async {
+            let _result = DB
+                .query("DELETE type::table($table) WHERE name = $app_name;")
+                .bind(("table", app_name))
+                .bind(("app_name", app_name))
+                .await?;
+            Ok(())
+        });
+
+        result
+    }
+
+    pub fn delete_notifications() -> anyhow::Result<()> {
+        let result: anyhow::Result<()> = Runtime::new().unwrap().block_on(async {
+            let _result: Vec<()> = DB.delete(TABLE_NOTIFICATION).await?;
+            Ok(())
+        });
+
+        result
+    }
+
+    pub fn update_notification(notification: Notification) -> anyhow::Result<()> {
+        let result: anyhow::Result<()> = Runtime::new().unwrap().block_on(async {
+            let _result: Option<()> = DB
+                .update((TABLE_NOTIFICATION, notification.id as i64))
+                .await?;
             Ok(())
         });
 
