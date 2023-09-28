@@ -39,8 +39,8 @@ class NotificationService extends ChangeNotifier {
         break;
       case SignalAppEvent_AppEventType.Update:
         notifications = appEvent.notifications;
-        final index = appEvent.lastNotificationId.toInt();
-        final notification = notifications[index];
+        final id = appEvent.lastNotificationId.toInt();
+        final notification = notifications.firstWhere((element) => element.id == id);
         final popupId = DateTime.now().millisecondsSinceEpoch;
         schedulePopupCleanUp(popupId);
 

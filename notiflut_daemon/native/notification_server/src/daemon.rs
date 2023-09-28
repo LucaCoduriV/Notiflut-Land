@@ -5,6 +5,8 @@ use std::{
     time::Duration,
     vec,
 };
+use surrealdb::engine::local::File;
+use tokio::runtime::Runtime;
 
 use crate::{
     daemon_data::DaemonData,
@@ -132,20 +134,37 @@ impl NotificationDaemon {
         }
 
         let action_join_handler = std::thread::spawn(move || {
-            let mut data = DaemonData::new();
+            let result = std::thread::spawn(|| {
+                Runtime::new().unwrap().block_on(async {
+                    let db = surrealdb::Surreal::new::<File>("/tmp/database.db")
+                        .await
+                        .unwrap();
+                    db.use_ns("app").use_db("data").await.unwrap();
+                    db
+                })
+            });
+
+            let db = result.join().unwrap();
+            let mut data = DaemonData::new(db);
 
             loop {
                 let result = match flutter_and_dbus_recv.recv().unwrap() {
                     ChannelMessage::DaemonAction(action) => match action {
                         AppEvent::Close(id) => {
-                            Self::on_notification_closed(&signal_sender, &flutter_sender, id)
+                            Self::on_notification_closed(&signal_sender, &flutter_sender, id, &data)
                         }
-                        AppEvent::CloseAll => {
-                            Self::on_all_notifications_closed(&signal_sender, &flutter_sender)
-                        }
-                        AppEvent::ActionInvoked(id, action_key) => {
-                            Self::on_action_invoked(&signal_sender, &flutter_sender, id, action_key)
-                        }
+                        AppEvent::CloseAll => Self::on_all_notifications_closed(
+                            &signal_sender,
+                            &flutter_sender,
+                            &data,
+                        ),
+                        AppEvent::ActionInvoked(id, action_key) => Self::on_action_invoked(
+                            &signal_sender,
+                            &flutter_sender,
+                            id,
+                            action_key,
+                            &data,
+                        ),
                         AppEvent::CloseNotification => {
                             data.is_open = false;
                             Ok(())
@@ -154,15 +173,16 @@ impl NotificationDaemon {
                             &signal_sender,
                             &flutter_sender,
                             app_name,
+                            &data,
                         ),
                     },
                     ChannelMessage::DbusEvent(event) => match event {
                         DbusEvent::NewNotification(notification) => {
-                            Self::show_notification(&flutter_sender, notification)
+                            Self::show_notification(&flutter_sender, notification, &data)
                         }
 
                         DbusEvent::CloseNotification(id) => {
-                            Self::close_notification(&flutter_sender, id)
+                            Self::close_notification(&flutter_sender, id, &data)
                         }
 
                         DbusEvent::ShowNotificationCenter => {
@@ -216,10 +236,11 @@ impl NotificationDaemon {
     pub fn show_notification(
         flutter_sender: &std::sync::mpsc::Sender<DaemonEvent>,
         notification: Notification,
+        db: &DaemonData,
     ) -> Result<(), DaemonError> {
-        DaemonData::delete_notification(notification.id).unwrap();
-        DaemonData::add_notification(notification.clone()).unwrap();
-        let notifications = crate::daemon_data::DaemonData::get_notifications_db().unwrap();
+        db.delete_notification(notification.id).unwrap();
+        db.add_notification(notification.clone()).unwrap();
+        let notifications = db.get_notifications_db().unwrap();
 
         if let Err(_error) = flutter_sender.send(DaemonEvent::Update(
             notifications,
@@ -236,12 +257,13 @@ impl NotificationDaemon {
         flutter_sender: &std::sync::mpsc::Sender<DaemonEvent>,
         id: u32,
         action_key: String,
+        db: &DaemonData,
     ) -> Result<(), DaemonError> {
-        DaemonData::delete_notification(id).unwrap();
+        db.delete_notification(id).unwrap();
         let message = dbus_definition::OrgFreedesktopNotificationsActionInvoked { id, action_key };
         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
         let _result = signal_sender.send(message.to_emit_message(&path));
-        let notifications = DaemonData::get_notifications_db().unwrap();
+        let notifications = db.get_notifications_db().unwrap();
 
         if let Err(_error) = flutter_sender.send(DaemonEvent::Update(notifications, None)) {
             Err(DaemonError::Error)
@@ -256,15 +278,16 @@ impl NotificationDaemon {
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &std::sync::mpsc::Sender<DaemonEvent>,
         id: u32,
+        db: &DaemonData,
     ) -> Result<(), DaemonError> {
-        DaemonData::delete_notification(id).unwrap();
+        db.delete_notification(id).unwrap();
         let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
             id,
             reason: 2, // 2 means dismissed by user
         };
         let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
         let _result = signal_sender.send(message.to_emit_message(&path));
-        let notifications = DaemonData::get_notifications_db().unwrap();
+        let notifications = db.get_notifications_db().unwrap();
 
         if let Err(_error) = flutter_sender.send(DaemonEvent::Update(notifications, None)) {
             Err(DaemonError::Error)
@@ -278,9 +301,10 @@ impl NotificationDaemon {
     pub fn close_notification(
         flutter_sender: &std::sync::mpsc::Sender<DaemonEvent>,
         id: u32,
+        db: &DaemonData,
     ) -> Result<(), DaemonError> {
-        DaemonData::delete_notification(id).unwrap();
-        let notifications = DaemonData::get_notifications_db().unwrap();
+        db.delete_notification(id).unwrap();
+        let notifications = db.get_notifications_db().unwrap();
         if let Err(_error) = flutter_sender.send(DaemonEvent::Update(notifications, None)) {
             Err(DaemonError::Error)
         } else {
@@ -297,8 +321,9 @@ impl NotificationDaemon {
     pub fn on_all_notifications_closed(
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &std::sync::mpsc::Sender<DaemonEvent>,
+        db: &DaemonData,
     ) -> Result<(), DaemonError> {
-        let notifications = DaemonData::get_notifications_db().unwrap();
+        let notifications = db.get_notifications_db().unwrap();
         for notification in notifications.iter() {
             let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
                 id: notification.id,
@@ -308,7 +333,7 @@ impl NotificationDaemon {
             let _result = signal_sender.send(message.to_emit_message(&path));
         }
 
-        DaemonData::delete_notifications().unwrap();
+        db.delete_notifications().unwrap();
         if let Err(_error) = flutter_sender.send(DaemonEvent::Update(vec![], None)) {
             Err(DaemonError::Error)
         } else {
@@ -321,8 +346,9 @@ impl NotificationDaemon {
         signal_sender: &std::sync::mpsc::Sender<::dbus::message::Message>,
         flutter_sender: &std::sync::mpsc::Sender<DaemonEvent>,
         app_name: String,
+        db: &DaemonData,
     ) -> Result<(), DaemonError> {
-        let notifications = DaemonData::get_notifications_db().unwrap();
+        let notifications = db.get_notifications_db().unwrap();
         for notification in notifications.iter().filter(|n| n.app_name == app_name) {
             let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
                 id: notification.id,
@@ -332,8 +358,8 @@ impl NotificationDaemon {
             let _result = signal_sender.send(message.to_emit_message(&path));
         }
 
-        DaemonData::delete_notifications_with_app_name(&app_name).unwrap();
-        let notifications = DaemonData::get_notifications_db().unwrap();
+        db.delete_notifications_with_app_name(&app_name).unwrap();
+        let notifications = db.get_notifications_db().unwrap();
         if let Err(_error) = flutter_sender.send(DaemonEvent::Update(notifications, None)) {
             return Err(DaemonError::Error);
         }
