@@ -57,7 +57,6 @@ impl NotificationDaemon {
             sender: None,
             dbus_server: None,
             signal_recv: Arc::new(Mutex::new(None)),
-            // cron_join_handle: None,
         }
     }
 
@@ -134,7 +133,7 @@ impl NotificationDaemon {
         }
 
         let action_join_handler = std::thread::spawn(move || {
-            let result = std::thread::spawn(|| {
+            let db_result = std::thread::spawn(|| {
                 Runtime::new().unwrap().block_on(async {
                     let db = surrealdb::Surreal::new::<File>("/tmp/database.db")
                         .await
@@ -144,8 +143,8 @@ impl NotificationDaemon {
                 })
             });
 
-            let db = result.join().unwrap();
-            let mut data = DaemonData::new(db);
+            let db = db_result.join().unwrap();
+            let mut data = DaemonData::new(&db);
 
             loop {
                 let result = match flutter_and_dbus_recv.recv().unwrap() {
@@ -238,13 +237,13 @@ impl NotificationDaemon {
         notification: Notification,
         db: &DaemonData,
     ) -> Result<(), DaemonError> {
-        db.delete_notification(notification.id).unwrap();
+        db.delete_notification(notification.n_id).unwrap();
         db.add_notification(notification.clone()).unwrap();
         let notifications = db.get_notifications_db().unwrap();
 
         if let Err(_error) = flutter_sender.send(DaemonEvent::Update(
             notifications,
-            Some(notification.id as usize),
+            Some(notification.n_id as usize),
         )) {
             Err(DaemonError::Error)
         } else {
@@ -326,7 +325,7 @@ impl NotificationDaemon {
         let notifications = db.get_notifications_db().unwrap();
         for notification in notifications.iter() {
             let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
-                id: notification.id,
+                id: notification.n_id,
                 reason: 2, // 2 means dismissed by user
             };
             let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();
@@ -351,7 +350,7 @@ impl NotificationDaemon {
         let notifications = db.get_notifications_db().unwrap();
         for notification in notifications.iter().filter(|n| n.app_name == app_name) {
             let message = dbus_definition::OrgFreedesktopNotificationsNotificationClosed {
-                id: notification.id,
+                id: notification.n_id,
                 reason: 2, // 2 means dismissed by user
             };
             let path = Path::new(dbus::NOTIFICATION_PATH).unwrap();

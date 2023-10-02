@@ -16,7 +16,7 @@ impl Into<messages::daemon_event::Notification> for Notification {
             nanos: self.created_at.timestamp_subsec_nanos() as i32,
         };
         messages::daemon_event::Notification {
-            id: self.id,
+            id: self.n_id,
             app_name: self.app_name,
             replaces_id: self.replaces_id,
             summary: self.summary,

@@ -61,7 +61,7 @@ mod test {
     fn test() {
         let d = DesktopFileManager::new();
         let entry = d.get("google-chrome.desktop");
-        println!("{entry:?}");
-        println!("{d:?}");
+        // println!("{entry:?}");
+        // println!("{d:?}");
     }
 }

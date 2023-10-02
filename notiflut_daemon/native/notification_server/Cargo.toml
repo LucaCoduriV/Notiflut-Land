@@ -19,7 +19,7 @@ freedesktop-icons = "0.2.3"
 freedesktop-desktop-entry = "0.5.0"
 surrealdb = { version = "1.0.0", features = ["kv-rocksdb", "kv-mem"] }
 serde = { version = "1.0.188", features = ["derive"] }
-tokio = { version = "1.32.0", features = ["rt", "macros"]}
+tokio = { version = "1.32.0", features = ["rt", "macros", "rt-multi-thread"] }
 
 [build-dependencies]
 dbus-codegen = "0.10.0"

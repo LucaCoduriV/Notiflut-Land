@@ -4,13 +4,13 @@ use tokio::runtime::Runtime;
 
 static TABLE_NOTIFICATION: &'static str = "notification";
 
-pub struct DaemonData {
+pub struct DaemonData<'a> {
     pub is_open: bool,
-    db: surrealdb::Surreal<Db>,
+    db: &'a surrealdb::Surreal<Db>,
 }
 
-impl DaemonData {
-    pub fn new(db: surrealdb::Surreal<Db>) -> Self {
+impl<'a> DaemonData<'a> {
+    pub fn new(db: &'a surrealdb::Surreal<Db>) -> Self {
         DaemonData { is_open: false, db }
     }
 
@@ -30,20 +30,25 @@ impl DaemonData {
     }
 
     pub fn add_notification(&self, notification: Notification) -> anyhow::Result<()> {
+        println!("COUCOU2");
         let result: anyhow::Result<()> = Runtime::new().unwrap().block_on(async {
-            let _created: Option<()> = self
+            println!("COUCOU3");
+            let _created: Option<Notification> = self
                 .db
-                .create((TABLE_NOTIFICATION, notification.id as i64))
+                .create((TABLE_NOTIFICATION, notification.n_id as i64))
                 .content(notification)
                 .await?;
+            println!("COUCOU4");
             Ok(())
         });
+        println!("COUCOU5");
         result
     }
 
     pub fn delete_notification(&self, id: u32) -> anyhow::Result<()> {
         let result: anyhow::Result<()> = Runtime::new().unwrap().block_on(async {
-            let _result: Option<()> = self.db.delete((TABLE_NOTIFICATION, id as i64)).await?;
+            let _result: Option<Notification> =
+                self.db.delete((TABLE_NOTIFICATION, id as i64)).await?;
             Ok(())
         });
 
@@ -66,7 +71,7 @@ impl DaemonData {
 
     pub fn delete_notifications(&self) -> anyhow::Result<()> {
         let result: anyhow::Result<()> = Runtime::new().unwrap().block_on(async {
-            let _result: Vec<()> = self.db.delete(TABLE_NOTIFICATION).await?;
+            let _result: Vec<Notification> = self.db.delete(TABLE_NOTIFICATION).await?;
             Ok(())
         });
 
@@ -75,9 +80,9 @@ impl DaemonData {
 
     pub fn update_notification(&self, notification: Notification) -> anyhow::Result<()> {
         let result: anyhow::Result<()> = Runtime::new().unwrap().block_on(async {
-            let _result: Option<()> = self
+            let _result: Option<Notification> = self
                 .db
-                .update((TABLE_NOTIFICATION, notification.id as i64))
+                .update((TABLE_NOTIFICATION, notification.n_id as i64))
                 .await?;
             Ok(())
         });
@@ -88,17 +93,21 @@ impl DaemonData {
 
 #[cfg(test)]
 mod test {
-    use surrealdb::{engine::local::File, Surreal};
+    use serde::Deserialize;
+    use surrealdb::{engine::local::Mem, sql::Thing, Surreal};
+
+    #[derive(Debug, Deserialize)]
+    struct Record {
+        #[allow(dead_code)]
+        id: Thing,
+    }
 
     use super::*;
 
     #[tokio::test]
     async fn write_db() {
-        let db = Surreal::new::<File>("/tmp/database.db").await.unwrap();
-        db.use_ns("app").use_db("data").await.unwrap();
-
         let notification = Notification {
-            id: 1,
+            n_id: 10,
             app_name: "test_app".to_string(),
             replaces_id: 0,
             summary: "summary".to_string(),
@@ -123,16 +132,26 @@ mod test {
             app_image: None,
         };
 
-        let data = DaemonData::new(db);
+        let result = std::thread::spawn(move || {
+            Runtime::new().unwrap().block_on(async {
+                let db = Surreal::new::<Mem>(()).await.unwrap();
+                db.use_ns("app").use_db("data").await.unwrap();
+                db
+            })
+        });
+
+        let db = result.join().unwrap();
 
         let result = std::thread::spawn(move || {
-            let result = data.add_notification(notification);
-            println!("{:?}", result);
-            result
+            let data = DaemonData::new(&db);
+            data.add_notification(notification).unwrap();
+            data.get_notifications_db()
         });
 
         let result = result.join();
 
-        result.unwrap();
+        println!("{:?}", result);
+
+        // result.unwrap();
     }
 }

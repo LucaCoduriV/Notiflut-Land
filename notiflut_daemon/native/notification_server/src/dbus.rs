@@ -253,7 +253,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
         );
 
         let notification = Notification {
-            id,
+            n_id: id,
             app_name,
             replaces_id,
             summary,

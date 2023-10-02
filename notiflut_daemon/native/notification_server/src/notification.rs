@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Notification {
-    pub id: u32,
+    pub n_id: u32,
     pub app_name: String,
     pub replaces_id: u32,
     pub summary: String,
@@ -24,7 +24,7 @@ pub struct Notification {
 impl std::fmt::Debug for Notification {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Notification")
-            .field("id", &self.id)
+            .field("n_id", &self.n_id)
             .field("app_name", &self.app_name)
             .field("replaces_id", &self.replaces_id)
             .field("summary", &self.summary)
