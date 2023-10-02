@@ -20,7 +20,16 @@ struct Record {
 
 #[tokio::main]
 pub(crate) async fn db_thread(called_function_rx: Receiver<SurrealdbMessages>) {
-    DB.set(Surreal::new::<Mem>(()).await.unwrap()).unwrap();
+    if let None = DB.get() {
+        let db = Surreal::new::<Mem>(()).await.unwrap();
+        let namespace = if cfg!(debug_assertions) {
+            "debug"
+        } else {
+            "release"
+        };
+        db.use_ns(namespace).use_db("data").await.unwrap();
+        DB.set(db).unwrap();
+    }
 
     while let Ok(msg) = called_function_rx.recv() {
         match msg {
@@ -31,7 +40,7 @@ pub(crate) async fn db_thread(called_function_rx: Receiver<SurrealdbMessages>) {
 
                 sender.send(notifications).unwrap();
             }
-            SurrealdbMessages::AddNotification(notification) => {
+            SurrealdbMessages::AddNotification(sender, notification) => {
                 let _created: Option<Notification> = DB
                     .get()
                     .unwrap()
@@ -39,16 +48,18 @@ pub(crate) async fn db_thread(called_function_rx: Receiver<SurrealdbMessages>) {
                     .content(notification)
                     .await
                     .unwrap();
+                sender.send(()).unwrap();
             }
-            SurrealdbMessages::DeleteNotification(id) => {
+            SurrealdbMessages::DeleteNotification(sender, id) => {
                 let _result: Option<Notification> = DB
                     .get()
                     .unwrap()
                     .delete((TABLE_NOTIFICATION, id as i64))
                     .await
                     .unwrap();
+                sender.send(()).unwrap();
             }
-            SurrealdbMessages::DeleteNotificationAppName(app_name) => {
+            SurrealdbMessages::DeleteNotificationAppName(sender, app_name) => {
                 let _result = DB
                     .get()
                     .unwrap()
@@ -57,12 +68,14 @@ pub(crate) async fn db_thread(called_function_rx: Receiver<SurrealdbMessages>) {
                     .bind(("app_name", app_name))
                     .await
                     .unwrap();
+                sender.send(()).unwrap();
             }
-            SurrealdbMessages::DeleteNotifications => {
+            SurrealdbMessages::DeleteNotifications(sender) => {
                 let _result: Vec<Notification> =
                     DB.get().unwrap().delete(TABLE_NOTIFICATION).await.unwrap();
+                sender.send(()).unwrap();
             }
-            SurrealdbMessages::UpdatetNotification(notification) => {
+            SurrealdbMessages::UpdatetNotification(sender, notification) => {
                 let _result: Option<Notification> = DB
                     .get()
                     .unwrap()
@@ -70,6 +83,7 @@ pub(crate) async fn db_thread(called_function_rx: Receiver<SurrealdbMessages>) {
                     .content(notification)
                     .await
                     .unwrap();
+                sender.send(()).unwrap();
             }
         }
     }

@@ -6,7 +6,7 @@ use dbus::arg::PropMap;
 use dbus::arg::RefArg;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Default)]
 pub struct Notification {
     pub n_id: u32,
     pub app_name: String,
@@ -39,7 +39,7 @@ impl std::fmt::Debug for Notification {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Default)]
 pub struct Hints {
     pub actions_icon: Option<bool>,
     pub category: Option<String>,
