@@ -1,5 +1,5 @@
-
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:open_url/open_url.dart';
@@ -18,7 +18,7 @@ List<(String, String)> actionsListToMap(List<String> actionsList) {
   List<(String, String)> newList = [];
 
   for (int i = 0; i < actionsList.length; i += 2) {
-    newList.add((actionsList[i], actionsList[i+1]));
+    newList.add((actionsList[i], actionsList[i + 1]));
   }
   return newList;
 }
@@ -130,13 +130,13 @@ class NotificationTile extends StatelessWidget {
               data: body.replaceAll("\\n", "</br>"),
               extensions: [
                 ImageExtension(
-                    networkSchemas: {"file://"},
+                    networkSchemas: {"file"},
                     builder: (extensionContext) {
                       final element = extensionContext.styledElement;
-                      return Image.network(
-                        element!.attributes["src"]!.replaceAll("file://", ""),
-                        width: double.infinity,
-                        height: 200.0,
+                      return Image.file(
+                      File(element!.attributes["src"]!.replaceAll("file://", "")),
+                        // width: double.infinity,
+                        // height: 200.0,
                       );
                     }),
               ],
@@ -144,14 +144,19 @@ class NotificationTile extends StatelessWidget {
                 openUrl(link!);
               },
               style: {
-                "body": Style(
-                  margin: Margins.all(0.0),
-                  padding: HtmlPaddings.all(0.0),
+                "a": Style(
+                color: Colors.black,
                 ),
-                "img": Style(
-                  display: Display.block,
-                  width: Width.auto(),
-                ),
+                // "body": Style(
+                //   margin: Margins.all(0.0),
+                //   padding: HtmlPaddings.all(0.0),
+                // ),
+                // "img": Style(
+                //   display: Display.block,
+                //   width: Width.auto(),
+                //   margin: Margins.all(0.0),
+                //   padding: HtmlPaddings.all(0.0),
+                // ),
               },
             ),
             leading: CircleAvatar(
