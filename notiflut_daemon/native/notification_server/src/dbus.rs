@@ -37,7 +37,6 @@ const SERVER_INFO: (&str, &str, &str, &str) = (
     "1.2",
 );
 
-static ID_COUNT: AtomicU32 = AtomicU32::new(1);
 /// D-Bus server capabilities.
 ///
 /// "action-icons"       Supports using icons instead of text for displaying actions.
@@ -100,6 +99,7 @@ pub enum DbusEvent {
 /// all events through channel to let the daemon decide what to do
 pub struct DbusNotification {
     sender: Sender<ChannelMessage>,
+    id_count: u32,
 }
 
 impl DbusNotification {
@@ -206,10 +206,14 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
         timeout: i32,
     ) -> Result<u32, dbus::MethodErr> {
         let id = if replaces_id == 0 {
-            ID_COUNT.fetch_add(1, Ordering::Relaxed)
+            let id = self.id_count;
+            self.id_count = self.id_count.wrapping_add(1);
+            id
         } else {
             replaces_id
         };
+
+        println!("{}", id);
 
         let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&hints, "image-data") {
             Some(v) => ImageData::try_from(v).ok(),
@@ -297,6 +301,7 @@ impl DbusServer {
     pub fn register_notification_handler(
         &mut self,
         sender: Sender<ChannelMessage>,
+        id_count: u32,
     ) -> Result<(), Box<dyn Error>> {
         let mut crossroad = Crossroads::new();
 
@@ -309,6 +314,7 @@ impl DbusServer {
             &[token],
             DbusNotification {
                 sender: sender.clone(),
+                id_count,
             },
         );
 

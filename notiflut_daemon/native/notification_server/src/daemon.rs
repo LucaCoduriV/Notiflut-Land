@@ -1,4 +1,5 @@
 use ::dbus::{message::SignalArgs, Path};
+use serde::{Deserialize, Serialize};
 use std::{
     sync::{mpsc::Receiver, Arc, Mutex},
     thread::JoinHandle,
@@ -10,7 +11,7 @@ use tokio::runtime::Runtime;
 
 use crate::{
     daemon_data::DaemonData,
-    db::SurrealDbSync,
+    db::{AppSettings, SurrealDbSync},
     dbus::{self, DaemonEvent, DbusEvent, DbusServer},
     dbus_definition,
     notification::Notification,
@@ -48,6 +49,7 @@ pub struct NotificationDaemon {
     notification_join_handle: Option<JoinHandle<Result<(), DaemonError>>>,
     signal_recv: Arc<Mutex<Option<Receiver<::dbus::message::Message>>>>,
     dbus_server: Option<Arc<Mutex<DbusServer>>>,
+    db: SurrealDbSync,
 }
 
 impl NotificationDaemon {
@@ -58,6 +60,7 @@ impl NotificationDaemon {
             sender: None,
             dbus_server: None,
             signal_recv: Arc::new(Mutex::new(None)),
+            db: SurrealDbSync::new(),
         }
     }
 
@@ -71,8 +74,9 @@ impl NotificationDaemon {
         let mut dbus_server = dbus::DbusServer::init().map_err(|_| DaemonError::Error)?;
         let (sender, dbus_events_recv) = std::sync::mpsc::channel::<ChannelMessage>();
         self.sender = Some(sender.clone());
+        let id_count = self.db.get_app_settings().map_or(1, |s| s.id_count);
         dbus_server
-            .register_notification_handler(sender)
+            .register_notification_handler(sender, id_count)
             .map_err(|_| DaemonError::Error)?;
         self.dbus_server = Some(Arc::new(Mutex::new(dbus_server)));
         self.handle_actions_and_events(flutter_stream_sink, dbus_events_recv);
@@ -133,19 +137,9 @@ impl NotificationDaemon {
             *sr = Some(signal_recv);
         }
 
+        let db = self.db.clone();
         let action_join_handler = std::thread::spawn(move || {
-            let db_result = std::thread::spawn(|| {
-                Runtime::new().unwrap().block_on(async {
-                    let db = surrealdb::Surreal::new::<File>("/tmp/database.db")
-                        .await
-                        .unwrap();
-                    db.use_ns("app").use_db("data").await.unwrap();
-                    db
-                })
-            });
-
-            let db = SurrealDbSync::new();
-            let mut data = DaemonData::new(db);
+            let mut data = DaemonData::new(db.clone());
 
             loop {
                 let result = match flutter_and_dbus_recv.recv().unwrap() {
@@ -178,6 +172,20 @@ impl NotificationDaemon {
                     },
                     ChannelMessage::DbusEvent(event) => match event {
                         DbusEvent::NewNotification(notification) => {
+                            let settings = db.get_app_settings().map_or(
+                                AppSettings {
+                                    id_count: notification.n_id,
+                                },
+                                |mut s| {
+                                    s.id_count = if notification.n_id > s.id_count {
+                                        notification.n_id
+                                    } else {
+                                        s.id_count
+                                    };
+                                    s
+                                },
+                            );
+                            db.set_notification(settings);
                             Self::show_notification(&flutter_sender, notification, &data)
                         }
 
