@@ -137,6 +137,7 @@ impl NotificationDaemon {
             *sr = Some(signal_recv);
         }
 
+        // Cloning the db will not create a new surrealdb instance, so it's totally okey to do it.
         let db = self.db.clone();
         let action_join_handler = std::thread::spawn(move || {
             let mut data = DaemonData::new(db.clone());

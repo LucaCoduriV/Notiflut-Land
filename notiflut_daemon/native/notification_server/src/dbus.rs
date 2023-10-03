@@ -298,6 +298,7 @@ impl DbusServer {
         Ok(DbusServer { connection: conn })
     }
 
+    /// id_count is the id counter that assigns new ids to notification.
     pub fn register_notification_handler(
         &mut self,
         sender: Sender<ChannelMessage>,
