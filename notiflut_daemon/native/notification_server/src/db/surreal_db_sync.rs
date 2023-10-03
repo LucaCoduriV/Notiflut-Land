@@ -103,12 +103,27 @@ pub(crate) async fn db_thread(called_function_rx: Receiver<SurrealdbMessages>) {
                 sender.send(settings).unwrap();
             }
             SurrealdbMessages::SetAppSettings(sender, settings) => {
-                let result: Result<Option<AppSettings>, _> = DB
+                const SETTINGS_ID: i64 = 0;
+                let db_settings: Option<AppSettings> = DB
                     .get()
                     .unwrap()
-                    .create((TABLE_NOTIFICATION, 0))
-                    .content(settings)
-                    .await;
+                    .select((TABLE_APP_SETTINGS, SETTINGS_ID))
+                    .await
+                    .unwrap();
+
+                let result: Result<Option<AppSettings>, _> = if db_settings.is_some() {
+                    DB.get()
+                        .unwrap()
+                        .update((TABLE_APP_SETTINGS, SETTINGS_ID))
+                        .content(&settings)
+                        .await
+                } else {
+                    DB.get()
+                        .unwrap()
+                        .create((TABLE_APP_SETTINGS, SETTINGS_ID))
+                        .content(&settings)
+                        .await
+                };
 
                 let result_casted = result.map(|_| ()).map_err(|e| e.into());
 

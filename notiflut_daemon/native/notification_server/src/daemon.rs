@@ -174,13 +174,13 @@ impl NotificationDaemon {
                         DbusEvent::NewNotification(notification) => {
                             let settings = db.get_app_settings().map_or(
                                 AppSettings {
-                                    id_count: notification.n_id,
+                                    id_count: notification.n_id.wrapping_add(1),
                                 },
                                 |mut s| {
                                     s.id_count = if notification.n_id > s.id_count {
-                                        notification.n_id
+                                        notification.n_id.wrapping_add(1)
                                     } else {
-                                        s.id_count
+                                        s.id_count.wrapping_add(1)
                                     };
                                     s
                                 },
