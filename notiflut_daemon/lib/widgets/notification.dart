@@ -106,19 +106,16 @@ class NotificationTile extends StatelessWidget {
                     Text(appName, style: const TextStyle(fontSize: 13)),
                   ],
                 ),
-                SizedBox(
-                  width: 100,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(time),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(20),
-                        onTap: closeAction,
-                        child: const Icon(Icons.close),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(time),
+                    InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: closeAction,
+                      child: const Icon(Icons.close),
+                    ),
+                  ],
                 ),
               ],
             ),

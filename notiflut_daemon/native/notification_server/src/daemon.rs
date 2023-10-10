@@ -1,13 +1,10 @@
 use ::dbus::{message::SignalArgs, Path};
-use serde::{Deserialize, Serialize};
 use std::{
     sync::{mpsc::Receiver, Arc, Mutex},
     thread::JoinHandle,
     time::Duration,
     vec,
 };
-use surrealdb::engine::local::File;
-use tokio::runtime::Runtime;
 
 use crate::{
     daemon_data::DaemonData,

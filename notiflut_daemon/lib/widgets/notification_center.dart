@@ -53,22 +53,30 @@ class _NotificationCenterState extends State<NotificationCenter>
     final categoryWidgets = keys.map((e) {
       final notifications = notificationByCategory[e]!;
 
-      final notificationTiles = notifications.reversed.map((e) {
-        ImageProvider<Object>? imageProvider = imageRawToProvider(e.appImage);
-        ImageProvider<Object>? iconeProvider = imageRawToProvider(e.appIcon);
+      final notificationTiles = notifications.map((n) {
+        ImageProvider<Object>? imageProvider = imageRawToProvider(n.appImage);
+        ImageProvider<Object>? iconeProvider = imageRawToProvider(n.appIcon);
         return NotificationTile(
-          e.id,
-          e.appName,
-          e.summary,
-          e.body,
+          n.id,
+          n.appName,
+          n.summary,
+          n.body,
           iconProvider: iconeProvider,
           imageProvider: imageProvider,
-          createdAt: e.createdAt.toDateTime(),
-          actions: actionsListToMap(e.actions)
-              .map((e) => NotificationAction(e.$1, () {
-                    print(e.$2);
+          createdAt: n.createdAt.toDateTime(),
+          actions: actionsListToMap(n.actions)
+              .map((e) => NotificationAction(e.$2, () {
+                    get<NotificationService>().invokeAction(n.id, e.$1);
+                    get<NotificationService>().closeNotification(n.id);
                   }))
               .toList(),
+          onTileTap: () {
+            get<NotificationService>().invokeAction(n.id, "default");
+            get<NotificationService>().closeNotification(n.id);
+          },
+          closeAction: () {
+            get<NotificationService>().closeNotification(n.id);
+          },
         );
       }).toList();
 

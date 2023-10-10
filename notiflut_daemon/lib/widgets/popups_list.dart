@@ -25,8 +25,7 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
     return ListView(
       shrinkWrap: true,
       controller: scrollController,
-      children: notifications.reversed.map((e) {
-        final (int _, daemon_event.Notification n) = e;
+      children: notifications.reversed.map((n) {
         ImageProvider<Object>? imageProvider = imageRawToProvider(n.appImage);
         ImageProvider<Object>? iconeProvider = imageRawToProvider(n.appIcon);
         return NotificationTile(
@@ -40,9 +39,17 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
           actions: actionsListToMap(n.actions)
               .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
-                    get<NotificationService>().invokeAction(e.$1);
+                    get<NotificationService>().invokeAction(n.id, e.$1);
+                    get<NotificationService>().closePopup(n.id, n.createdAt);
                   }))
               .toList(),
+          onTileTap: () {
+            get<NotificationService>().invokeAction(n.id, "default");
+            get<NotificationService>().closePopup(n.id, n.createdAt);
+          },
+          closeAction: () {
+            get<NotificationService>().closePopup(n.id, n.createdAt);
+          },
         );
       }).toList(),
     );

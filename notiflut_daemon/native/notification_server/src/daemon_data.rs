@@ -14,9 +14,6 @@ impl DaemonData {
 
     pub fn get_notifications_db(&self) -> Vec<Notification> {
         let notifications = self.db.get_notifications();
-
-        println!("{:?}", notifications);
-
         notifications
     }
 

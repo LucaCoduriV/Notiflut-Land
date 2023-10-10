@@ -213,8 +213,6 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
             replaces_id
         };
 
-        println!("{}", id);
-
         let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&hints, "image-data") {
             Some(v) => ImageData::try_from(v).ok(),
             None => None,
@@ -269,7 +267,6 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotification {
             app_image,
             app_icon,
         };
-        println!("{notification:#?}");
 
         if let Err(_) = self
             .sender
