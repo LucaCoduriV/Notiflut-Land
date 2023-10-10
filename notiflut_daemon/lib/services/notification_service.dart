@@ -49,11 +49,13 @@ class NotificationService extends ChangeNotifier {
         if (isHidden && hasNewNotification) {
           final notification =
               notifications.firstWhere((element) => element.id == id);
+          if (notification.replacesId != 0) {
+            closePopup(id);
+          }
           popups.insert(0, notification);
           popups = List.from(popups);
           schedulePopupCleanUp(id, notification.createdAt);
         }
-
 
         notifications.sort((a, b) =>
             b.createdAt.toDateTime().compareTo(a.createdAt.toDateTime()));
@@ -84,19 +86,25 @@ class NotificationService extends ChangeNotifier {
     }
   }
 
-  void closePopup(int id, Timestamp date){
-    popups = List.from(popups..removeWhere(((n) => n.id == id && n.createdAt == date)));
+  void closePopupWithDate(int id, Timestamp date) {
+    popups = List.from(
+        popups..removeWhere(((n) => n.id == id && n.createdAt == date)));
     notifyListeners();
   }
 
-  void closeNotification(int id){
+  void closePopup(int id) {
+    popups = List.from(popups..removeWhere(((n) => n.id == id)));
+    notifyListeners();
+  }
+
+  void closeNotification(int id) {
     notifications = List.from(notifications..removeWhere(((n) => n.id == id)));
     notifyListeners();
   }
 
   Future<void> schedulePopupCleanUp(int id, Timestamp date) async {
     await Future.delayed(const Duration(seconds: 5));
-    closePopup(id, date);
+    closePopupWithDate(id, date);
 
     if (popups.isEmpty) {
       // TODO Understand why [PopupsList] does not resize automatically.

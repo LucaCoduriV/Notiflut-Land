@@ -40,15 +40,15 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
               .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
                     get<NotificationService>().invokeAction(n.id, e.$1);
-                    get<NotificationService>().closePopup(n.id, n.createdAt);
+                    get<NotificationService>().closePopupWithDate(n.id, n.createdAt);
                   }))
               .toList(),
           onTileTap: () {
             get<NotificationService>().invokeAction(n.id, "default");
-            get<NotificationService>().closePopup(n.id, n.createdAt);
+            get<NotificationService>().closePopupWithDate(n.id, n.createdAt);
           },
           closeAction: () {
-            get<NotificationService>().closePopup(n.id, n.createdAt);
+            get<NotificationService>().closePopupWithDate(n.id, n.createdAt);
           },
         );
       }).toList(),
