@@ -65,6 +65,7 @@ class _NotificationCenterState extends State<NotificationCenter>
           imageProvider: imageProvider,
           createdAt: n.createdAt.toDateTime(),
           actions: actionsListToMap(n.actions)
+              .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
                     get<NotificationService>().invokeAction(n.id, e.$1);
                     get<NotificationService>().closeNotification(n.id);
