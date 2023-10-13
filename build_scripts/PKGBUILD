@@ -19,7 +19,9 @@ sha256sums=('SKIP')
 
 build() {
     cd "$srcdir/$_pkgfoldername/notiflut_daemon"
-    protoc --proto_path=./messages --dart_out=./lib/messages 
+    mkdir ./lib/messages
+    protoc --dart_out=./lib/ ./messages/*
+    protoc --dart_out=./lib/messages google/protobuf/timestamp.pb.dart
     flutter build linux --release
 
     cd "$srcdir/$_pkgfoldername/notiflut_ctl"
