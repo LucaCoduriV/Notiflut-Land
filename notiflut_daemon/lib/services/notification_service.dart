@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
@@ -9,7 +11,7 @@ import 'package:rust_in_flutter/rust_in_flutter.dart';
 
 class NotificationService extends ChangeNotifier {
   List<daemon_event.Notification> notifications = [];
-  List<daemon_event.Notification> popups = [];
+  List<(daemon_event.Notification, Timer)> popups = [];
   bool isHidden = true;
 
   NotificationService() {
@@ -52,15 +54,15 @@ class NotificationService extends ChangeNotifier {
           if (notification.replacesId != 0) {
             closePopup(id);
           }
-          popups.insert(0, notification);
+          final timer = schedulePopupCleanUp(id, notification.createdAt);
+          popups.insert(0, (notification, timer));
           popups = List.from(popups);
-          schedulePopupCleanUp(id, notification.createdAt);
         }
 
         notifications.sort((a, b) =>
             b.createdAt.toDateTime().compareTo(a.createdAt.toDateTime()));
         popups.sort((a, b) =>
-            b.createdAt.toDateTime().compareTo(a.createdAt.toDateTime()));
+            b.$1.createdAt.toDateTime().compareTo(a.$1.createdAt.toDateTime()));
 
         notifyListeners();
         break;
@@ -88,13 +90,18 @@ class NotificationService extends ChangeNotifier {
 
   void closePopupWithDate(int id, Timestamp date) {
     popups = List.from(
-        popups..removeWhere(((n) => n.id == id && n.createdAt == date)));
+        popups..removeWhere(((n) => n.$1.id == id && n.$1.createdAt == date)));
     notifyListeners();
   }
 
   void closePopup(int id) {
-    popups = List.from(popups..removeWhere(((n) => n.id == id)));
+    popups = List.from(popups..removeWhere(((n) => n.$1.id == id)));
     notifyListeners();
+  }
+
+  void cancelClosePopup(int id) {
+    final timer = popups.firstWhere((tuple) => tuple.$1.id == id).$2;
+    timer.cancel();
   }
 
   void closeNotification(int id) {
@@ -102,17 +109,24 @@ class NotificationService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> schedulePopupCleanUp(int id, Timestamp date) async {
-    await Future.delayed(const Duration(seconds: 5));
-    closePopupWithDate(id, date);
+  void updateTimer(int id, Timer timer){
+    final index = popups.indexWhere((tuple) => tuple.$1.id == id);
+    final tuple = popups[index];
+    popups[index] = (tuple.$1, timer);
+  }
 
-    if (popups.isEmpty) {
-      // TODO Understand why [PopupsList] does not resize automatically.
-      if (isHidden) {
-        hideWindow();
-        print("POPUP CLEAN UP HIDE WINDOW");
-        setWindowSize(const Size(500, 2));
+  Timer schedulePopupCleanUp(int id, Timestamp date) {
+    return Timer(const Duration(seconds: 5), () {
+      closePopupWithDate(id, date);
+
+      if (popups.isEmpty) {
+        // TODO Understand why [PopupsList] does not resize automatically.
+        if (isHidden) {
+          hideWindow();
+          print("POPUP CLEAN UP HIDE WINDOW");
+          setWindowSize(const Size(500, 2));
+        }
       }
-    }
+    });
   }
 }

@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:open_url/open_url.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -43,6 +44,8 @@ class NotificationTile extends StatelessWidget {
   final ImageProvider? imageProvider;
   final Function()? onTileTap;
   final Function()? closeAction;
+  final Function(PointerEnterEvent)? onHover;
+  final Function(PointerExitEvent)? onHoverExit;
   final List<NotificationAction>? actions;
   final DateTime? createdAt;
   final EdgeInsetsGeometry? margin;
@@ -61,6 +64,8 @@ class NotificationTile extends StatelessWidget {
     this.iconProvider,
     this.closeAction,
     this.onTileTap,
+    this.onHover,
+    this.onHoverExit,
     this.actions,
     this.createdAt,
     this.margin,
@@ -84,90 +89,94 @@ class NotificationTile extends StatelessWidget {
         time = "${createdAt!.day}/${createdAt!.month}";
       }
     }
-    return Card(
-      margin: margin,
-      color: const Color(0xBBE0E0E0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: iconProvider,
-                      radius: 13,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(appName, style: const TextStyle(fontSize: 13)),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(time),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: closeAction,
-                      child: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-              ],
+    return MouseRegion(
+    onEnter: onHover,
+    onExit: onHoverExit,
+      child: Card(
+        margin: margin,
+        color: const Color(0xBBE0E0E0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        backgroundImage: iconProvider,
+                        radius: 13,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(appName, style: const TextStyle(fontSize: 13)),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(time),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: closeAction,
+                        child: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          ListTile(
-            title: Text(title),
-            onTap: onTileTap,
-            subtitle: Html(
-              data: body.replaceAll("\\n", "</br>"),
-              extensions: [
-                ImageExtension(
-                    networkSchemas: {"file"},
-                    builder: (extensionContext) {
-                      final element = extensionContext.styledElement;
-                      return Image.file(
-                      File(element!.attributes["src"]!.replaceAll("file://", "")),
-                        // width: double.infinity,
-                        // height: 200.0,
-                      );
-                    }),
-              ],
-              onLinkTap: (link, context, element) {
-                openUrl(link!);
-              },
-              style: {
-                "a": Style(
-                color: Colors.black,
-                ),
-                // "body": Style(
-                //   margin: Margins.all(0.0),
-                //   padding: HtmlPaddings.all(0.0),
-                // ),
-                // "img": Style(
-                //   display: Display.block,
-                //   width: Width.auto(),
-                //   margin: Margins.all(0.0),
-                //   padding: HtmlPaddings.all(0.0),
-                // ),
-              },
+            ListTile(
+              title: Text(title),
+              onTap: onTileTap,
+              subtitle: Html(
+                data: body.replaceAll("\\n", "</br>"),
+                extensions: [
+                  ImageExtension(
+                      networkSchemas: {"file"},
+                      builder: (extensionContext) {
+                        final element = extensionContext.styledElement;
+                        return Image.file(
+                        File(element!.attributes["src"]!.replaceAll("file://", "")),
+                          // width: double.infinity,
+                          // height: 200.0,
+                        );
+                      }),
+                ],
+                onLinkTap: (link, context, element) {
+                  openUrl(link!);
+                },
+                style: {
+                  "a": Style(
+                  color: Colors.black,
+                  ),
+                  // "body": Style(
+                  //   margin: Margins.all(0.0),
+                  //   padding: HtmlPaddings.all(0.0),
+                  // ),
+                  // "img": Style(
+                  //   display: Display.block,
+                  //   width: Width.auto(),
+                  //   margin: Margins.all(0.0),
+                  //   padding: HtmlPaddings.all(0.0),
+                  // ),
+                },
+              ),
+              leading: CircleAvatar(
+                backgroundColor: Colors.transparent,
+                backgroundImage: imageProvider,
+              ),
             ),
-            leading: CircleAvatar(
-              backgroundColor: Colors.transparent,
-              backgroundImage: imageProvider,
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: buttons ?? [],
             ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: buttons ?? [],
-          ),
-          const SizedBox(height: 5),
-        ],
+            const SizedBox(height: 5),
+          ],
+        ),
       ),
     );
   }

@@ -4,8 +4,6 @@ import 'package:notiflutland/services/notification_service.dart';
 import 'package:notiflutland/utils.dart';
 import 'package:notiflutland/widgets/notification.dart';
 import 'package:notiflutland/window_utils.dart';
-import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
-    show Notification;
 
 class PopupsList extends StatefulWidget with GetItStatefulWidgetMixin {
   PopupsList({super.key});
@@ -21,11 +19,13 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
   Widget build(BuildContext context) {
     final notifications =
         watchOnly((NotificationService service) => service.popups);
+    final notificationService = get<NotificationService>();
     resizeWindowAfterBuild();
     return ListView(
       shrinkWrap: true,
       controller: scrollController,
-      children: notifications.reversed.map((n) {
+      children: notifications.reversed.map((tuple) {
+        final n = tuple.$1;
         ImageProvider<Object>? imageProvider = imageRawToProvider(n.appImage);
         ImageProvider<Object>? iconeProvider = imageRawToProvider(n.appIcon);
         return NotificationTile(
@@ -40,15 +40,24 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
               .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
                     get<NotificationService>().invokeAction(n.id, e.$1);
-                    get<NotificationService>().closePopupWithDate(n.id, n.createdAt);
+                    get<NotificationService>()
+                        .closePopupWithDate(n.id, n.createdAt);
                   }))
               .toList(),
           onTileTap: () {
-            get<NotificationService>().invokeAction(n.id, "default");
-            get<NotificationService>().closePopupWithDate(n.id, n.createdAt);
+            notificationService.invokeAction(n.id, "default");
+            notificationService.closePopupWithDate(n.id, n.createdAt);
           },
           closeAction: () {
-            get<NotificationService>().closePopupWithDate(n.id, n.createdAt);
+            notificationService.closePopupWithDate(n.id, n.createdAt);
+          },
+          onHover: (pointer) {
+            notificationService.cancelClosePopup(n.id);
+          },
+          onHoverExit: (pointer) {
+            final timer =
+                notificationService.schedulePopupCleanUp(n.id, n.createdAt);
+            notificationService.updateTimer(n.id, timer);
           },
         );
       }).toList(),
