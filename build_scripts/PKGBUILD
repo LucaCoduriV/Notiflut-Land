@@ -19,27 +19,35 @@ sha256sums=('SKIP')
 
 build() {
     cd "$srcdir/$_pkgfoldername/notiflut_daemon"
-    mkdir ./lib/messages
-    protoc --dart_out=./lib/ ./messages/*
-    protoc --dart_out=./lib/messages google/protobuf/timestamp.pb.dart
+    mkdir -p ./lib/messages
+    echo 'Running rift message'
+    dart run rust_in_flutter message
+    echo 'Running protoc google'
+    protoc --dart_out=./lib/messages google/protobuf/timestamp.proto 
+    echo 'Running flutter build'
     flutter build linux --release
 
     cd "$srcdir/$_pkgfoldername/notiflut_ctl"
+    echo 'Running cargo build'
     cargo build --release
 }
 
 package() {
+  echo 'Installing notiflut_daemon'
 	install -dm 755 "${pkgdir}/opt/${pkgname}"
   cp -a "$_pkgfoldername/notiflut_daemon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
 
+  echo 'Creating link to notiflutland'
   install -d "$pkgdir/usr/bin/"
-  ln -s /opt/${pkgname}/notiflut_land ${pkgdir}/usr/bin/notiflut_land
+  ln -s /opt/${pkgname}/notiflutland ${pkgdir}/usr/bin/notiflutland
 
   #install service
+  echo 'Installing service'
   mv $_pkgfoldername/notiflut_daemon/notiflut.systemd.service $_pkgfoldername/notiflut_daemon/notiflut.service
   install -Dm 644 $_pkgfoldername/notiflut_daemon/notiflut.service -t ${pkgdir}/etc/systemd/user/
   install -Dm 644 $_pkgfoldername/notiflut_daemon/org.lucacoduriv.notiflut.service -t ${pkgdir}/usr/share/dbus-1/services/
 
   #install ctl (TODO CHECK PERMISSION)
+  echo 'Installing notiflut_ctl'
 	install -Dm 777 "$_pkgfoldername/notiflut_ctl/target/release/notiflut_ctl" -t "${pkgdir}/usr/bin/"
 }

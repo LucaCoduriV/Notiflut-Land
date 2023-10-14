@@ -1,0 +1,8 @@
+[Unit]
+Description=Notiflut notification daemon
+PartOf=graphical-session.target
+
+[Service]
+Type=dbus
+BusName=org.freedesktop.Notifications
+ExecStart=/opt/notiflut/notiflutland
