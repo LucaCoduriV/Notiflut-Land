@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
-const SMALL_WINDOW_SIZE = Size(500, 200);
+const _SMALL_WINDOW_SIZE = Size(500, 200);
+bool _top = true;
+bool _bottom = true;
+bool _left = true;
+bool _right = true;
 
 Future<void> initWindowConfig() async {
   WindowOptions windowOptions = const WindowOptions(
@@ -15,42 +20,49 @@ Future<void> initWindowConfig() async {
     windowButtonVisibility: false,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.setMinimumSize(const Size(500, 150));
     await windowManager.show();
     await windowManager.focus();
-    await windowManager.setLayer(LayerSurface.background);
+    await windowManager.setLayer(LayerSurface.top);
     await setWindowPosTopRight();
   });
 }
 
 Future<void> setWindowPosTopRight() async {
-    await windowManager.setAnchor(LayerEdge.top, true);
-    await windowManager.setAnchor(LayerEdge.right, true);
-    await windowManager.setAnchor(LayerEdge.left, false);
-    await windowManager.setAnchor(LayerEdge.bottom, false);
+  _top = true;
+  _bottom = false;
+  _right = true;
+  _left = false;
 }
 
 Future<void> setWindowSize(Size size) async {
-    await windowManager.setLayerSize(size);
+  if (size.height <= 0 || size.width <= 0) {
+    return;
+  }
+  await windowManager.setLayerSize(size);
 }
 
 Future<void> setWindowFullscreen() async {
-    await windowManager.setAnchor(LayerEdge.top, true);
-    await windowManager.setAnchor(LayerEdge.right, true);
-    await windowManager.setAnchor(LayerEdge.left, true);
-    await windowManager.setAnchor(LayerEdge.bottom, true);
-    // Random size to be sure the window is rendered
-    await windowManager.setLayerSize(const Size(1000,500));
+  _top = true;
+  _bottom = true;
+  _right = true;
+  _left = true;
+  // Random size to be sure the window is rendered
+  await windowManager.setLayerSize(const Size(1000, 500));
 }
 
-
 Future<void> hideWindow() async {
-// I Don't know why but hidding the layer with the hide methods makes the app sometimes crash
-// So for now I resize the layer to 500 by 2 pixels so we can't see it.
-  await windowManager.setLayerSize(const Size(500,2));
-  await windowManager.setLayer(LayerSurface.background);
+  await windowManager.setAnchor(LayerEdge.top, _top);
+  await windowManager.setAnchor(LayerEdge.right, _right);
+  await windowManager.setAnchor(LayerEdge.left, _left);
+  await windowManager.setAnchor(LayerEdge.bottom, _bottom);
+  await windowManager.hide();
 }
 
 Future<void> showWindow() async {
-// Same as above
-  await windowManager.setLayer(LayerSurface.top);
+  await windowManager.setAnchor(LayerEdge.top, _top);
+  await windowManager.setAnchor(LayerEdge.right, _right);
+  await windowManager.setAnchor(LayerEdge.left, _left);
+  await windowManager.setAnchor(LayerEdge.bottom, _bottom);
+  await windowManager.show();
 }

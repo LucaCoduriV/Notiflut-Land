@@ -1,12 +1,4 @@
-use std::{
-    collections::VecDeque,
-    error::Error,
-    sync::{
-        atomic::{AtomicU32, Ordering},
-        mpsc::Sender,
-    },
-    time::Duration,
-};
+use std::{collections::VecDeque, error::Error, sync::mpsc::Sender, time::Duration};
 
 use dbus::{
     arg::{prop_cast, RefArg},

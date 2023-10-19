@@ -1,7 +1,5 @@
 use crate::{db::SurrealDbSync, notification::Notification};
 
-static TABLE_NOTIFICATION: &'static str = "notification";
-
 pub struct DaemonData {
     pub is_open: bool,
     db: SurrealDbSync,
