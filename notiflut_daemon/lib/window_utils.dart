@@ -52,17 +52,21 @@ Future<void> setWindowFullscreen() async {
 }
 
 Future<void> hideWindow() async {
-  await windowManager.setAnchor(LayerEdge.top, _top);
-  await windowManager.setAnchor(LayerEdge.right, _right);
-  await windowManager.setAnchor(LayerEdge.left, _left);
-  await windowManager.setAnchor(LayerEdge.bottom, _bottom);
+  await Future.wait([
+    windowManager.setAnchor(LayerEdge.top, _top),
+    windowManager.setAnchor(LayerEdge.right, _right),
+    windowManager.setAnchor(LayerEdge.left, _left),
+    windowManager.setAnchor(LayerEdge.bottom, _bottom),
+  ]);
   await windowManager.hide();
 }
 
 Future<void> showWindow() async {
-  await windowManager.setAnchor(LayerEdge.top, _top);
-  await windowManager.setAnchor(LayerEdge.right, _right);
-  await windowManager.setAnchor(LayerEdge.left, _left);
-  await windowManager.setAnchor(LayerEdge.bottom, _bottom);
+  await Future.wait([
+    windowManager.setAnchor(LayerEdge.top, _top),
+    windowManager.setAnchor(LayerEdge.right, _right),
+    windowManager.setAnchor(LayerEdge.left, _left),
+    windowManager.setAnchor(LayerEdge.bottom, _bottom),
+  ]);
   await windowManager.show();
 }
