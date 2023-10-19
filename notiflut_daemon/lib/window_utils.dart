@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
-const _SMALL_WINDOW_SIZE = Size(500, 200);
+const _smallWindowSize = Size(500, 200);
 bool _top = true;
 bool _bottom = true;
 bool _left = true;
@@ -20,7 +19,7 @@ Future<void> initWindowConfig() async {
     windowButtonVisibility: false,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.setMinimumSize(const Size(500, 150));
+    await windowManager.setMinimumSize(_smallWindowSize);
     await windowManager.show();
     await windowManager.focus();
     await windowManager.setLayer(LayerSurface.top);
