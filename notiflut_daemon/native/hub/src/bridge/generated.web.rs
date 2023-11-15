@@ -12,6 +12,11 @@ pub fn wire_prepare_rust_response_stream(port_: MessagePort) {
 }
 
 #[wasm_bindgen]
+pub fn wire_prepare_rust_report_stream(port_: MessagePort) {
+    wire_prepare_rust_report_stream_impl(port_)
+}
+
+#[wasm_bindgen]
 pub fn wire_prepare_channels(port_: MessagePort) {
     wire_prepare_channels_impl(port_)
 }
@@ -24,6 +29,11 @@ pub fn wire_check_rust_streams(port_: MessagePort) {
 #[wasm_bindgen]
 pub fn wire_start_rust_logic(port_: MessagePort) {
     wire_start_rust_logic_impl(port_)
+}
+
+#[wasm_bindgen]
+pub fn wire_stop_rust_logic(port_: MessagePort) {
+    wire_stop_rust_logic_impl(port_)
 }
 
 #[wasm_bindgen]
@@ -105,6 +115,8 @@ impl Wire2Api<u8> for JsValue {
 }
 impl Wire2Api<Vec<u8>> for JsValue {
     fn wire2api(self) -> Vec<u8> {
-        self.unchecked_into::<js_sys::Uint8Array>().to_vec().into()
+        self.unchecked_into::<rinf::externs::js_sys::Uint8Array>()
+            .to_vec()
+            .into()
     }
 }

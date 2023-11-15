@@ -62,7 +62,7 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                     child: Text(_open ? "Show less" : "See more",
                         style: const TextStyle(color: Colors.black)),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   CircleAvatar(
                     radius: 15,
                     backgroundColor: const Color(0xBBE0E0E0),
@@ -75,7 +75,7 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                       onPressed: () {},
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                 ],
               ),
           ],

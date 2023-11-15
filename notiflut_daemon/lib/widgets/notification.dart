@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -90,8 +89,8 @@ class NotificationTile extends StatelessWidget {
       }
     }
     return MouseRegion(
-    onEnter: onHover,
-    onExit: onHoverExit,
+      onEnter: onHover,
+      onExit: onHoverExit,
       child: Card(
         margin: margin,
         color: const Color(0xBBE0E0E0),
@@ -139,7 +138,8 @@ class NotificationTile extends StatelessWidget {
                       builder: (extensionContext) {
                         final element = extensionContext.styledElement;
                         return Image.file(
-                        File(element!.attributes["src"]!.replaceAll("file://", "")),
+                          File(element!.attributes["src"]!
+                              .replaceAll("file://", "")),
                           // width: double.infinity,
                           // height: 200.0,
                         );
@@ -150,7 +150,7 @@ class NotificationTile extends StatelessWidget {
                 },
                 style: {
                   "a": Style(
-                  color: Colors.black,
+                    color: Colors.black,
                   ),
                   // "body": Style(
                   //   margin: Margins.all(0.0),

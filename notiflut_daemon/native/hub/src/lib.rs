@@ -1,7 +1,8 @@
-use bridge::api::RustSignal;
+use bridge::RustSignal;
 use bridge::{respond_to_dart, send_rust_signal};
 use prost::Message;
 use with_request::handle_request;
+use tokio_with_wasm::tokio;
 
 mod bridge;
 mod messages;

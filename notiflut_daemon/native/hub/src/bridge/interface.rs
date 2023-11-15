@@ -1,13 +1,14 @@
 #![allow(dead_code)]
 
-use crate::bridge::bridge_engine::StreamSink;
-use lazy_static::lazy_static;
+use rinf::engine::StreamSink;
+use rinf::externs::lazy_static::lazy_static;
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::sync::Mutex;
 use tokio::sync::mpsc::channel;
 use tokio::sync::mpsc::Receiver;
 use tokio::sync::mpsc::Sender;
+use tokio_with_wasm::tokio;
 
 /// Available operations that a `RustRequest` object can hold.
 /// There are 4 options, `Create`,`Read`,`Update`, and `Delete`.
@@ -71,6 +72,7 @@ type SharedCell<T> = Arc<Mutex<Cell<T>>>;
 
 type RustSignalStream = StreamSink<RustSignal>;
 type RustResponseStream = StreamSink<RustResponseUnique>;
+type RustReportStream = StreamSink<String>;
 type RustRequestSender = Sender<RustRequestUnique>;
 type RustRequestReceiver = Receiver<RustRequestUnique>;
 
@@ -85,7 +87,7 @@ thread_local! {
 thread_local! {
     pub static SIGNAL_STREAM: Cell<RustSignalStream> = RefCell::new(None);
     pub static RESPONSE_STREAM: Cell<RustResponseStream> = RefCell::new(None);
-    pub static RESPONSE_SENDER: Cell<RustResponseUnique> = RefCell::new(None);
+    pub static REPORT_STREAM: Cell<RustReportStream> = RefCell::new(None);
 }
 
 // Native: All threads
@@ -95,14 +97,21 @@ lazy_static! {
         Arc::new(Mutex::new(RefCell::new(None)));
     pub static ref RESPONSE_STREAM_SHARED: SharedCell<RustResponseStream> =
         Arc::new(Mutex::new(RefCell::new(None)));
+    pub static ref REPORT_STREAM_SHARED: SharedCell<RustReportStream> =
+        Arc::new(Mutex::new(RefCell::new(None)));
     pub static ref REQUST_RECEIVER_SHARED: SharedCell<RustRequestReceiver> =
         Arc::new(Mutex::new(RefCell::new(None)));
 }
 
 #[cfg(not(target_family = "wasm"))]
 lazy_static! {
-    pub static ref TOKIO_RUNTIME: os_thread_local::ThreadLocal<RefCell<Option<tokio::runtime::Runtime>>> =
-        os_thread_local::ThreadLocal::new(|| RefCell::new(None));
+    pub static ref TOKIO_RUNTIME: rinf::externs::os_thread_local::ThreadLocal<Cell<tokio::runtime::Runtime>> =
+        rinf::externs::os_thread_local::ThreadLocal::new(|| RefCell::new(None));
+}
+
+#[cfg(target_family = "wasm")]
+thread_local! {
+    pub static IS_MAIN_STARTED: RefCell<bool> = RefCell::new(false);
 }
 
 /// Returns a stream object in Dart that listens to Rust.
@@ -111,10 +120,16 @@ pub fn prepare_rust_signal_stream(signal_stream: StreamSink<RustSignal>) {
     cell.replace(Some(signal_stream));
 }
 
-/// Returns a stream object in Dart that returns responses from Rust.
+/// Returns a stream object in Dart that gives responses from Rust.
 pub fn prepare_rust_response_stream(response_stream: StreamSink<RustResponseUnique>) {
     let cell = RESPONSE_STREAM_SHARED.lock().unwrap();
     cell.replace(Some(response_stream));
+}
+
+/// Returns a stream object in Dart that gives strings to print from Rust.
+pub fn prepare_rust_report_stream(print_stream: StreamSink<String>) {
+    let cell = REPORT_STREAM_SHARED.lock().unwrap();
+    cell.replace(Some(print_stream));
 }
 
 /// Prepare channels that are used in the Rust world.
@@ -139,6 +154,13 @@ pub fn check_rust_streams() -> bool {
     if cell.borrow().is_none() {
         are_all_ready = false;
     };
+    #[cfg(debug_assertions)]
+    {
+        let cell = REPORT_STREAM_SHARED.lock().unwrap();
+        if cell.borrow().is_none() {
+            are_all_ready = false;
+        };
+    }
     are_all_ready
 }
 
@@ -146,6 +168,40 @@ pub fn check_rust_streams() -> bool {
 pub fn start_rust_logic() {
     #[cfg(not(target_family = "wasm"))]
     {
+        use rinf::externs::backtrace;
+        #[cfg(debug_assertions)]
+        std::panic::set_hook(Box::new(|panic_info| {
+            let mut frames_filtered = Vec::new();
+            backtrace::trace(|frame| {
+                // Filter some backtrace frames
+                // as those from infrastructure functions are not needed.
+                let mut should_keep_tracing = true;
+                backtrace::resolve_frame(frame, |symbol| {
+                    if let Some(symbol_name) = symbol.name() {
+                        let name = symbol_name.to_string();
+                        let name_trimmed = name.trim_start_matches('_');
+                        if name_trimmed.starts_with("rust_begin_unwind") {
+                            frames_filtered.clear();
+                            return;
+                        }
+                        if name_trimmed.starts_with("rust_try") {
+                            should_keep_tracing = false;
+                            return;
+                        }
+                    }
+                    let backtrace_frame = backtrace::BacktraceFrame::from(frame.to_owned());
+                    frames_filtered.push(backtrace_frame);
+                });
+                should_keep_tracing
+            });
+            let mut backtrace_filtered = backtrace::Backtrace::from(frames_filtered);
+            backtrace_filtered.resolve();
+            crate::debug_print!(
+                "A panic occurred in Rust.\n{}\n{:?}",
+                panic_info,
+                backtrace_filtered
+            );
+        }));
         TOKIO_RUNTIME.with(move |inner| {
             let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
                 .enable_all()
@@ -158,9 +214,25 @@ pub fn start_rust_logic() {
     #[cfg(target_family = "wasm")]
     {
         #[cfg(debug_assertions)]
-        crate::bridge::bridge_engine::wasm_bindgen_src::worker::replace_worker();
-        wasm_bindgen_futures::spawn_local(crate::main());
+        std::panic::set_hook(Box::new(|panic_info| {
+            crate::debug_print!("A panic occurred in Rust.\n{panic_info}");
+        }));
+        IS_MAIN_STARTED.with(move |ref_cell| {
+            let is_started = *ref_cell.borrow();
+            if !is_started {
+                tokio::spawn(crate::main());
+                ref_cell.replace(true);
+            }
+        });
     }
+}
+
+/// Stop and terminate all Rust tasks.
+pub fn stop_rust_logic() {
+    #[cfg(not(target_family = "wasm"))]
+    TOKIO_RUNTIME.with(move |ref_cell| {
+        ref_cell.replace(None);
+    });
 }
 
 /// Send a request to Rust and receive a response in Dart.
