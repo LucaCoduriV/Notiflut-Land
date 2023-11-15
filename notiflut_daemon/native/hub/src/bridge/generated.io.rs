@@ -12,6 +12,11 @@ pub extern "C" fn wire_prepare_rust_response_stream(port_: i64) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_prepare_rust_report_stream(port_: i64) {
+    wire_prepare_rust_report_stream_impl(port_)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_prepare_channels(port_: i64) {
     wire_prepare_channels_impl(port_)
 }
@@ -24,6 +29,11 @@ pub extern "C" fn wire_check_rust_streams(port_: i64) {
 #[no_mangle]
 pub extern "C" fn wire_start_rust_logic(port_: i64) {
     wire_start_rust_logic_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_stop_rust_logic(port_: i64) {
+    wire_stop_rust_logic_impl(port_)
 }
 
 #[no_mangle]

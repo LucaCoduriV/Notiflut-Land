@@ -7,22 +7,14 @@ edition = "2021"
 [lib]
 # `lib` is required for non-library targets,
 # such as tests and benchmarks.
+# `cdylib` is for Linux, Android, Windows, and web.
 # `staticlib` is for iOS and macOS.
-# `cdylib` is for all other platforms.
 crate-type = ["lib", "cdylib", "staticlib"]
 
-# These are dependencies for non-web platforms.
-[target.'cfg(not(target_family = "wasm"))'.dependencies]
-libc = "0.2"
-dart-sys = { version = "4.0.2" }
-allo-isolate = { version = "0.1.20", features = ["zero-copy"] }
-tokio = { version = "1.28.2", features = ["rt-multi-thread", "time"] }
-os-thread-local = "0.1.3"
-
 [dependencies]
-bytemuck = "1.11.0"
-lazy_static = "1.4.0"
-tokio = { version = "1.28.2", features = ["sync", "macros"] }
+rinf = "4.16.3"
+tokio_with_wasm = "0.3.2"
+wasm-bindgen = "0.2.87"
 prost = "0.12.1"
 prost-types = "0.12.1"
 notification_server = { path = "../notification_server" }

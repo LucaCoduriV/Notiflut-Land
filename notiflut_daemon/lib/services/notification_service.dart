@@ -7,7 +7,7 @@ import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
 import 'package:notiflutland/messages/app_event.pb.dart' as app_event;
 import 'package:notiflutland/messages/google/protobuf/timestamp.pb.dart';
 import 'package:notiflutland/window_utils.dart';
-import 'package:rust_in_flutter/rust_in_flutter.dart';
+import 'package:rinf/rinf.dart';
 
 class NotificationService extends ChangeNotifier {
   List<daemon_event.Notification> notifications = [];
@@ -109,7 +109,7 @@ class NotificationService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateTimer(int id, Timer timer){
+  void updateTimer(int id, Timer timer) {
     final index = popups.indexWhere((tuple) => tuple.$1.id == id);
     final tuple = popups[index];
     popups[index] = (tuple.$1, timer);

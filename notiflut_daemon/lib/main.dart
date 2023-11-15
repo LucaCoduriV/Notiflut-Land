@@ -5,10 +5,10 @@ import 'package:notiflutland/services/notification_service.dart';
 import 'package:notiflutland/widgets/notification_center.dart';
 import 'package:notiflutland/widgets/popups_list.dart';
 import 'package:notiflutland/window_utils.dart';
-import 'package:rust_in_flutter/rust_in_flutter.dart';
+import 'package:rinf/rinf.dart';
 
 void main(List<String> args) async {
-  await RustInFlutter.ensureInitialized();
+  await Rinf.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   initWindowConfig();
 
