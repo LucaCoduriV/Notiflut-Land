@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
@@ -8,13 +11,30 @@ import 'package:notiflutland/window_utils.dart';
 import 'package:rinf/rinf.dart';
 
 void main(List<String> args) async {
-  await Rinf.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
-  initWindowConfig();
 
-  GetIt.I.registerSingleton(NotificationService());
+  if (args.firstOrNull != 'multi_window') {
+    await Rinf.ensureInitialized();
+    initWindowConfig();
+    GetIt.I.registerSingleton(NotificationService());
+  }
 
-  runApp(MyApp());
+  if (args.firstOrNull == 'multi_window') {
+    runApp(const MaterialApp(home: Text("coucou")));
+  } else {
+    final window = await DesktopMultiWindow.createWindow(jsonEncode({
+      'args1': 'Sub window',
+      'args2': 100,
+      'args3': true,
+      'bussiness': 'bussiness_test',
+    }));
+    window
+      ..setFrame(const Offset(0, 0) & const Size(1280, 720))
+      ..center()
+      ..setTitle('Another window')
+      ..show();
+    runApp(MyApp());
+  }
 }
 
 class MyApp extends StatelessWidget with GetItMixin {
