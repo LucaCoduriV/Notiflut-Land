@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
@@ -9,6 +8,7 @@ import 'package:notiflutland/widgets/notification_center.dart';
 import 'package:notiflutland/widgets/popups_list.dart';
 import 'package:notiflutland/window_utils.dart';
 import 'package:rinf/rinf.dart';
+import 'package:wayland_multi_window/wayland_multi_window.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,21 +17,29 @@ void main(List<String> args) async {
     await Rinf.ensureInitialized();
     initWindowConfig();
     GetIt.I.registerSingleton(NotificationService());
+  }else{
+    // final windowId = int.parse(args[1]);
+    // final window = LayerShellController.fromWindowId(windowId);
+    // window.show();
   }
 
   if (args.firstOrNull == 'multi_window') {
     runApp(const MaterialApp(home: Text("coucou")));
   } else {
-    final window = await DesktopMultiWindow.createWindow(jsonEncode({
+    final window = await WaylandMultiWindow.createLayerShell(jsonEncode({
       'args1': 'Sub window',
       'args2': 100,
       'args3': true,
       'bussiness': 'bussiness_test',
     }));
     window
-      ..setFrame(const Offset(0, 0) & const Size(1280, 720))
-      ..center()
       ..setTitle('Another window')
+      ..setLayer(LayerSurface.overlay)
+      ..setAnchor(LayerEdge.top, true)
+      ..setAnchor(LayerEdge.right, true)
+      ..setAnchor(LayerEdge.left, true)
+      ..setAnchor(LayerEdge.bottom, true)
+      ..setLayerSize(Size(1,1))
       ..show();
     runApp(MyApp());
   }

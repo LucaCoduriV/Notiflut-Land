@@ -23,7 +23,10 @@ dependencies:
     git:
       url: https://github.com/LucaCoduriV/window_manager.git
       ref: 6f627e825db10d2f45bef0e0bbabdf5d1ecf1cb3
-  desktop_multi_window: ^0.2.0
+  wayland_multi_window:
+    git:
+      url: https://github.com/LucaCoduriV/wayland_multi_window.git
+      ref: 8fb310f497ae4d4055dcf746ea9bc92bf0a72447
 
 dev_dependencies:
   flutter_test:
