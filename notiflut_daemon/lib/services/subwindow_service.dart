@@ -11,7 +11,8 @@ import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
 import '../messages/google/protobuf/timestamp.pb.dart';
 
 enum SubWindowEvents {
-  invokeAction;
+  invokeAction,
+  notificationClosed;
 
   factory SubWindowEvents.fromString(String value) {
     return SubWindowEvents.values.firstWhere(
@@ -62,6 +63,14 @@ class SubWindowService extends ChangeNotifier {
       0,
       SubWindowEvents.invokeAction.toString(),
       jsonEncode({"id": id, "action": action}),
+    );
+  }
+
+  Future<void> sendCloseEvent(int id) async {
+    WaylandMultiWindow.invokeMethod(
+      0,
+      SubWindowEvents.notificationClosed.toString(),
+      jsonEncode({"id": id}),
     );
   }
 

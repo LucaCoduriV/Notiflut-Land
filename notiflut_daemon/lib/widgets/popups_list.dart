@@ -49,6 +49,7 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
           },
           closeAction: () {
             notificationService.closePopupWithDate(n.id, n.createdAt);
+            notificationService.sendCloseEvent(n.id);
           },
           onHover: (pointer) {
             notificationService.cancelClosePopupTimer(n.id);

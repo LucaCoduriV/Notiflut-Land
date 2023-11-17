@@ -47,8 +47,13 @@ class MainWindowService extends ChangeNotifier {
     final event = SubWindowEvents.fromString(call.method);
     final args = jsonDecode(call.arguments) as Map<String, dynamic>;
 
-    if (event == SubWindowEvents.invokeAction) {
-      invokeAction(args["id"] as int, args["action"] as String);
+    switch(event){
+      case SubWindowEvents.invokeAction:
+        invokeAction(args["id"] as int, args["action"] as String);
+        break;
+      case SubWindowEvents.notificationClosed:
+        final notificationId = args["id"];
+        closeNotification(notificationId);
     }
   }
 

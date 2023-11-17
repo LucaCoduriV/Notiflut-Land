@@ -87,6 +87,8 @@ class _NotificationCenterState extends State<NotificationCenter>
         children: notificationTiles,
       );
     }).toList();
+
+    // TODO find why there is a warning on runtime
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:notiflutland/services/mainwindow_service.dart';
 import 'package:notiflutland/services/subwindow_service.dart';
 import 'package:notiflutland/widgets/notification_center.dart';
