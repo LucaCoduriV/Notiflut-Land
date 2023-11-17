@@ -51,7 +51,7 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
             notificationService.closePopupWithDate(n.id, n.createdAt);
           },
           onHover: (pointer) {
-            notificationService.cancelClosePopup(n.id);
+            notificationService.cancelClosePopupTimer(n.id);
           },
           onHoverExit: (pointer) {
             final timer =
@@ -71,7 +71,7 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
           scrollController.position.extentInside;
       if (size > 1) {
         print("New size: $size");
-        await get<SubWindowService>().setWindowSize(Size(500, size));
+        await get<SubWindowService>().setLayerSize(Size(500, size));
       }
     }
   }

@@ -14,10 +14,10 @@ void main(List<String> args) async {
 
   if (isMainWindow) {
     await Rinf.ensureInitialized();
-    initWindowConfig();
+    setupMainWindow();
     GetIt.I.registerSingleton(MainWindowService());
-    await initPopupsLayer();
-    runApp(MainWindow());
+    await setupSubWindow();
+    runApp(const MainWindow());
   } else {
     final windowId = int.parse(args[1]);
     GetIt.I.registerSingleton(SubWindowService(windowId));

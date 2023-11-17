@@ -10,6 +10,16 @@ import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
 
 import '../messages/google/protobuf/timestamp.pb.dart';
 
+enum SubWindowEvents {
+  invokeAction;
+
+  factory SubWindowEvents.fromString(String value) {
+    return SubWindowEvents.values.firstWhere(
+        (e) => e.toString() == value,
+        orElse: () => throw Exception("Not an element of SubWindowEvents"));
+  }
+}
+
 class SubWindowService extends ChangeNotifier {
   List<(daemon_event.Notification, Timer)> popups = [];
   bool isHidden = true;
@@ -33,11 +43,8 @@ class SubWindowService extends ChangeNotifier {
     final data = call.arguments as List<int>;
     final notification = daemon_event.Notification.fromBuffer(data);
 
-    print("NEW Notification !");
-
     if (popups.isEmpty) {
       layerController.show();
-      print("SHOW WINDOW");
     }
 
     final timer = schedulePopupCleanUp(notification.id, notification.createdAt);
@@ -53,7 +60,7 @@ class SubWindowService extends ChangeNotifier {
   Future<void> invokeAction(int id, String action) async {
     WaylandMultiWindow.invokeMethod(
       0,
-      "invokeAction",
+      SubWindowEvents.invokeAction.toString(),
       jsonEncode({"id": id, "action": action}),
     );
   }
@@ -82,19 +89,27 @@ class SubWindowService extends ChangeNotifier {
     popups = List.from(
         popups..removeWhere(((n) => n.$1.id == id && n.$1.createdAt == date)));
     notifyListeners();
+
+    if (popups.isEmpty) {
+      layerController.hide();
+    }
   }
 
   void closePopup(int id) {
     popups = List.from(popups..removeWhere(((n) => n.$1.id == id)));
     notifyListeners();
+
+    if (popups.isEmpty) {
+      layerController.hide();
+    }
   }
 
-  void cancelClosePopup(int id) {
+  void cancelClosePopupTimer(int id) {
     final timer = popups.firstWhere((tuple) => tuple.$1.id == id).$2;
     timer.cancel();
   }
 
-  Future<void> setWindowSize(Size size) async {
+  Future<void> setLayerSize(Size size) async {
     if (size.height <= 0 || size.width <= 0) {
       return;
     }

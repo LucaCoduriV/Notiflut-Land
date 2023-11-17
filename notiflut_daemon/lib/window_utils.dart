@@ -6,7 +6,7 @@ import 'package:window_manager/window_manager.dart';
 
 const _smallWindowSize = Size(500, 200);
 
-Future<void> initWindowConfig() async {
+Future<void> setupMainWindow() async {
   WindowOptions windowOptions = const WindowOptions(
     size: Size(800, 600),
     center: true,
@@ -24,7 +24,7 @@ Future<void> initWindowConfig() async {
   });
 }
 
-Future<w.LayerShellController> initPopupsLayer() async{
+Future<w.LayerShellController> setupSubWindow() async{
     final window = await w.WaylandMultiWindow.createLayerShell("");
     window
       ..setTitle('Notification popup')
@@ -34,22 +34,8 @@ Future<w.LayerShellController> initPopupsLayer() async{
       ..setAnchor(w.LayerEdge.left, false)
       ..setAnchor(w.LayerEdge.bottom, false)
       ..setLayerSize(_smallWindowSize)
-      ..show();
+      ..hide();
 
       return window;
 }
 
-Future<void> setWindowSize(Size size) async {
-  if (size.height <= 0 || size.width <= 0) {
-    return;
-  }
-  await windowManager.setLayerSize(size);
-}
-
-Future<void> hideWindow() async {
-  await windowManager.hide();
-}
-
-Future<void> showWindow() async {
-  await windowManager.show();
-}

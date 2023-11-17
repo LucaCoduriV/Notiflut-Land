@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,9 +7,20 @@ import 'package:notiflutland/messages/daemon_event.pb.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
     show ID, Notification;
 import 'package:notiflutland/messages/app_event.pb.dart' as app_event;
-import 'package:notiflutland/window_utils.dart';
+import 'package:notiflutland/services/subwindow_service.dart';
+import 'package:window_manager/window_manager.dart';
 import 'package:rinf/rinf.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
+
+enum MainWindowEvents {
+  newNotification;
+
+  factory MainWindowEvents.fromString(String value) {
+    return MainWindowEvents.values.firstWhere(
+        (e) => e.toString() == value,
+        orElse: () => throw Exception("Not an element of MainWindowEvents"));
+  }
+}
 
 class MainWindowService extends ChangeNotifier {
   List<daemon_event.Notification> notifications = [];
@@ -31,9 +41,13 @@ class MainWindowService extends ChangeNotifier {
   }
 
   Future<dynamic> _handleSubWindowEvents(
-      MethodCall call, int fromWindowId) async {
-    if (call.method == "invokeAction") {
-      final args = jsonDecode(call.arguments) as Map<String, dynamic>;
+    MethodCall call,
+    int fromWindowId,
+  ) async {
+    final event = SubWindowEvents.fromString(call.method);
+    final args = jsonDecode(call.arguments) as Map<String, dynamic>;
+
+    if (event == SubWindowEvents.invokeAction) {
       invokeAction(args["id"] as int, args["action"] as String);
     }
   }
@@ -67,7 +81,10 @@ class MainWindowService extends ChangeNotifier {
               notifications.firstWhere((element) => element.id == id);
 
           WaylandMultiWindow.invokeMethod(
-              1, "newNotification", notification.writeToBuffer());
+            1, // 1 is the id of the popup subwindow
+            MainWindowEvents.newNotification.toString(),
+            notification.writeToBuffer(),
+          );
         }
 
         notifications.sort((a, b) =>
@@ -100,5 +117,20 @@ class MainWindowService extends ChangeNotifier {
   void closeNotification(int id) {
     notifications = List.from(notifications..removeWhere(((n) => n.id == id)));
     notifyListeners();
+  }
+
+  Future<void> setWindowSize(Size size) async {
+    if (size.height <= 0 || size.width <= 0) {
+      return;
+    }
+    await windowManager.setLayerSize(size);
+  }
+
+  Future<void> hideWindow() async {
+    await windowManager.hide();
+  }
+
+  Future<void> showWindow() async {
+    await windowManager.show();
   }
 }
