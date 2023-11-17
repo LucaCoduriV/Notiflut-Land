@@ -75,7 +75,10 @@ class _SubWindowState extends State<SubWindow> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Scaffold(body: PopupsList()),
+      home: Scaffold(
+      backgroundColor: Colors.transparent,
+        body: PopupsList(),
+      ),
     );
   }
 }

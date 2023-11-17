@@ -45,6 +45,9 @@ class SubWindowService extends ChangeNotifier {
 
     popups.sort((a, b) =>
         b.$1.createdAt.toDateTime().compareTo(a.$1.createdAt.toDateTime()));
+
+
+    notifyListeners();
   }
 
   Timer schedulePopupCleanUp(int id, Timestamp date) {
