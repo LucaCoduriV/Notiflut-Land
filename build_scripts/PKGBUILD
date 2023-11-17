@@ -21,7 +21,7 @@ build() {
     cd "$srcdir/$_pkgfoldername/notiflut_daemon"
     mkdir -p ./lib/messages
     echo 'Running rift message'
-    dart run rust_in_flutter message
+    dart run rinf message
     echo 'Running protoc google'
     protoc --dart_out=./lib/messages google/protobuf/timestamp.proto 
     echo 'Running flutter build'
