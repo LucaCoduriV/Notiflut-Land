@@ -15,14 +15,18 @@ dependencies:
   protobuf: ^3.1.0
   flutter_html: ^3.0.0-beta.2
   image: ^4.0.16
-  window_manager:
-    git:
-      url: https://github.com/LucaCoduriV/window_manager.git
-      ref: 6f627e825db10d2f45bef0e0bbabdf5d1ecf1cb3
   open_url: ^2.0.1
   get_it: ^7.6.4
   get_it_mixin: ^4.2.2
   flutter_inset_box_shadow: ^1.0.8
+  window_manager:
+    git:
+      url: https://github.com/LucaCoduriV/window_manager.git
+      ref: 6f627e825db10d2f45bef0e0bbabdf5d1ecf1cb3
+  wayland_multi_window:
+    git:
+      url: https://github.com/LucaCoduriV/wayland_multi_window.git
+      ref: 8dd1d7016c1472dcc8531e91c52789d46c405e3c
 
 dev_dependencies:
   flutter_test:

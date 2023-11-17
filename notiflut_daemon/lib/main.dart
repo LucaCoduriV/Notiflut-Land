@@ -1,29 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
-import 'package:notiflutland/services/notification_service.dart';
+import 'package:notiflutland/services/mainwindow_service.dart';
+import 'package:notiflutland/services/subwindow_service.dart';
 import 'package:notiflutland/widgets/notification_center.dart';
 import 'package:notiflutland/widgets/popups_list.dart';
 import 'package:notiflutland/window_utils.dart';
 import 'package:rinf/rinf.dart';
 
 void main(List<String> args) async {
-  await Rinf.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
-  initWindowConfig();
+  final isMainWindow = args.firstOrNull != 'multi_window';
 
-  GetIt.I.registerSingleton(NotificationService());
-
-  runApp(MyApp());
+  if (isMainWindow) {
+    await Rinf.ensureInitialized();
+    initWindowConfig();
+    GetIt.I.registerSingleton(MainWindowService());
+    await initPopupsLayer();
+    runApp(MainWindow());
+  } else {
+    final windowId = int.parse(args[1]);
+    GetIt.I.registerSingleton(SubWindowService(windowId));
+    runApp(const SubWindow());
+  }
 }
 
-class MyApp extends StatelessWidget with GetItMixin {
-  MyApp({super.key});
+class MainWindow extends StatefulWidget {
+  const MainWindow({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MainWindow> createState() => _MainWindowState();
+}
+
+class _MainWindowState extends State<MainWindow> {
+  @override
+  void initState() {
+    GetIt.I.get<MainWindowService>().init();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    GetIt.I.get<MainWindowService>().dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isNotiCenterHidden = watchOnly((NotificationService s) => s.isHidden);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Notiflut-Land',
@@ -32,10 +55,45 @@ class MyApp extends StatelessWidget with GetItMixin {
         useMaterial3: true,
       ),
       home: Scaffold(
-        backgroundColor: isNotiCenterHidden
-            ? Colors.transparent
-            : Colors.black.withOpacity(0.1),
-        body: isNotiCenterHidden ? PopupsList() : NotificationCenter(),
+        backgroundColor: Colors.black.withOpacity(0.1),
+        body: NotificationCenter(),
+      ),
+    );
+  }
+}
+
+class SubWindow extends StatefulWidget {
+  const SubWindow({super.key});
+
+  @override
+  State<SubWindow> createState() => _SubWindowState();
+}
+
+class _SubWindowState extends State<SubWindow> {
+  @override
+  void initState() {
+    GetIt.I.get<SubWindowService>().init();
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    GetIt.I.get<SubWindowService>().dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Notiflut-Land',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: PopupsList(),
       ),
     );
   }

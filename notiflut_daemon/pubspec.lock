@@ -360,6 +360,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  wayland_multi_window:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "8dd1d7016c1472dcc8531e91c52789d46c405e3c"
+      resolved-ref: "8dd1d7016c1472dcc8531e91c52789d46c405e3c"
+      url: "https://github.com/LucaCoduriV/wayland_multi_window.git"
+    source: git
+    version: "0.2.0"
   web:
     dependency: transitive
     description:

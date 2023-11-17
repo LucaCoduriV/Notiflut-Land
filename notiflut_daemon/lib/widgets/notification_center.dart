@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
-import 'package:notiflutland/services/notification_service.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
 
+import '../services/mainwindow_service.dart';
 import '../utils.dart';
 import 'category.dart';
 import 'notification.dart';
@@ -39,7 +39,7 @@ class _NotificationCenterState extends State<NotificationCenter>
 
   @override
   Widget build(BuildContext context) {
-    final notifications = watchOnly((NotificationService s) => s.notifications);
+    final notifications = watchOnly((MainWindowService s) => s.notifications);
     final notificationByCategory = notifications
         .fold(<String, List<daemon_event.Notification>>{}, (map, notification) {
       final key = notification.appName;
@@ -67,16 +67,16 @@ class _NotificationCenterState extends State<NotificationCenter>
           actions: actionsListToMap(n.actions)
               .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
-                    get<NotificationService>().invokeAction(n.id, e.$1);
-                    get<NotificationService>().closeNotification(n.id);
+                    get<MainWindowService>().invokeAction(n.id, e.$1);
+                    get<MainWindowService>().closeNotification(n.id);
                   }))
               .toList(),
           onTileTap: () {
-            get<NotificationService>().invokeAction(n.id, "default");
-            get<NotificationService>().closeNotification(n.id);
+            get<MainWindowService>().invokeAction(n.id, "default");
+            get<MainWindowService>().closeNotification(n.id);
           },
           closeAction: () {
-            get<NotificationService>().closeNotification(n.id);
+            get<MainWindowService>().closeNotification(n.id);
           },
         );
       }).toList();

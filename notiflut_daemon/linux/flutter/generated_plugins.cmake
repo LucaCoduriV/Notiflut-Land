@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   screen_retriever
+  wayland_multi_window
   window_manager
 )
 
