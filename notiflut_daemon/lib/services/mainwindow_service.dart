@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
     show ID, Notification;
@@ -15,6 +18,24 @@ class MainWindowService extends ChangeNotifier {
 
   MainWindowService() {
     rustBroadcaster.stream.listen(_handleEvents);
+  }
+
+  void init() {
+    WaylandMultiWindow.setMethodHandler(_handleSubWindowEvents);
+  }
+
+  @override
+  void dispose() {
+    WaylandMultiWindow.setMethodHandler(null);
+    super.dispose();
+  }
+
+  Future<dynamic> _handleSubWindowEvents(
+      MethodCall call, int fromWindowId) async {
+    if (call.method == "invokeAction") {
+      final args = jsonDecode(call.arguments) as Map<String, dynamic>;
+      invokeAction(args["id"] as int, args["action"] as String);
+    }
   }
 
   _handleEvents(RustSignal event) {
@@ -45,7 +66,8 @@ class MainWindowService extends ChangeNotifier {
           final notification =
               notifications.firstWhere((element) => element.id == id);
 
-          WaylandMultiWindow.invokeMethod(1, "newNotification", notification.writeToBuffer());
+          WaylandMultiWindow.invokeMethod(
+              1, "newNotification", notification.writeToBuffer());
         }
 
         notifications.sort((a, b) =>
@@ -74,7 +96,6 @@ class MainWindowService extends ChangeNotifier {
       print("Action invoked with error");
     }
   }
-
 
   void closeNotification(int id) {
     notifications = List.from(notifications..removeWhere(((n) => n.id == id)));

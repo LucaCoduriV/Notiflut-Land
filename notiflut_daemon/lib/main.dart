@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
-import 'package:notiflutland/services/notification_service.dart';
+import 'package:notiflutland/services/mainwindow_service.dart';
 import 'package:notiflutland/services/subwindow_service.dart';
 import 'package:notiflutland/widgets/notification_center.dart';
 import 'package:notiflutland/widgets/popups_list.dart';
@@ -25,10 +25,26 @@ void main(List<String> args) async {
   }
 }
 
-class MainWindow extends StatelessWidget with GetItMixin {
-  MainWindow({super.key});
+class MainWindow extends StatefulWidget {
+  const MainWindow({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MainWindow> createState() => _MainWindowState();
+}
+
+class _MainWindowState extends State<MainWindow> {
+  @override
+  void initState() {
+    GetIt.I.get<MainWindowService>().init();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    GetIt.I.get<MainWindowService>().dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

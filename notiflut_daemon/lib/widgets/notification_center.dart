@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
-import 'package:notiflutland/services/notification_service.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
 
+import '../services/mainwindow_service.dart';
 import '../utils.dart';
 import 'category.dart';
 import 'notification.dart';

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,8 +47,15 @@ class SubWindowService extends ChangeNotifier {
     popups.sort((a, b) =>
         b.$1.createdAt.toDateTime().compareTo(a.$1.createdAt.toDateTime()));
 
-
     notifyListeners();
+  }
+
+  Future<void> invokeAction(int id, String action) async {
+    WaylandMultiWindow.invokeMethod(
+      0,
+      "invokeAction",
+      jsonEncode({"id": id, "action": action}),
+    );
   }
 
   Timer schedulePopupCleanUp(int id, Timestamp date) {
