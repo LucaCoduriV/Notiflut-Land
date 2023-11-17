@@ -76,7 +76,7 @@ class _SubWindowState extends State<SubWindow> {
         useMaterial3: true,
       ),
       home: Scaffold(
-      backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         body: PopupsList(),
       ),
     );

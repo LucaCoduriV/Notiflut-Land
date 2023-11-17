@@ -26,7 +26,7 @@ dependencies:
   wayland_multi_window:
     git:
       url: https://github.com/LucaCoduriV/wayland_multi_window.git
-      ref: 8fb310f497ae4d4055dcf746ea9bc92bf0a72447
+      ref: 8dd1d7016c1472dcc8531e91c52789d46c405e3c
 
 dev_dependencies:
   flutter_test:
