@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
+import 'package:notiflutland/widgets/mediaPlayer.dart';
 
 import '../services/mainwindow_service.dart';
 import '../utils.dart';
@@ -97,7 +98,7 @@ class _NotificationCenterState extends State<NotificationCenter>
           height: double.infinity,
           color: Colors.transparent,
           child: ListView(
-            children: categoryWidgets,
+            children: [MediaPlayer(), ...categoryWidgets],
           ),
         ),
       ],
