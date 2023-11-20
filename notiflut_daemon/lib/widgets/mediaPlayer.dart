@@ -33,6 +33,7 @@ class _MediaPlayerState extends State<MediaPlayer> {
     );
 
     return Card(
+      color: const Color(0xBBE0E0E0),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Container(
         decoration: metadata?.trackArtUrl != null
@@ -114,8 +115,7 @@ class _PlayerButtonsState extends State<PlayerButtons> {
             style: TextStyle(color: color),
             value: currentPlayer?.$2,
             items: players
-                .map(
-                    (e) => DropdownMenuItem(value: e.$2, child: Text(e.$2)))
+                .map((e) => DropdownMenuItem(value: e.$2, child: Text(e.$2)))
                 .toList(),
             onChanged: (String? playerId) {
               if (playerId == null) {
@@ -130,7 +130,7 @@ class _PlayerButtonsState extends State<PlayerButtons> {
         Expanded(
           flex: 3,
           child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (mpService.shuffle != null)
                 SuffleButton(mpService: mpService, color: color),
@@ -161,13 +161,11 @@ class LoopButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () => mpService.currentPlayer?.$1
-          .setLoopStatus(LoopStatus.none),
+      onPressed: () =>
+          mpService.currentPlayer?.$1.setLoopStatus(LoopStatus.none),
       icon: switch (mpService.loopStatus) {
-        LoopStatus.none =>
-          Icon(Icons.repeat_outlined, color: color),
-        LoopStatus.track =>
-          Icon(Icons.repeat_one_outlined, color: color),
+        LoopStatus.none => Icon(Icons.repeat_outlined, color: color),
+        LoopStatus.track => Icon(Icons.repeat_one_outlined, color: color),
         LoopStatus.playlist ||
         null =>
           Icon(Icons.repeat_on_outlined, color: color),
@@ -228,8 +226,7 @@ class PreviousButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
         onPressed: () => mpService.currentPlayer?.$1.previous(),
-        icon:
-            Icon(Icons.skip_previous_outlined, color: color));
+        icon: Icon(Icons.skip_previous_outlined, color: color));
   }
 }
 
@@ -246,11 +243,10 @@ class SuffleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () => mpService.currentPlayer?.$1
-          .setShuffle(!mpService.shuffle!),
+      onPressed: () =>
+          mpService.currentPlayer?.$1.setShuffle(!mpService.shuffle!),
       icon: switch (mpService.shuffle) {
-        true =>
-          Icon(Icons.shuffle_on_outlined, color: color),
+        true => Icon(Icons.shuffle_on_outlined, color: color),
         _ => Icon(Icons.shuffle_outlined, color: color),
       },
     );

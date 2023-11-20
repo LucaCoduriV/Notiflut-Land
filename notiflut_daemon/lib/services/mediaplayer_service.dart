@@ -24,7 +24,7 @@ class MediaPlayerService extends ChangeNotifier {
 
   void init() {
     _getPlayerWithId().then((_) {
-      notifyListeners();
+      _getAllCurrentPlayerData();
       _playerEventSub = MPRIS().playerChanged().listen((e) {
         switch (e) {
           case PlayerMountEvent(:final player):
@@ -34,6 +34,11 @@ class MediaPlayerService extends ChangeNotifier {
             });
           case PlayerUnmountEvent(:final playerName):
             players.removeWhere((t) => t.$1.name == playerName);
+            final nextPlayer = players.firstOrNull;
+            if(nextPlayer != null){
+              selectPlayer(nextPlayer.$2);
+            }
+            notifyListeners();
           case PlayerUnknownEvent(:final event):
             print(event);
         }
@@ -121,6 +126,8 @@ class MediaPlayerService extends ChangeNotifier {
     for (final player in players) {
       this.players.add((player, await player.getIdentity()));
     }
+    currentPlayer = this.players.firstOrNull;
+    notifyListeners();
   }
 
   List<String> getPlayersId() {
