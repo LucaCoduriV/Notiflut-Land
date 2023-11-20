@@ -3,17 +3,24 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mpris/mpris.dart';
 
+import '../utils.dart';
+
 class MediaPlayerService extends ChangeNotifier {
+  static Map<String, Color> bestTextColorCache = {};
+
   Metadata? metadata;
-  bool shuffle = false;
-  PlaybackStatus playbackStatus = PlaybackStatus.stopped;
-  LoopStatus loopStatus = LoopStatus.none;
-  double volume = 0.0;
+  bool? shuffle;
+  PlaybackStatus? playbackStatus;
+  LoopStatus? loopStatus;
+  double? volume;
+  Color? bestTextColor;
 
   List<(MPRISPlayer, String)> players = [];
   (MPRISPlayer, String)? currentPlayer;
   StreamSubscription? _currentPlayerEventSub;
   StreamSubscription? _playerEventSub;
+
+  get showMediaPlayerWidget => players.isNotEmpty;
 
   void init() {
     _getPlayerWithId().then((_) {
@@ -21,7 +28,7 @@ class MediaPlayerService extends ChangeNotifier {
       _playerEventSub = MPRIS().playerChanged().listen((e) {
         switch (e) {
           case PlayerMountEvent(:final player):
-            player.getIdentity().then((id) { 
+            player.getIdentity().then((id) {
               players.add((player, id));
               notifyListeners();
             });
@@ -34,11 +41,78 @@ class MediaPlayerService extends ChangeNotifier {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  Future<Color> _computeBestTextColor(String url) async {
+    if (bestTextColorCache[url] != null) {
+      return bestTextColorCache[url]!;
+    }
+    final dominantColor = await getDominantColor(NetworkImage(url));
+    if (dominantColor == null) {
+      return Colors.black;
+    }
+    final textColor = getContrastingTextColor(dominantColor);
+    bestTextColorCache[url] = textColor;
+
+    return textColor;
+  }
+
+  void _getAllCurrentPlayerData() {
+    currentPlayer?.$1.getVolume().then((value) {
+      volume = value;
+      notifyListeners();
+    }).catchError((e) {
+      volume = null;
+      notifyListeners();
+    });
+    currentPlayer?.$1.getShuffle().then((value) {
+      shuffle = value;
+      notifyListeners();
+    }).catchError((e) {
+      shuffle = null;
+      notifyListeners();
+    });
+    currentPlayer?.$1.getLoopStatus().then((value) {
+      loopStatus = value;
+      notifyListeners();
+    }).catchError((e) {
+      loopStatus = null;
+      notifyListeners();
+    });
+
+    currentPlayer?.$1.getMetadata().then((value) {
+      metadata = value;
+      notifyListeners();
+      return value;
+    }).then((value) {
+      if (value.trackArtUrl != null) {
+        _computeBestTextColor(value.trackArtUrl!).then((color) {
+          bestTextColor = color;
+          notifyListeners();
+        });
+      }else{
+        bestTextColor = Colors.black;
+      }
+    }).catchError((e) {
+      metadata = null;
+      notifyListeners();
+    });
+    currentPlayer?.$1.getPlaybackStatus().then((value) {
+      playbackStatus = value;
+      notifyListeners();
+    }).catchError((e) {
+      playbackStatus = null;
+      notifyListeners();
+    });
+  }
+
+  void deinit() {
     _currentPlayerEventSub?.cancel();
     _playerEventSub?.cancel();
+  }
+
+  @override
+  void dispose() {
+    deinit();
+    super.dispose();
   }
 
   Future<void> _getPlayerWithId() async {
@@ -63,6 +137,16 @@ class MediaPlayerService extends ChangeNotifier {
           print(value);
         case MetaDataChanged(:final metadata):
           this.metadata = metadata;
+
+          if (metadata.trackArtUrl != null) {
+            print("TRACK URL ${metadata.trackArtUrl}");
+            _computeBestTextColor(metadata.trackArtUrl!).then((color) {
+              bestTextColor = color;
+              notifyListeners();
+            });
+          }else{
+            bestTextColor = Colors.black;
+          }
         case PlaybackStatusChanged(:final playbackStatus):
           this.playbackStatus = playbackStatus;
         case LoopStatusChanged(:final loopStatus):
@@ -74,8 +158,9 @@ class MediaPlayerService extends ChangeNotifier {
       }
       notifyListeners();
     });
-    if(player != null){
+    if (player != null) {
       currentPlayer = (player, id);
+      _getAllCurrentPlayerData();
     }
     notifyListeners();
   }

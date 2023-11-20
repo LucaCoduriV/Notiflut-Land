@@ -7,6 +7,7 @@ import 'package:notiflutland/widgets/mediaPlayer.dart';
 import 'package:watch_it/watch_it.dart';
 
 import '../services/mainwindow_service.dart';
+import '../services/mediaplayer_service.dart';
 import '../utils.dart';
 import 'category.dart';
 import 'notification.dart';
@@ -40,6 +41,7 @@ class _NotificationCenterState extends State<NotificationCenter>{
   @override
   Widget build(BuildContext context) {
     final notifications = watchIt<MainWindowService>().notifications;
+    final showMediaPlayer = watchPropertyValue((MediaPlayerService s) => s.showMediaPlayerWidget);
     final notificationByCategory = notifications
         .fold(<String, List<daemon_event.Notification>>{}, (map, notification) {
       final key = notification.appName;
@@ -97,7 +99,7 @@ class _NotificationCenterState extends State<NotificationCenter>{
           height: double.infinity,
           color: Colors.transparent,
           child: ListView(
-            children: [MediaPlayer(), ...categoryWidgets],
+            children: [if(showMediaPlayer)MediaPlayer(), ...categoryWidgets],
           ),
         ),
       ],

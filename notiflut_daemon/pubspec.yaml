@@ -32,6 +32,7 @@ dependencies:
     git:
       url: https://github.com/LucaCoduriV/dart-mpris
       ref: 6c7a55e3990a827ad0198e67d47723fa28ff5877
+  palette_generator: ^0.3.3+3
 dev_dependencies:
   flutter_test:
     sdk: flutter

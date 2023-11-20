@@ -16,7 +16,7 @@ void main(List<String> args) async {
     await Rinf.ensureInitialized();
     setupMainWindow();
     di.registerSingleton(MainWindowService());
-    di.registerSingleton(MediaPlayerService());
+    di.registerSingleton(MediaPlayerService()).init();
     await setupSubWindow();
     runApp(const MainWindow());
   } else {
