@@ -19,9 +19,9 @@ Image createImageIiibiiay(
     rowStride: rowStride,
     order: img.ChannelOrder.rgb,
   );
-  final png = img.encodePng(image);
+  final encodedImage = img.encodeBmp(image);
   return Image.memory(
-    png,
+    encodedImage,
     height: 100,
     width: 100,
   );
