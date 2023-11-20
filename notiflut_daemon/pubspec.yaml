@@ -16,8 +16,9 @@ dependencies:
   flutter_html: ^3.0.0-beta.2
   image: ^4.0.16
   open_url: ^2.0.1
-  get_it: ^7.6.4
-  get_it_mixin: ^4.2.2
+  # get_it: ^7.6.4
+  # get_it_mixin: ^4.2.2
+  watch_it: ^1.1.0
   flutter_inset_box_shadow: ^1.0.8
   window_manager:
     git:
@@ -27,7 +28,11 @@ dependencies:
     git:
       url: https://github.com/LucaCoduriV/wayland_multi_window.git
       ref: 8dd1d7016c1472dcc8531e91c52789d46c405e3c
-
+  mpris:
+    git:
+      url: https://github.com/LucaCoduriV/dart-mpris
+      ref: 6c7a55e3990a827ad0198e67d47723fa28ff5877
+  palette_generator: ^0.3.3+3
 dev_dependencies:
   flutter_test:
     sdk: flutter

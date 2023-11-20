@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:get_it_mixin/get_it_mixin.dart';
+import 'package:notiflutland/services/mediaplayer_service.dart';
 import 'package:notiflutland/services/subwindow_service.dart';
 import 'package:notiflutland/utils.dart';
 import 'package:notiflutland/widgets/notification.dart';
+import 'package:watch_it/watch_it.dart';
 
-class PopupsList extends StatefulWidget with GetItStatefulWidgetMixin {
+class PopupsList extends StatefulWidget with WatchItStatefulWidgetMixin {
   PopupsList({super.key});
 
   @override
   State<PopupsList> createState() => _PopupsListState();
 }
 
-class _PopupsListState extends State<PopupsList> with GetItStateMixin {
+class _PopupsListState extends State<PopupsList> {
   final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    final notifications =
-        watchOnly((SubWindowService service) => service.popups);
-    final notificationService = get<SubWindowService>();
+    final notifications = watchIt<SubWindowService>().popups;
+    final notificationService = di<SubWindowService>();
     resizeWindowAfterBuild();
     return ListView(
       shrinkWrap: true,
@@ -38,8 +38,8 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
           actions: actionsListToMap(n.actions)
               .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
-                    get<SubWindowService>().invokeAction(n.id, e.$1);
-                    get<SubWindowService>()
+                    di<SubWindowService>().invokeAction(n.id, e.$1);
+                    di<SubWindowService>()
                         .closePopupWithDate(n.id, n.createdAt);
                   }))
               .toList(),
@@ -72,7 +72,7 @@ class _PopupsListState extends State<PopupsList> with GetItStateMixin {
           scrollController.position.extentInside;
       if (size > 1) {
         print("New size: $size");
-        await get<SubWindowService>().setLayerSize(Size(500, size));
+        await di<SubWindowService>().setLayerSize(Size(500, size));
       }
     }
   }

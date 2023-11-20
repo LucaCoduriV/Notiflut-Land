@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event;
+import 'package:palette_generator/palette_generator.dart';
 
 import 'messages/daemon_event.pbenum.dart';
 
@@ -51,4 +52,38 @@ extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";
   }
+}
+
+Future<Color?> getDominantColor(ImageProvider provider) async {
+  PaletteGenerator paletteGenerator =
+      await PaletteGenerator.fromImageProvider(provider);
+
+  return paletteGenerator.dominantColor?.color;
+}
+
+Color getContrastingColor(Color color) {
+  // Adjust this threshold based on my preference
+  const double threshold = 128.0;
+
+  // Calculate the relative luminance of the color
+  double luminance = 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue;
+
+  // Choose white or black text based on luminance
+  return luminance > threshold ? Colors.black : Colors.white;
+}
+
+Color getContrastingTextColor(Color color) {
+  // Adjust this target lightness based on my preference
+  const double targetLightness = 0.5;
+
+  HSLColor hslColor = HSLColor.fromColor(color);
+  double currentLightness = hslColor.lightness;
+
+  // Calculate the difference between the target and current lightness
+  double lightnessDifference = targetLightness - currentLightness;
+
+  // Adjust the lightness of the color
+  HSLColor adjustedColor = hslColor.withLightness(currentLightness + lightnessDifference);
+
+  return adjustedColor.toColor();
 }

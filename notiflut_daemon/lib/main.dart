@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:notiflutland/services/mainwindow_service.dart';
+import 'package:notiflutland/services/mediaplayer_service.dart';
 import 'package:notiflutland/services/subwindow_service.dart';
 import 'package:notiflutland/widgets/notification_center.dart';
 import 'package:notiflutland/widgets/popups_list.dart';
 import 'package:notiflutland/window_utils.dart';
 import 'package:rinf/rinf.dart';
+import 'package:watch_it/watch_it.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,12 +15,13 @@ void main(List<String> args) async {
   if (isMainWindow) {
     await Rinf.ensureInitialized();
     setupMainWindow();
-    GetIt.I.registerSingleton(MainWindowService());
+    di.registerSingleton(MainWindowService());
+    di.registerSingleton(MediaPlayerService()).init();
     await setupSubWindow();
     runApp(const MainWindow());
   } else {
     final windowId = int.parse(args[1]);
-    GetIt.I.registerSingleton(SubWindowService(windowId));
+    di.registerSingleton(SubWindowService(windowId));
     runApp(const SubWindow());
   }
 }
@@ -34,13 +36,13 @@ class MainWindow extends StatefulWidget {
 class _MainWindowState extends State<MainWindow> {
   @override
   void initState() {
-    GetIt.I.get<MainWindowService>().init();
+    di.get<MainWindowService>().init();
     super.initState();
   }
 
   @override
   void dispose() {
-    GetIt.I.get<MainWindowService>().dispose();
+    di.get<MainWindowService>().dispose();
     super.dispose();
   }
 
@@ -71,13 +73,13 @@ class SubWindow extends StatefulWidget {
 class _SubWindowState extends State<SubWindow> {
   @override
   void initState() {
-    GetIt.I.get<SubWindowService>().init();
+    di.get<SubWindowService>().init();
     super.initState();
   }
 
   @override
   dispose() {
-    GetIt.I.get<SubWindowService>().dispose();
+    di.get<SubWindowService>().dispose();
     super.dispose();
   }
 
