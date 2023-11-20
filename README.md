@@ -29,7 +29,7 @@ This project is a notification center designed specifically for Wayland, impleme
 - [ ] Filter notifications
 - [ ] support for waybar
 - [ ] Widgets
-- [ ] Media player controller
+- [x] Media player controller
 
 ## requirement
 - Flutter v. > 3.0 [Download](https://docs.flutter.dev/get-started/install)
