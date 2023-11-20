@@ -1,56 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:mpris/mpris.dart';
+import 'package:watch_it/watch_it.dart';
 import '../services/mediaplayer_service.dart';
 
-class MediaPlayer extends StatefulWidget {
-  const MediaPlayer({super.key});
+class MediaPlayer extends StatefulWidget with WatchItStatefulWidgetMixin {
+  MediaPlayer({super.key});
 
   @override
   State<MediaPlayer> createState() => _MediaPlayerState();
 }
 
 class _MediaPlayerState extends State<MediaPlayer> {
-  List<(MPRISPlayer, String)> players = [];
-  MPRISPlayer? selectedPlayer = null;
+  late MediaPlayerService mpService;
   @override
   void initState() {
-    getPlayersWithNames()
-        .forEach((player) => players.add(player))
-        .then((value) => setState(() {
-              selectedPlayer = players.firstOrNull?.$1;
-              final playerTracker =
-                  selectedPlayer?.tracker(const Duration(seconds: 5));
-              playerTracker?.stream.listen((event) {
-                switch(event){
-                  case EventIdentity(:final identity):
-                    print(identity);
-                    // TODO: Handle this case.
-                  case EventMetadata(:final metadata):
-                    print(metadata.trackId);
-                    // TODO: Handle this case.
-                }
-              });
-            }));
+    mpService = di<MediaPlayerService>();
+    mpService.init();
     super.initState();
   }
 
   @override
-  void dispose(){
+  void dispose() {
+    mpService.dispose();
     super.dispose();
-  }
-
-  Stream<(MPRISPlayer, String)> getPlayersWithNames() async* {
-    final players = await MPRIS().getPlayers();
-    for (final player in players) {
-      final identity = await player.getIdentity();
-
-      print(identity);
-      yield (player, identity);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final mpService = watchIt<MediaPlayerService>();
+    final players = mpService.players;
+    final currentPlayer = mpService.currentPlayer;
+
     return Card(
       margin: const EdgeInsets.all(5.0),
       child: Column(
@@ -59,26 +38,31 @@ class _MediaPlayerState extends State<MediaPlayer> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                  onPressed: () => selectedPlayer?.previous(),
+                  onPressed: () => mpService.currentPlayer?.$1.previous(),
                   child: const Icon(Icons.skip_previous)),
               ElevatedButton(
-                  onPressed: () => selectedPlayer?.toggle(),
+                  onPressed: () => mpService.currentPlayer?.$1.toggle(),
                   child: const Icon(Icons.play_arrow)),
               ElevatedButton(
-                  onPressed: () => selectedPlayer?.next(),
+                  onPressed: () => mpService.currentPlayer?.$1.next(),
                   child: const Icon(Icons.skip_next)),
             ],
           ),
           Row(
             children: [
-              DropdownButton<MPRISPlayer>(
-                value: selectedPlayer,
+              DropdownButton<String>(
+                value: currentPlayer?.$2,
                 items: players
                     .map(
-                        (e) => DropdownMenuItem(value: e.$1, child: Text(e.$2)))
+                        (e) => DropdownMenuItem(value: e.$2, child: Text(e.$2)))
                     .toList(),
-                onChanged: (MPRISPlayer? value) {
-                  selectedPlayer = value;
+                onChanged: (String? playerId) {
+                  if (playerId == null) {
+                    return;
+                  }
+                  setState(() {
+                    mpService.selectPlayer(playerId);
+                  });
                 },
               )
             ],

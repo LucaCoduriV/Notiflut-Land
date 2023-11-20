@@ -1,25 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
 import 'package:notiflutland/widgets/mediaPlayer.dart';
+import 'package:watch_it/watch_it.dart';
 
 import '../services/mainwindow_service.dart';
 import '../utils.dart';
 import 'category.dart';
 import 'notification.dart';
 
-class NotificationCenter extends StatefulWidget with GetItStatefulWidgetMixin {
+class NotificationCenter extends StatefulWidget with WatchItStatefulWidgetMixin {
   NotificationCenter({super.key});
 
   @override
   State<NotificationCenter> createState() => _NotificationCenterState();
 }
 
-class _NotificationCenterState extends State<NotificationCenter>
-    with GetItStateMixin {
+class _NotificationCenterState extends State<NotificationCenter>{
   Timer? notificationUpTimeTimer;
 
   @override
@@ -40,7 +39,7 @@ class _NotificationCenterState extends State<NotificationCenter>
 
   @override
   Widget build(BuildContext context) {
-    final notifications = watchOnly((MainWindowService s) => s.notifications);
+    final notifications = watchIt<MainWindowService>().notifications;
     final notificationByCategory = notifications
         .fold(<String, List<daemon_event.Notification>>{}, (map, notification) {
       final key = notification.appName;
@@ -68,16 +67,16 @@ class _NotificationCenterState extends State<NotificationCenter>
           actions: actionsListToMap(n.actions)
               .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
-                    get<MainWindowService>().invokeAction(n.id, e.$1);
-                    get<MainWindowService>().closeNotification(n.id);
+                    di<MainWindowService>().invokeAction(n.id, e.$1);
+                    di<MainWindowService>().closeNotification(n.id);
                   }))
               .toList(),
           onTileTap: () {
-            get<MainWindowService>().invokeAction(n.id, "default");
-            get<MainWindowService>().closeNotification(n.id);
+            di<MainWindowService>().invokeAction(n.id, "default");
+            di<MainWindowService>().closeNotification(n.id);
           },
           closeAction: () {
-            get<MainWindowService>().closeNotification(n.id);
+            di<MainWindowService>().closeNotification(n.id);
           },
         );
       }).toList();

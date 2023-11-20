@@ -164,21 +164,13 @@ packages:
     source: hosted
     version: "2.3.1"
   get_it:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: get_it
       sha256: f79870884de16d689cf9a7d15eedf31ed61d750e813c538a6efb92660fea83c3
       url: "https://pub.dev"
     source: hosted
     version: "7.6.4"
-  get_it_mixin:
-    dependency: "direct main"
-    description:
-      name: get_it_mixin
-      sha256: "0ab5c9f3cdaab813ec396de5d43ee3833c418424b3a99bec0071fcbf693c0bad"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.2"
   html:
     dependency: transitive
     description:
@@ -246,10 +238,11 @@ packages:
   mpris:
     dependency: "direct main"
     description:
-      name: mpris
-      sha256: "9f90e970f6b97ef872de3e77b2a9ccf649bc52f8040f3b535b3a8fc770058adf"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "6c7a55e3990a827ad0198e67d47723fa28ff5877"
+      resolved-ref: "6c7a55e3990a827ad0198e67d47723fa28ff5877"
+      url: "https://github.com/LucaCoduriV/dart-mpris"
+    source: git
     version: "1.1.0"
   open_url:
     dependency: "direct main"
@@ -392,6 +385,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  watch_it:
+    dependency: "direct main"
+    description:
+      name: watch_it
+      sha256: "7cd6bc4d70ed6e43ad30638f8aac9c2bd015e38837dd334637a393e1287235a3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   wayland_multi_window:
     dependency: "direct main"
     description:

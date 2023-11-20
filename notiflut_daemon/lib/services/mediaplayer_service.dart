@@ -3,67 +3,80 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mpris/mpris.dart';
 
-class MediaPlayerService extends ChangeNotifier {}
-
-//ignore: non_constant_identifier_names
-extension MPRISPlayerEventTrackerGetter on MPRISPlayer {
-  /// Listen for event every rate duration.
-  MPRISPlayerEventTracker tracker(Duration rate) =>
-      MPRISPlayerEventTracker(rate, this);
-}
-
-class MPRISPlayerEventTracker {
-  final StreamController<MPRISEvent> _controller = StreamController();
-  late final Timer _timer;
-  final MPRISPlayer _player;
-  final Duration _rate;
-
-  String identity = "";
+class MediaPlayerService extends ChangeNotifier {
   Metadata? metadata;
+  bool shuffle = false;
+  PlaybackStatus playbackStatus = PlaybackStatus.stopped;
+  LoopStatus loopStatus = LoopStatus.none;
+  double volume = 0.0;
 
-  MPRISPlayerEventTracker(this._rate, this._player);
+  List<(MPRISPlayer, String)> players = [];
+  (MPRISPlayer, String)? currentPlayer;
+  StreamSubscription? _currentPlayerEventSub;
+  StreamSubscription? _playerEventSub;
 
-  void _checkForChange(Timer timer) {
-    try {
-      _player.getMetadata().then((newMetadata) {
-        if (metadata == null || metadata!.trackId != newMetadata.trackId) {
-          metadata = newMetadata;
-          _controller.add(EventMetadata(newMetadata));
+  void init() {
+    _getPlayerWithId().then((_) {
+      notifyListeners();
+      _playerEventSub = MPRIS().playerChanged().listen((e) {
+        switch (e) {
+          case PlayerMountEvent(:final player):
+            player.getIdentity().then((id) { 
+              players.add((player, id));
+              notifyListeners();
+            });
+          case PlayerUnmountEvent(:final playerName):
+            players.removeWhere((t) => t.$1.name == playerName);
+          case PlayerUnknownEvent(:final event):
+            print(event);
         }
       });
-    } catch (e) {}
-
-    try {
-      _player.getIdentity().then((newIdentity) {
-        if (newIdentity.compareTo(identity) != 0) {
-          identity = newIdentity;
-          _controller.add(EventIdentity(newIdentity));
-        }
-      });
-    } catch (e) {}
+    });
   }
 
-  Stream<MPRISEvent> get stream {
-    _timer = Timer.periodic(_rate, _checkForChange);
-    return _controller.stream;
-  }
-
+  @override
   void dispose() {
-    _timer.cancel();
-    _controller.close();
+    super.dispose();
+    _currentPlayerEventSub?.cancel();
+    _playerEventSub?.cancel();
   }
-}
 
-sealed class MPRISEvent {
-  const MPRISEvent();
-}
+  Future<void> _getPlayerWithId() async {
+    final players = await MPRIS().getPlayers();
 
-class EventIdentity extends MPRISEvent {
-  final String identity;
-  const EventIdentity(this.identity);
-}
+    for (final player in players) {
+      this.players.add((player, await player.getIdentity()));
+    }
+  }
 
-class EventMetadata extends MPRISEvent {
-  final Metadata metadata;
-  const EventMetadata(this.metadata);
+  List<String> getPlayersId() {
+    return players.map((e) => e.$2).toList();
+  }
+
+  void selectPlayer(String id) {
+    _currentPlayerEventSub?.cancel();
+    final tuple = players.where((player) => player.$2 == id).firstOrNull;
+    final player = tuple?.$1;
+    _currentPlayerEventSub = player?.propertiesChanged().listen((event) {
+      switch (event) {
+        case UnsuportedEvent(:final value):
+          print(value);
+        case MetaDataChanged(:final metadata):
+          this.metadata = metadata;
+        case PlaybackStatusChanged(:final playbackStatus):
+          this.playbackStatus = playbackStatus;
+        case LoopStatusChanged(:final loopStatus):
+          this.loopStatus = loopStatus;
+        case ShuffleChanged(:final shuffle):
+          this.shuffle = shuffle;
+        case VolumeChanged(:final volume):
+          this.volume = volume;
+      }
+      notifyListeners();
+    });
+    if(player != null){
+      currentPlayer = (player, id);
+    }
+    notifyListeners();
+  }
 }
