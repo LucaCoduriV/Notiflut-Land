@@ -93,8 +93,8 @@ class MainWindowService extends ChangeNotifier {
           );
         }
 
-        // notifications.sort((a, b) =>
-        //     b.createdAt.toDateTime().compareTo(a.createdAt.toDateTime()));
+        notifications.sort((a, b) =>
+            b.createdAt.toDateTime().compareTo(a.createdAt.toDateTime()));
 
         notifyListeners();
         break;

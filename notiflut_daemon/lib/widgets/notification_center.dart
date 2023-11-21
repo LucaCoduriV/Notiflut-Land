@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
+import 'package:notiflutland/services/cache_service.dart';
 import 'package:notiflutland/widgets/mediaPlayer.dart';
 import 'package:watch_it/watch_it.dart';
 
@@ -21,6 +22,7 @@ class NotificationCenter extends StatefulWidget with WatchItStatefulWidgetMixin 
 
 class _NotificationCenterState extends State<NotificationCenter>{
   Timer? notificationUpTimeTimer;
+  final CacheService<String, ImageProvider<Object>> _imageCache = CacheService();
 
   @override
   void dispose() {
@@ -56,8 +58,8 @@ class _NotificationCenterState extends State<NotificationCenter>{
       final notifications = notificationByCategory[e]!;
 
       final notificationTiles = notifications.map((n) {
-        ImageProvider<Object>? imageProvider = imageRawToProvider(n.appImage);
-        ImageProvider<Object>? iconeProvider = imageRawToProvider(n.appIcon);
+        ImageProvider<Object>? imageProvider = _imageCache.getOrPut(n.summary, () => imageRawToProvider(n.appImage));
+        ImageProvider<Object>? iconeProvider = _imageCache.getOrPut(n.appName, () => imageRawToProvider(n.appIcon));
         return NotificationTile(
           n.id,
           n.appName,
