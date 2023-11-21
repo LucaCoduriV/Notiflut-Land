@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart';
@@ -16,8 +17,7 @@ enum MainWindowEvents {
   newNotification;
 
   factory MainWindowEvents.fromString(String value) {
-    return MainWindowEvents.values.firstWhere(
-        (e) => e.toString() == value,
+    return MainWindowEvents.values.firstWhere((e) => e.toString() == value,
         orElse: () => throw Exception("Not an element of MainWindowEvents"));
   }
 }
@@ -47,7 +47,7 @@ class MainWindowService extends ChangeNotifier {
     final event = SubWindowEvents.fromString(call.method);
     final args = jsonDecode(call.arguments) as Map<String, dynamic>;
 
-    switch(event){
+    switch (event) {
       case SubWindowEvents.invokeAction:
         invokeAction(args["id"] as int, args["action"] as String);
         break;
@@ -57,12 +57,13 @@ class MainWindowService extends ChangeNotifier {
     }
   }
 
-  _handleEvents(RustSignal event) {
+  _handleEvents(RustSignal event) async {
     if (event.resource != daemon_event.ID) {
       return;
     }
 
-    final appEvent = SignalAppEvent.fromBuffer(event.message!.toList());
+    final appEvent =
+        await compute(SignalAppEvent.fromBuffer, event.message!.toList());
     switch (appEvent.type) {
       case SignalAppEvent_AppEventType.HideNotificationCenter:
         isHidden = true;
@@ -92,8 +93,8 @@ class MainWindowService extends ChangeNotifier {
           );
         }
 
-        notifications.sort((a, b) =>
-            b.createdAt.toDateTime().compareTo(a.createdAt.toDateTime()));
+        // notifications.sort((a, b) =>
+        //     b.createdAt.toDateTime().compareTo(a.createdAt.toDateTime()));
 
         notifyListeners();
         break;
