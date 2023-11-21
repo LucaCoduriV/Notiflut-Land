@@ -23,17 +23,6 @@ List<(String, String)> actionsListToMap(List<String> actionsList) {
   return newList;
 }
 
-// List<NotificationAction> buildNotificationActionsFromMap(
-//     int id, Map<String, String> actions) {
-//   return actions.entries
-//       .where((element) => element.key != "default")
-//       .map((entry) => NotificationAction(entry.value, () async {
-//             await ffi.api.sendDaemonAction(
-//                 action: ffi.DaemonAction.flutterActionInvoked(id, entry.key));
-//           }))
-//       .toList();
-// }
-
 class NotificationTile extends StatelessWidget {
   final int id;
   final String appName;
