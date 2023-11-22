@@ -1,13 +1,25 @@
-use dbus as dbus;
+use dbus;
 #[allow(unused_imports)]
 use dbus::arg;
 use dbus_crossroads as crossroads;
 
 pub trait OrgFreedesktopNotifications {
-    fn notify(&mut self, app_name: String, replaces_id: u32, app_icon: String, summary: String, body: String, actions: Vec<String>, hints: arg::PropMap, timeout: i32) -> Result<u32, dbus::MethodErr>;
+    fn notify(
+        &mut self,
+        app_name: String,
+        replaces_id: u32,
+        app_icon: String,
+        summary: String,
+        body: String,
+        actions: Vec<String>,
+        hints: arg::PropMap,
+        timeout: i32,
+    ) -> Result<u32, dbus::MethodErr>;
     fn close_notification(&mut self, id: u32) -> Result<(), dbus::MethodErr>;
     fn get_capabilities(&mut self) -> Result<Vec<String>, dbus::MethodErr>;
-    fn get_server_information(&mut self) -> Result<(String, String, String, String), dbus::MethodErr>;
+    fn get_server_information(
+        &mut self,
+    ) -> Result<(String, String, String, String), dbus::MethodErr>;
 }
 
 #[derive(Debug)]
@@ -64,8 +76,11 @@ impl dbus::message::SignalArgs for OrgFreedesktopNotificationsActionInvoked {
     const INTERFACE: &'static str = "org.freedesktop.Notifications";
 }
 
-pub fn register_org_freedesktop_notifications<T>(cr: &mut crossroads::Crossroads) -> crossroads::IfaceToken<T>
-where T: OrgFreedesktopNotifications + Send + 'static
+pub fn register_org_freedesktop_notifications<T>(
+    cr: &mut crossroads::Crossroads,
+) -> crossroads::IfaceToken<T>
+where
+    T: OrgFreedesktopNotifications + Send + 'static,
 {
     cr.register("org.freedesktop.Notifications", |b| {
         b.signal::<(u32,u32,), _>("NotificationClosed", ("id","reason",));
