@@ -58,9 +58,11 @@ class MainWindowService extends ChangeNotifier {
   }
 
   _handleEvents(RustSignal event) async {
-    if (event.resource != daemon_event.ID) {
+    print("COUCOU");
+    if (event.resource != app_event.ID) {
       return;
     }
+    print("COUCOU 2");
 
     final appEvent =
         await compute(SignalAppEvent.fromBuffer, event.message!.toList());
@@ -77,15 +79,11 @@ class MainWindowService extends ChangeNotifier {
           showWindow();
         });
         break;
-      case SignalAppEvent_AppEventType.Update:
-        notifications = appEvent.notifications;
-        final hasNewNotification = appEvent.hasLastNotificationId();
-        final id = appEvent.lastNotificationId.toInt();
+      case SignalAppEvent_AppEventType.NewNotification:
+        print("NEW NOTIFICATION");
+        final notification = appEvent.notification;
 
-        if (isHidden && hasNewNotification) {
-          final notification =
-              notifications.firstWhere((element) => element.id == id);
-
+        if (isHidden) {
           WaylandMultiWindow.invokeMethod(
             1, // 1 is the id of the popup subwindow
             MainWindowEvents.newNotification.toString(),
@@ -93,10 +91,15 @@ class MainWindowService extends ChangeNotifier {
           );
         }
 
+        notifications.add(notification);
         notifications.sort((a, b) =>
             b.createdAt.toDateTime().compareTo(a.createdAt.toDateTime()));
 
         notifyListeners();
+        break;
+      case SignalAppEvent_AppEventType.CloseNotification:
+        notifications.removeWhere(
+            (element) => element.id == appEvent.notificationId.toInt());
         break;
     }
   }

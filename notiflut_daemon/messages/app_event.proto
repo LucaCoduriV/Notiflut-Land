@@ -7,7 +7,6 @@ enum AppEventType {
     CloseAll = 1;
     CloseAllApp = 2;
     ActionInvoked = 3;
-    CloseNotification = 4;
 }
 
 message AppEvent {

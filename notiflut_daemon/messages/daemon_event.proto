@@ -9,6 +9,7 @@ message SignalAppEvent {
     CloseNotification = 1;
     ShowNotificationCenter = 2;
     HideNotificationCenter = 3;
+    ToggleNotificationCenter = 4;
   }
   AppEventType type = 1;
   optional Notification notification = 5;

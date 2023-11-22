@@ -8,6 +8,12 @@ use crate::{
     notification_dbus::{notification_server::NotificationServerCore, Notification},
 };
 
+pub enum NotificationCenterCommand {
+    Open,
+    Close,
+    Toggle,
+}
+
 pub struct NotificationServer {
     is_notification_center_open: Arc<Mutex<bool>>,
     core: Arc<NotificationServerCore>,
@@ -22,7 +28,7 @@ impl NotificationServer {
     where
         F1: Fn(Notification) + Send + Clone + 'static,
         F2: Fn(u32) + Send + Clone + 'static,
-        F3: Fn(bool) + Send + Clone + 'static,
+        F3: Fn(NotificationCenterCommand) + Send + Clone + 'static,
     {
         let on_state_change_notification_center_clone1 =
             on_state_change_notification_center.clone();
@@ -37,13 +43,13 @@ impl NotificationServer {
                 on_close(id);
             },
             move || {
-                on_state_change_notification_center(true);
+                on_state_change_notification_center(NotificationCenterCommand::Open);
             },
             move || {
-                on_state_change_notification_center_clone1(false);
+                on_state_change_notification_center_clone1(NotificationCenterCommand::Close);
             },
             move || {
-                on_state_change_notification_center_clone2(true);
+                on_state_change_notification_center_clone2(NotificationCenterCommand::Toggle);
             },
         )?;
 
@@ -79,5 +85,14 @@ impl NotificationServer {
     }
     pub fn close_notification_center(&self) {
         *self.is_notification_center_open.lock().unwrap() = false;
+    }
+
+    pub fn toggle_notification_center(&self) {
+        let mut lock = self.is_notification_center_open.lock().unwrap();
+        *lock = !*lock;
+    }
+
+    pub fn open_notification_center(&self) {
+        *self.is_notification_center_open.lock().unwrap() = true;
     }
 }

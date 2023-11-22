@@ -4,6 +4,7 @@ use bridge::RustSignal;
 use bridge::{respond_to_dart, send_rust_signal};
 use messages::app_event::ID;
 use messages::daemon_event::{signal_app_event, SignalAppEvent};
+use notification_server::NotificationCenterCommand;
 use prost::Message;
 use tokio_with_wasm::tokio;
 use with_request::handle_request;
@@ -20,7 +21,7 @@ async fn main() {
     let server = Arc::new(
         notification_server::NotificationServer::run(
             on_notification,
-            on_close,
+            on_notification_close,
             on_notification_center_state_change,
         )
         .unwrap(),
@@ -36,6 +37,7 @@ async fn main() {
     }
 }
 fn on_notification(n: notification_server::Notification) {
+    debug_print!("RUST: NEW NOTIFICATION");
     let signal_message = SignalAppEvent {
         r#type: signal_app_event::AppEventType::NewNotification.into(),
         notification: Some(n.into()),
@@ -50,7 +52,8 @@ fn on_notification(n: notification_server::Notification) {
     send_rust_signal(rust_signal);
 }
 
-fn on_close(n_id: u32) {
+fn on_notification_close(n_id: u32) {
+    debug_print!("RUST: NOTIFICATION CLOSED");
     let signal_message = SignalAppEvent {
         r#type: signal_app_event::AppEventType::CloseNotification.into(),
         notification: None,
@@ -65,27 +68,23 @@ fn on_close(n_id: u32) {
     send_rust_signal(rust_signal);
 }
 
-fn on_notification_center_state_change(state: bool) {
-    let signal = if state {
-        let signal_message = SignalAppEvent {
-            r#type: signal_app_event::AppEventType::ShowNotificationCenter.into(),
-            ..Default::default()
-        };
-        RustSignal {
-            resource: ID,
-            message: Some(signal_message.encode_to_vec()),
-            blob: None,
-        }
-    } else {
-        let signal_message = SignalAppEvent {
-            r#type: signal_app_event::AppEventType::HideNotificationCenter.into(),
-            ..Default::default()
-        };
-        RustSignal {
-            resource: ID,
-            message: Some(signal_message.encode_to_vec()),
-            blob: None,
+fn on_notification_center_state_change(state: NotificationCenterCommand) {
+    debug_print!("RUST: OPEN/CLOSE CENTER");
+    let event_type = match state {
+        NotificationCenterCommand::Open => signal_app_event::AppEventType::ShowNotificationCenter,
+        NotificationCenterCommand::Close => signal_app_event::AppEventType::HideNotificationCenter,
+        NotificationCenterCommand::Toggle => {
+            signal_app_event::AppEventType::ToggleNotificationCenter
         }
     };
-    send_rust_signal(signal);
+    let signal_message = SignalAppEvent {
+        r#type: event_type.into(),
+        ..Default::default()
+    };
+    let rust_signal = RustSignal {
+        resource: ID,
+        message: Some(signal_message.encode_to_vec()),
+        blob: None,
+    };
+    send_rust_signal(rust_signal);
 }
