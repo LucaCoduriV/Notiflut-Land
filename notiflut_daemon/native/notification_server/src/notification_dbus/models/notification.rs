@@ -4,9 +4,10 @@ use dbus::arg::cast;
 use dbus::arg::prop_cast;
 use dbus::arg::PropMap;
 use dbus::arg::RefArg;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-#[derive(Clone, Serialize, Deserialize, Default)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Notification {
     pub n_id: u32,
     pub app_name: String,
@@ -39,7 +40,7 @@ impl std::fmt::Debug for Notification {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, Default)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Hints {
     pub actions_icon: Option<bool>,
     pub category: Option<String>,
@@ -103,7 +104,7 @@ impl From<&PropMap> for Hints {
         }
     }
 }
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum Urgency {
     Low,
     Normal,
@@ -123,7 +124,7 @@ impl TryFrom<u8> for Urgency {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ImageData {
     pub width: i32,
     pub height: i32,
@@ -162,7 +163,8 @@ impl TryFrom<&VecDeque<Box<dyn RefArg>>> for ImageData {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[allow(dead_code)]
+#[derive(Clone, Deserialize, Serialize)]
 pub enum ImageSource {
     Data(ImageData),
     Path(String),

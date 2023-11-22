@@ -5,13 +5,14 @@ import "google/protobuf/timestamp.proto";
 
 message SignalAppEvent {
   enum AppEventType {
-    Update = 0;
-    ShowNotificationCenter = 1;
-    HideNotificationCenter = 2;
+    NewNotification = 0;
+    CloseNotification = 1;
+    ShowNotificationCenter = 2;
+    HideNotificationCenter = 3;
   }
   AppEventType type = 1;
-  repeated Notification notifications = 2;
-  optional uint64 lastNotificationId = 3;
+  optional Notification notification = 5;
+  optional uint64 notificationId = 4;
 }
 
 

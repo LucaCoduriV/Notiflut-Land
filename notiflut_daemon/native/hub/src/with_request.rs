@@ -2,13 +2,17 @@
 //! when a `RustRequest` was received from Dart
 //! and returns a `RustResponse`.
 
-use notification_server::AppEvent;
+use notification_server::NotificationServer;
 use prost::Message;
 
 use crate::bridge::{RustRequestUnique, RustResponse, RustResponseUnique};
 use crate::messages;
+use crate::messages::app_event::AppEvent;
 
-pub async fn handle_request(request_unique: RustRequestUnique) -> RustResponseUnique {
+pub fn handle_request(
+    request_unique: RustRequestUnique,
+    server: &NotificationServer,
+) -> RustResponseUnique {
     // Get the request data from Dart.
     let rust_request = request_unique.request;
     let interaction_id = request_unique.id;
@@ -20,7 +24,23 @@ pub async fn handle_request(request_unique: RustRequestUnique) -> RustResponseUn
             let message_bytes = rust_request.message.unwrap();
             if let Ok(event) = messages::app_event::AppEvent::decode(message_bytes.as_slice()) {
                 let event: AppEvent = event.into();
-                notification_server::send_app_event(event).unwrap();
+                match event.r#type() {
+                    messages::app_event::AppEventType::Close => {
+                        NotificationServer::close_notification(0);
+                    }
+                    messages::app_event::AppEventType::CloseAll => {
+                        NotificationServer::close_all_notifications();
+                    }
+                    messages::app_event::AppEventType::CloseAllApp => {
+                        NotificationServer::close_all_notification_from_app("".to_string());
+                    }
+                    messages::app_event::AppEventType::ActionInvoked => {
+                        server.invoke_action(0, "default".to_string());
+                    }
+                    messages::app_event::AppEventType::CloseNotification => {
+                        server.close_notification_center();
+                    }
+                }
                 RustResponse {
                     successful: true,
                     message: None,

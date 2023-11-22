@@ -1,54 +1,83 @@
-use std::sync::mpsc::Sender;
-use std::sync::Mutex;
-
-use anyhow::Ok;
-
-use crate::{
-    daemon::{AppEvent, ChannelMessage, DaemonError, NotificationDaemon},
-    dbus::DaemonEvent,
+use std::{
+    cell::RefCell,
+    sync::{Arc, Mutex},
 };
 
-/// Global instance of the daemon
-static DAEMON: Mutex<Option<NotificationDaemon>> = Mutex::new(None);
+use crate::{
+    db::Database,
+    notification_dbus::{notification_server::NotificationServerCore, Notification},
+};
 
-/// This needs to be called first
-pub fn setup() {
-    *DAEMON.lock().unwrap() = Some(NotificationDaemon::new());
+pub struct NotificationServer {
+    is_notification_center_open: Arc<Mutex<bool>>,
+    core: Arc<NotificationServerCore>,
 }
 
-/// Starts the daemon
-/// This can fail if setup was not called before
-pub fn start_daemon(s: Sender<DaemonEvent>) -> anyhow::Result<()> {
-    DAEMON
-        .lock()
-        .unwrap()
-        .as_mut()
-        .ok_or(DaemonError::Error)?
-        .run_daemon(s)?;
-    Ok(())
-}
+impl NotificationServer {
+    pub fn run<F1, F2, F3>(
+        on_notification: F1,
+        on_close: F2,
+        on_state_change_notification_center: F3,
+    ) -> anyhow::Result<Self>
+    where
+        F1: Fn(Notification) + Send + Clone + 'static,
+        F2: Fn(u32) + Send + Clone + 'static,
+        F3: Fn(bool) + Send + Clone + 'static,
+    {
+        let on_state_change_notification_center_clone1 =
+            on_state_change_notification_center.clone();
+        let on_state_change_notification_center_clone2 =
+            on_state_change_notification_center.clone();
+        let core = NotificationServerCore::run(
+            0,
+            move |n| {
+                on_notification(n);
+            },
+            move |id| {
+                on_close(id);
+            },
+            move || {
+                on_state_change_notification_center(true);
+            },
+            move || {
+                on_state_change_notification_center_clone1(false);
+            },
+            move || {
+                on_state_change_notification_center_clone2(true);
+            },
+        )?;
 
-/// Stop the daemon
-pub fn stop_daemon() -> anyhow::Result<()> {
-    DAEMON
-        .lock()
-        .unwrap()
-        .as_mut()
-        .ok_or(DaemonError::Error)?
-        .stop_daemon()?;
-    Ok(())
-}
+        let _ = Database::new();
 
-/// Sends an event to rust code
-pub fn send_app_event(action: AppEvent) -> anyhow::Result<()> {
-    DAEMON
-        .lock()
-        .unwrap()
-        .as_mut()
-        .unwrap()
-        .sender
-        .as_mut()
-        .unwrap()
-        .send(ChannelMessage::DaemonAction(action))?;
-    Ok(())
+        Ok(NotificationServer {
+            is_notification_center_open: Arc::new(false.into()),
+            core: core.into(),
+        })
+    }
+
+    pub fn close_notification(notification_id: u32) {
+        tokio::spawn(async move {
+            Database::delete_notification(notification_id.into()).await;
+        });
+    }
+    pub fn close_all_notifications() {
+        tokio::spawn(async move {
+            Database::delete_notifications().await;
+        });
+    }
+    pub fn close_all_notification_from_app(app_name: String) {
+        tokio::spawn(async move {
+            Database::delete_notification_with_app_name(&app_name).await;
+        });
+    }
+    pub fn invoke_action(&self, notification_id: u32, action: String) {
+        let core = self.core.clone();
+        tokio::spawn(async move {
+            core.invoke_action(notification_id, action);
+            Database::delete_notification(notification_id.into()).await;
+        });
+    }
+    pub fn close_notification_center(&self) {
+        *self.is_notification_center_open.lock().unwrap() = false;
+    }
 }

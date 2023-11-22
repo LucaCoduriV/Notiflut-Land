@@ -1,8 +1,12 @@
+use std::sync::Arc;
+
 use bridge::RustSignal;
 use bridge::{respond_to_dart, send_rust_signal};
+use messages::app_event::ID;
+use messages::daemon_event::{signal_app_event, SignalAppEvent};
 use prost::Message;
-use with_request::handle_request;
 use tokio_with_wasm::tokio;
+use with_request::handle_request;
 
 mod bridge;
 mod messages;
@@ -13,60 +17,75 @@ mod with_request;
 /// Always use non-blocking async functions such as `tokio::fs::File::open`.
 async fn main() {
     let mut request_receiver = bridge::get_request_receiver();
-    let (sender, receiver) = std::sync::mpsc::channel();
-    notification_server::setup();
-    notification_server::start_daemon(sender).unwrap();
-
-    let _app_event_stream = std::thread::spawn(move || {
-        use messages::daemon_event::*;
-        for event in receiver {
-            let rust_signal = match event {
-                notification_server::DaemonEvent::Update(notification, id) => {
-                    let signal_message = SignalAppEvent {
-                        r#type: signal_app_event::AppEventType::Update.into(),
-                        notifications: notification.into_iter().map(|n| n.into()).collect(),
-                        last_notification_id: id.map(|v| v as u64),
-                    };
-
-                    RustSignal {
-                        resource: ID,
-                        message: Some(signal_message.encode_to_vec()),
-                        blob: None,
-                    }
-                }
-                notification_server::DaemonEvent::ShowNotificationCenter => {
-                    let signal_message = SignalAppEvent {
-                        r#type: signal_app_event::AppEventType::ShowNotificationCenter.into(),
-                        ..Default::default()
-                    };
-                    RustSignal {
-                        resource: ID,
-                        message: Some(signal_message.encode_to_vec()),
-                        blob: None,
-                    }
-                }
-                notification_server::DaemonEvent::HideNotificationCenter => {
-                    let signal_message = SignalAppEvent {
-                        r#type: signal_app_event::AppEventType::HideNotificationCenter.into(),
-                        ..Default::default()
-                    };
-                    RustSignal {
-                        resource: ID,
-                        message: Some(signal_message.encode_to_vec()),
-                        blob: None,
-                    }
-                }
-            };
-
-            send_rust_signal(rust_signal);
-        }
-    });
+    let server = Arc::new(
+        notification_server::NotificationServer::run(
+            on_notification,
+            on_close,
+            on_notification_center_state_change,
+        )
+        .unwrap(),
+    );
 
     // This is `tokio::sync::mpsc::Reciver` that receives the requests from Dart.
     while let Some(request_unique) = request_receiver.recv().await {
-        tokio::spawn(async {
-            let response_unique = handle_request(request_unique).await;
+        let clone = server.clone();
+        tokio::spawn(async move {
+            let response_unique = handle_request(request_unique, &clone);
             respond_to_dart(response_unique);
         });
     }
+}
+fn on_notification(n: notification_server::Notification) {
+    let signal_message = SignalAppEvent {
+        r#type: signal_app_event::AppEventType::NewNotification.into(),
+        notification: Some(n.into()),
+        notification_id: None,
+    };
+
+    let rust_signal = RustSignal {
+        resource: ID,
+        message: Some(signal_message.encode_to_vec()),
+        blob: None,
+    };
+    send_rust_signal(rust_signal);
+}
+
+fn on_close(n_id: u32) {
+    let signal_message = SignalAppEvent {
+        r#type: signal_app_event::AppEventType::CloseNotification.into(),
+        notification: None,
+        notification_id: Some(n_id.into()),
+    };
+
+    let rust_signal = RustSignal {
+        resource: ID,
+        message: Some(signal_message.encode_to_vec()),
+        blob: None,
+    };
+    send_rust_signal(rust_signal);
+}
+
+fn on_notification_center_state_change(state: bool) {
+    let signal = if state {
+        let signal_message = SignalAppEvent {
+            r#type: signal_app_event::AppEventType::ShowNotificationCenter.into(),
+            ..Default::default()
+        };
+        RustSignal {
+            resource: ID,
+            message: Some(signal_message.encode_to_vec()),
+            blob: None,
+        }
+    } else {
+        let signal_message = SignalAppEvent {
+            r#type: signal_app_event::AppEventType::HideNotificationCenter.into(),
+            ..Default::default()
+        };
+        RustSignal {
+            resource: ID,
+            message: Some(signal_message.encode_to_vec()),
+            blob: None,
+        }
+    };
+    send_rust_signal(signal);
 }

@@ -1,9 +1,4 @@
-use notification_server::AppEvent;
-use notification_server::Hints;
-use notification_server::ImageData;
-use notification_server::ImageSource;
-use notification_server::Notification;
-use notification_server::Urgency;
+use notification_server::{Hints, ImageData, ImageSource, Notification, Urgency};
 use prost_types::Timestamp;
 use std::convert::Into;
 
@@ -92,18 +87,18 @@ impl Into<messages::daemon_event::ImageData> for ImageData {
     }
 }
 
-impl Into<AppEvent> for messages::app_event::AppEvent {
-    fn into(self) -> AppEvent {
-        match self.r#type() {
-            messages::app_event::AppEventType::Close => AppEvent::Close(self.notification_id()),
-            messages::app_event::AppEventType::CloseAll => AppEvent::CloseAll,
-            messages::app_event::AppEventType::CloseAllApp => {
-                AppEvent::CloseAllApp(self.data().to_owned())
-            }
-            messages::app_event::AppEventType::CloseNotification => AppEvent::CloseNotification,
-            messages::app_event::AppEventType::ActionInvoked => {
-                AppEvent::ActionInvoked(self.notification_id(), self.data().to_owned())
-            }
-        }
-    }
-}
+// impl Into<AppEvent> for messages::app_event::AppEvent {
+//     fn into(self) -> AppEvent {
+//         match self.r#type() {
+//             messages::app_event::AppEventType::Close => AppEvent::Close(self.notification_id()),
+//             messages::app_event::AppEventType::CloseAll => AppEvent::CloseAll,
+//             messages::app_event::AppEventType::CloseAllApp => {
+//                 AppEvent::CloseAllApp(self.data().to_owned())
+//             }
+//             messages::app_event::AppEventType::CloseNotification => AppEvent::CloseNotification,
+//             messages::app_event::AppEventType::ActionInvoked => {
+//                 AppEvent::ActionInvoked(self.notification_id(), self.data().to_owned())
+//             }
+//         }
+//     }
+// }
