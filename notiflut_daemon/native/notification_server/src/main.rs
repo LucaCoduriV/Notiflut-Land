@@ -15,7 +15,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             send.send(n).unwrap();
         },
         |id| println!("{}", id),
-        |state| println!("STATE: {}", state),
+        |state| println!("STATE: {}", true),
     );
 
     for notification in recv {

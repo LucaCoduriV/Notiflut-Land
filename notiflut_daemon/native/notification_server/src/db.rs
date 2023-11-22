@@ -47,7 +47,7 @@ impl Database {
         notifications
     }
 
-    pub async fn add_notification(notification: Notification) {
+    pub async fn put_notification(notification: &Notification) {
         let result: Result<Option<Notification>, _> = DB
             .get()
             .unwrap()
@@ -58,7 +58,7 @@ impl Database {
         let _result_casted: anyhow::Result<_> = result.map(|_| ()).map_err(|e| e.into());
     }
 
-    pub async fn update_notification(&self, notification: Notification) {
+    pub async fn update_notification(&self, notification: &Notification) {
         let result: Result<Option<Notification>, _> = DB
             .get()
             .unwrap()

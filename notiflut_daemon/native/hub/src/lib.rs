@@ -37,7 +37,6 @@ async fn main() {
     }
 }
 fn on_notification(n: notification_server::Notification) {
-    debug_print!("RUST: NEW NOTIFICATION");
     let signal_message = SignalAppEvent {
         r#type: signal_app_event::AppEventType::NewNotification.into(),
         notification: Some(n.into()),
@@ -53,7 +52,6 @@ fn on_notification(n: notification_server::Notification) {
 }
 
 fn on_notification_close(n_id: u32) {
-    debug_print!("RUST: NOTIFICATION CLOSED");
     let signal_message = SignalAppEvent {
         r#type: signal_app_event::AppEventType::CloseNotification.into(),
         notification: None,
@@ -69,7 +67,6 @@ fn on_notification_close(n_id: u32) {
 }
 
 fn on_notification_center_state_change(state: NotificationCenterCommand) {
-    debug_print!("RUST: OPEN/CLOSE CENTER");
     let event_type = match state {
         NotificationCenterCommand::Open => signal_app_event::AppEventType::ShowNotificationCenter,
         NotificationCenterCommand::Close => signal_app_event::AppEventType::HideNotificationCenter,

@@ -1,7 +1,4 @@
-use std::{
-    cell::RefCell,
-    sync::{Arc, Mutex},
-};
+use std::sync::Arc;
 
 use crate::{
     db::Database,
@@ -15,7 +12,6 @@ pub enum NotificationCenterCommand {
 }
 
 pub struct NotificationServer {
-    is_notification_center_open: Arc<Mutex<bool>>,
     core: Arc<NotificationServerCore>,
 }
 
@@ -37,9 +33,16 @@ impl NotificationServer {
         let core = NotificationServerCore::run(
             0,
             move |n| {
+                let n2 = n.clone();
+                tokio::spawn(async move {
+                    Database::put_notification(&n2).await;
+                });
                 on_notification(n);
             },
             move |id| {
+                tokio::spawn(async move {
+                    Database::delete_notification(id.into()).await;
+                });
                 on_close(id);
             },
             move || {
@@ -53,12 +56,11 @@ impl NotificationServer {
             },
         )?;
 
-        let _ = Database::new();
+        tokio::spawn(async {
+            let _ = Database::new().await;
+        });
 
-        Ok(NotificationServer {
-            is_notification_center_open: Arc::new(false.into()),
-            core: core.into(),
-        })
+        Ok(NotificationServer { core: core.into() })
     }
 
     pub fn close_notification(notification_id: u32) {
@@ -82,17 +84,5 @@ impl NotificationServer {
             core.invoke_action(notification_id, action);
             Database::delete_notification(notification_id.into()).await;
         });
-    }
-    pub fn close_notification_center(&self) {
-        *self.is_notification_center_open.lock().unwrap() = false;
-    }
-
-    pub fn toggle_notification_center(&self) {
-        let mut lock = self.is_notification_center_open.lock().unwrap();
-        *lock = !*lock;
-    }
-
-    pub fn open_notification_center(&self) {
-        *self.is_notification_center_open.lock().unwrap() = true;
     }
 }

@@ -13,16 +13,18 @@ import '../utils.dart';
 import 'category.dart';
 import 'notification.dart';
 
-class NotificationCenter extends StatefulWidget with WatchItStatefulWidgetMixin {
+class NotificationCenter extends StatefulWidget
+    with WatchItStatefulWidgetMixin {
   NotificationCenter({super.key});
 
   @override
   State<NotificationCenter> createState() => _NotificationCenterState();
 }
 
-class _NotificationCenterState extends State<NotificationCenter>{
+class _NotificationCenterState extends State<NotificationCenter> {
   Timer? notificationUpTimeTimer;
-  final CacheService<String, ImageProvider<Object>> _imageCache = CacheService();
+  final CacheService<String, ImageProvider<Object>> _imageCache =
+      CacheService();
 
   @override
   void dispose() {
@@ -43,7 +45,8 @@ class _NotificationCenterState extends State<NotificationCenter>{
   @override
   Widget build(BuildContext context) {
     final notifications = watchIt<MainWindowService>().notifications;
-    final showMediaPlayer = watchPropertyValue((MediaPlayerService s) => s.showMediaPlayerWidget);
+    final showMediaPlayer =
+        watchPropertyValue((MediaPlayerService s) => s.showMediaPlayerWidget);
     final notificationByCategory = notifications
         .fold(<String, List<daemon_event.Notification>>{}, (map, notification) {
       final key = notification.appName;
@@ -58,8 +61,10 @@ class _NotificationCenterState extends State<NotificationCenter>{
       final notifications = notificationByCategory[e]!;
 
       final notificationTiles = notifications.map((n) {
-        ImageProvider<Object>? imageProvider = _imageCache.getOrPut(n.summary, () => imageRawToProvider(n.appImage));
-        ImageProvider<Object>? iconeProvider = _imageCache.getOrPut(n.appName, () => imageRawToProvider(n.appIcon));
+        ImageProvider<Object>? imageProvider = _imageCache.getOrPut(
+            n.summary, () => imageRawToProvider(n.appImage));
+        ImageProvider<Object>? iconeProvider = _imageCache.getOrPut(
+            n.appName, () => imageRawToProvider(n.appIcon));
         return NotificationTile(
           n.id,
           n.appName,
@@ -96,12 +101,13 @@ class _NotificationCenterState extends State<NotificationCenter>{
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Container(
-          constraints: const BoxConstraints(maxWidth: 500),
-          height: double.infinity,
-          color: Colors.transparent,
-          child: ListView(
-            children: [if(showMediaPlayer)MediaPlayer(), ...categoryWidgets],
+        Flexible(
+          child: Container(
+            width: 500,
+            color: Colors.transparent,
+            child: ListView(
+              children: [if (showMediaPlayer) MediaPlayer(), ...categoryWidgets],
+            ),
           ),
         ),
       ],

@@ -37,9 +37,6 @@ pub fn handle_request(
                     messages::app_event::AppEventType::ActionInvoked => {
                         server.invoke_action(0, "default".to_string());
                     }
-                    messages::app_event::AppEventType::CloseNotification => {
-                        server.close_notification_center();
-                    }
                 }
                 RustResponse {
                     successful: true,

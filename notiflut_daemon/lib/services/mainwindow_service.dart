@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart';
 import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
-    show ID, Notification;
+    show Notification;
 import 'package:notiflutland/messages/app_event.pb.dart' as app_event;
 import 'package:notiflutland/services/subwindow_service.dart';
 import 'package:window_manager/window_manager.dart';
@@ -58,15 +58,23 @@ class MainWindowService extends ChangeNotifier {
   }
 
   _handleEvents(RustSignal event) async {
-    print("COUCOU");
     if (event.resource != app_event.ID) {
       return;
     }
-    print("COUCOU 2");
 
     final appEvent =
         await compute(SignalAppEvent.fromBuffer, event.message!.toList());
     switch (appEvent.type) {
+      case SignalAppEvent_AppEventType.ToggleNotificationCenter:
+        isHidden = !isHidden;
+        if (isHidden) {
+          Future.delayed(const Duration(milliseconds: 300), () {
+            hideWindow();
+          });
+        } else {
+          showWindow();
+        }
+        break;
       case SignalAppEvent_AppEventType.HideNotificationCenter:
         isHidden = true;
         hideWindow();
@@ -80,7 +88,6 @@ class MainWindowService extends ChangeNotifier {
         });
         break;
       case SignalAppEvent_AppEventType.NewNotification:
-        print("NEW NOTIFICATION");
         final notification = appEvent.notification;
 
         if (isHidden) {
@@ -89,6 +96,11 @@ class MainWindowService extends ChangeNotifier {
             MainWindowEvents.newNotification.toString(),
             notification.writeToBuffer(),
           );
+        }
+
+        if (notification.id != 0) {
+          notifications.removeWhere(
+              (element) => element.id == notification.id);
         }
 
         notifications.add(notification);

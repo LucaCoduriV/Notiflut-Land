@@ -69,9 +69,15 @@ class _MediaPlayerState extends State<MediaPlayer> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            metadata!.trackTitle!,
-                            style: textStyle,
+                          SizedBox(
+                          width: 400,
+                            child: Text(
+                              metadata!.trackTitle!,
+                              style: textStyle,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              textAlign: TextAlign.center,
+                            ),
                           )
                         ],
                       ),
