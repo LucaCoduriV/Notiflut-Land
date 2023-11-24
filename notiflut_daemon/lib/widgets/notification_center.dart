@@ -100,14 +100,16 @@ class _NotificationCenterState extends State<NotificationCenter> {
     // TODO find why there is a warning on runtime
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.max,
       children: [
-        Flexible(
-          child: Container(
-            width: 500,
-            color: Colors.transparent,
-            child: ListView(
-              children: [if (showMediaPlayer) MediaPlayer(), ...categoryWidgets],
-            ),
+        Container(
+          width: 500,
+          color: Colors.red,
+          child: ListView(
+            children: [
+              if (showMediaPlayer) MediaPlayer(),
+              ...categoryWidgets
+            ],
           ),
         ),
       ],
