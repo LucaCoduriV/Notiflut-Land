@@ -5,6 +5,9 @@ use crate::{
     notification_dbus::{notification_server::NotificationServerCore, Notification},
 };
 
+use tracing::error;
+use tracing::info;
+
 pub enum NotificationCenterCommand {
     Open,
     Close,
@@ -47,14 +50,20 @@ impl NotificationServer {
                 let n2 = n.clone();
                 let db = db_clone1.clone();
                 tokio::spawn(async move {
-                    db.put_notification(&n2).await;
+                    match db.put_notification(&n2).await {
+                        Ok(_) => (),
+                        Err(e) => error!("{}", e),
+                    };
                 });
                 on_notification(n);
             },
             move |id| {
                 let db = db_clone2.clone();
                 tokio::spawn(async move {
-                    db.delete_notification(id.into()).await;
+                    match db.delete_notification(id.into()).await {
+                        Ok(_) => (),
+                        Err(e) => error!("{}", e),
+                    };
                 });
                 on_close(id);
             },
@@ -70,25 +79,35 @@ impl NotificationServer {
         )?;
 
         self.core = Some(core.into());
+        info!("Listening for new notification");
         Ok(())
     }
 
     pub fn close_notification(&self, notification_id: u32) {
         let db = self.db.clone();
         tokio::spawn(async move {
-            db.delete_notification(notification_id.into()).await;
+            match db.delete_notification(notification_id.into()).await {
+                Ok(_) => (),
+                Err(e) => error!("{}", e),
+            };
         });
     }
     pub fn close_all_notifications(&self) {
         let db = self.db.clone();
         tokio::spawn(async move {
-            db.delete_notifications().await;
+            match db.delete_notifications().await {
+                Ok(_) => (),
+                Err(e) => error!("{}", e),
+            };
         });
     }
     pub fn close_all_notification_from_app(&self, app_name: String) {
         let db = self.db.clone();
         tokio::spawn(async move {
-            db.delete_notification_with_app_name(&app_name).await;
+            match db.delete_notification_with_app_name(&app_name).await {
+                Ok(_) => (),
+                Err(e) => error!("{}", e),
+            };
         });
     }
     pub fn invoke_action(&self, notification_id: u32, action: String) {
@@ -96,7 +115,10 @@ impl NotificationServer {
         let db = self.db.clone();
         tokio::spawn(async move {
             core.unwrap().invoke_action(notification_id, action);
-            db.delete_notification(notification_id.into()).await;
+            match db.delete_notification(notification_id.into()).await {
+                Ok(_) => (),
+                Err(e) => error!("{}", e),
+            };
         });
     }
 }

@@ -28,7 +28,11 @@ pub struct Database {
 
 impl Database {
     pub async fn new() -> Database {
-        let db = Surreal::new::<File>("/tmp/db.db").await.unwrap();
+        let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
+        let database_path = xdg_dirs
+            .place_data_file("notifications.db")
+            .expect("cannot create configuration directory");
+        let db = Surreal::new::<File>(database_path).await.unwrap();
         let namespace = if cfg!(debug_assertions) {
             "debug"
         } else {
@@ -37,82 +41,81 @@ impl Database {
         db.use_ns(namespace).use_db("data").await.unwrap();
         Self { db }
     }
-    pub async fn get_notifications(&self) -> Vec<Notification> {
-        let notifications: Result<Vec<Notification>, _> = self.db.select(TABLE_NOTIFICATION).await;
-        let notifications = notifications.unwrap();
-        notifications
+    pub async fn get_notifications(&self) -> anyhow::Result<Vec<Notification>> {
+        let notifications: Vec<Notification> = self.db.select(TABLE_NOTIFICATION).await?;
+        Ok(notifications)
     }
 
-    pub async fn put_notification(&self, notification: &Notification) {
-        let result: Result<Option<Notification>, _> = self
+    pub async fn put_notification(&self, notification: &Notification) -> anyhow::Result<()> {
+        let _result: Option<Notification> = self
+            .db
+            .delete((TABLE_NOTIFICATION, notification.n_id as i64))
+            .await?;
+        let _result: Option<Notification> = self
             .db
             .create((TABLE_NOTIFICATION, notification.n_id as i64))
             .content(notification)
-            .await;
-
-        let _result_casted: anyhow::Result<_> = result.map(|_| ()).map_err(|e| e.into());
+            .await?;
+        Ok(())
     }
 
-    pub async fn update_notification(&self, notification: &Notification) {
-        let result: Result<Option<Notification>, _> = self
+    pub async fn update_notification(&self, notification: &Notification) -> anyhow::Result<()> {
+        let _result: Option<Notification> = self
             .db
             .update((TABLE_NOTIFICATION, notification.n_id as i64))
             .content(notification)
-            .await;
-        let _result_casted: anyhow::Result<_> = result.map(|_| ()).map_err(|e| e.into());
+            .await?;
+        Ok(())
     }
 
-    pub async fn delete_notification(&self, notification_id: i64) {
-        let result: Result<Option<Notification>, _> =
-            self.db.delete((TABLE_NOTIFICATION, notification_id)).await;
-
-        let _result_casted: anyhow::Result<_> = result.map(|_| ()).map_err(|e| e.into());
+    pub async fn delete_notification(&self, notification_id: i64) -> anyhow::Result<()> {
+        let _result: Option<Notification> = self
+            .db
+            .delete((TABLE_NOTIFICATION, notification_id))
+            .await?;
+        Ok(())
     }
 
-    pub async fn delete_notifications(&self) {
-        let result: Result<Vec<Notification>, _> = self.db.delete(TABLE_NOTIFICATION).await;
-
-        let _result_casted: anyhow::Result<_> = result.map(|_| ()).map_err(|e| e.into());
+    pub async fn delete_notifications(&self) -> anyhow::Result<()> {
+        let _result: Vec<Notification> = self.db.delete(TABLE_NOTIFICATION).await?;
+        Ok(())
     }
 
-    pub async fn delete_notification_with_app_name(&self, app_name: &str) {
-        let result = self
+    pub async fn delete_notification_with_app_name(&self, app_name: &str) -> anyhow::Result<()> {
+        let _result = self
             .db
             .query("DELETE type::table($table) WHERE name = $app_name;")
             .bind(("table", TABLE_NOTIFICATION))
             .bind(("app_name", app_name))
-            .await;
-
-        let _result_casted: anyhow::Result<_> = result.map(|_| ()).map_err(|e| e.into());
+            .await?;
+        Ok(())
     }
 
-    pub async fn get_app_settings(&self) -> Option<AppSettings> {
-        let settings: Result<Vec<AppSettings>, _> = self.db.select(TABLE_APP_SETTINGS).await;
-        let settings: anyhow::Result<_> =
-            settings.map(|v| v.into_iter().nth(0)).map_err(|e| e.into());
-        settings.unwrap()
+    pub async fn get_app_settings(&self) -> anyhow::Result<Option<AppSettings>> {
+        let settings: Vec<AppSettings> = self.db.select(TABLE_APP_SETTINGS).await?;
+        let settings = settings.into_iter().nth(0);
+        Ok(settings)
     }
 
-    pub async fn set_appsettings(&self, settings: AppSettings) {
+    pub async fn put_appsettings(&self, settings: AppSettings) -> anyhow::Result<()> {
         const SETTINGS_ID: i64 = 0;
         let db_settings: Option<AppSettings> = self
             .db
             .select((TABLE_APP_SETTINGS, SETTINGS_ID))
-            .await
+            .await?
             .unwrap();
 
-        let result: Result<Option<AppSettings>, _> = if db_settings.is_some() {
+        let _result: Option<AppSettings> = if db_settings.is_some() {
             self.db
                 .update((TABLE_APP_SETTINGS, SETTINGS_ID))
                 .content(&settings)
-                .await
+                .await?
         } else {
             self.db
                 .create((TABLE_APP_SETTINGS, SETTINGS_ID))
                 .content(&settings)
-                .await
+                .await?
         };
-
-        let _result_casted: anyhow::Result<_> = result.map(|_| ()).map_err(|e| e.into());
+        Ok(())
     }
 }

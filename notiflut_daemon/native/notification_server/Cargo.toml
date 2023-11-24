@@ -20,3 +20,5 @@ anyhow = "1"
 thiserror = "1.0.40"
 surrealdb = { version = "1.0.0", features = ["kv-rocksdb", "kv-mem"] }
 serde = { version = "1.0.188", features = ["derive"] }
+xdg = "2.5.2"
+tracing = "0.1.40"

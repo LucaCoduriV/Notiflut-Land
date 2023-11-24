@@ -18,3 +18,5 @@ wasm-bindgen = "0.2.87"
 prost = "0.12.1"
 prost-types = "0.12.1"
 notification_server = { path = "../notification_server" }
+tracing = "0.1.40"
+tracing-subscriber = {version = "0.3.18", features = ["env-filter"]}

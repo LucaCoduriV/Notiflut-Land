@@ -7,6 +7,9 @@ use messages::daemon_event::{signal_app_event, SignalAppEvent};
 use notification_server::NotificationCenterCommand;
 use prost::Message;
 use tokio_with_wasm::tokio;
+use tracing::Level;
+use tracing_subscriber::EnvFilter;
+use tracing_subscriber::FmtSubscriber;
 use with_request::handle_request;
 
 mod bridge;
@@ -17,6 +20,17 @@ mod with_request;
 /// This `hub` crate is the entry point for the Rust logic.
 /// Always use non-blocking async functions such as `tokio::fs::File::open`.
 async fn main() {
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(Level::TRACE)
+        .with_level(true)
+        .with_file(true)
+        .with_line_number(true)
+        .with_env_filter(EnvFilter::new("hub=trace,notification_server=trace"))
+        .pretty()
+        .finish();
+
+    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+
     let mut request_receiver = bridge::get_request_receiver();
     let mut server = notification_server::NotificationServer::new().await;
     server
