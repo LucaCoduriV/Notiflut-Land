@@ -26,13 +26,13 @@ pub fn handle_request(
                 let event: AppEvent = event.into();
                 match event.r#type() {
                     messages::app_event::AppEventType::Close => {
-                        NotificationServer::close_notification(0);
+                        server.close_notification(0);
                     }
                     messages::app_event::AppEventType::CloseAll => {
-                        NotificationServer::close_all_notifications();
+                        server.close_all_notifications();
                     }
                     messages::app_event::AppEventType::CloseAllApp => {
-                        NotificationServer::close_all_notification_from_app("".to_string());
+                        server.close_all_notification_from_app("".to_string());
                     }
                     messages::app_event::AppEventType::ActionInvoked => {
                         server.invoke_action(0, "default".to_string());

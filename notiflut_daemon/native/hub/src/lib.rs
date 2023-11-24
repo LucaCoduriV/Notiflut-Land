@@ -18,14 +18,15 @@ mod with_request;
 /// Always use non-blocking async functions such as `tokio::fs::File::open`.
 async fn main() {
     let mut request_receiver = bridge::get_request_receiver();
-    let server = Arc::new(
-        notification_server::NotificationServer::run(
+    let mut server = notification_server::NotificationServer::new().await;
+    server
+        .run(
             on_notification,
             on_notification_close,
             on_notification_center_state_change,
         )
-        .unwrap(),
-    );
+        .unwrap();
+    let server = Arc::new(server);
 
     // This is `tokio::sync::mpsc::Reciver` that receives the requests from Dart.
     while let Some(request_unique) = request_receiver.recv().await {
