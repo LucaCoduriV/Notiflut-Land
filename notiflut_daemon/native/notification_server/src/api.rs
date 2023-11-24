@@ -42,6 +42,8 @@ impl NotificationServer {
             on_state_change_notification_center.clone();
         let on_state_change_notification_center_clone2 =
             on_state_change_notification_center.clone();
+
+        self.load_db(on_notification.clone());
         let db_clone1 = Arc::clone(&self.db);
         let db_clone2 = Arc::clone(&self.db);
         let core = NotificationServerCore::run(
@@ -81,6 +83,28 @@ impl NotificationServer {
         self.core = Some(core.into());
         info!("Listening for new notification");
         Ok(())
+    }
+
+    fn load_db<F1>(&self, on_notification: F1)
+    where
+        F1: Fn(Notification) + Send + Clone + 'static,
+    {
+        let db = self.db.clone();
+        tokio::spawn(async move {
+            let notifications = match db.get_notifications().await {
+                Ok(notifications) => Some(notifications),
+                Err(e) => {
+                    error!("{}", e);
+                    None
+                }
+            };
+
+            if let Some(notifications) = notifications {
+                for noti in notifications {
+                    on_notification(noti);
+                }
+            }
+        });
     }
 
     pub fn close_notification(&self, notification_id: u32) {
