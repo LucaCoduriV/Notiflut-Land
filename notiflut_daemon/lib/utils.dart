@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
-import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event;
+import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event;
 import 'package:palette_generator/palette_generator.dart';
 
 import 'messages/daemon_event.pbenum.dart';

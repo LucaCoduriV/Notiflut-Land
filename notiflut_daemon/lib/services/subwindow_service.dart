@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
 
-import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
+import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
 
 import '../messages/google/protobuf/timestamp.pb.dart';

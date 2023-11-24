@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:notiflutland/services/mainwindow_service.dart';
-import 'package:notiflutland/services/mediaplayer_service.dart';
-import 'package:notiflutland/services/subwindow_service.dart';
-import 'package:notiflutland/widgets/notification_center.dart';
-import 'package:notiflutland/widgets/popups_list.dart';
-import 'package:notiflutland/window_utils.dart';
+import 'package:notiflut/services/mainwindow_service.dart';
+import 'package:notiflut/services/mediaplayer_service.dart';
+import 'package:notiflut/services/subwindow_service.dart';
+import 'package:notiflut/widgets/notification_center.dart';
+import 'package:notiflut/widgets/popups_list.dart';
+import 'package:notiflut/window_utils.dart';
 import 'package:rinf/rinf.dart';
 import 'package:watch_it/watch_it.dart';
 

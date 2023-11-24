@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
+import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
-import 'package:notiflutland/services/cache_service.dart';
-import 'package:notiflutland/widgets/mediaPlayer.dart';
+import 'package:notiflut/services/cache_service.dart';
+import 'package:notiflut/widgets/mediaPlayer.dart';
 import 'package:watch_it/watch_it.dart';
 
 import '../services/mainwindow_service.dart';

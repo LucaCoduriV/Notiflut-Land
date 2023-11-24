@@ -37,9 +37,9 @@ package() {
 	install -dm 755 "${pkgdir}/opt/${pkgname}"
   cp -a "$_pkgfoldername/notiflut_daemon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
 
-  echo 'Creating link to notiflutland'
+  echo 'Creating link to notiflut'
   install -d "$pkgdir/usr/bin/"
-  ln -s /opt/${pkgname}/notiflutland ${pkgdir}/usr/bin/notiflutland
+  ln -s /opt/${pkgname}/notiflut ${pkgdir}/usr/bin/notiflut
 
   #install service
   echo 'Installing service'

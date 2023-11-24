@@ -4,11 +4,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:notiflutland/messages/daemon_event.pb.dart';
-import 'package:notiflutland/messages/daemon_event.pb.dart' as daemon_event
+import 'package:notiflut/messages/daemon_event.pb.dart';
+import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
-import 'package:notiflutland/messages/app_event.pb.dart' as app_event;
-import 'package:notiflutland/services/subwindow_service.dart';
+import 'package:notiflut/messages/app_event.pb.dart' as app_event;
+import 'package:notiflut/services/subwindow_service.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:rinf/rinf.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';

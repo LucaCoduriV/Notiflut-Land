@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:notiflutland/services/mediaplayer_service.dart';
-import 'package:notiflutland/services/subwindow_service.dart';
-import 'package:notiflutland/utils.dart';
-import 'package:notiflutland/widgets/notification.dart';
+import 'package:notiflut/services/mediaplayer_service.dart';
+import 'package:notiflut/services/subwindow_service.dart';
+import 'package:notiflut/utils.dart';
+import 'package:notiflut/widgets/notification.dart';
 import 'package:watch_it/watch_it.dart';
 
 class PopupsList extends StatefulWidget with WatchItStatefulWidgetMixin {
