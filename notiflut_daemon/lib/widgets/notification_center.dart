@@ -104,7 +104,7 @@ class _NotificationCenterState extends State<NotificationCenter> {
       children: [
         Container(
           width: 500,
-          color: Colors.red,
+          color: Colors.transparent,
           child: ListView(
             children: [
               if (showMediaPlayer) MediaPlayer(),
