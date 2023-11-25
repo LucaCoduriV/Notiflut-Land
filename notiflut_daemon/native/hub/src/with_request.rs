@@ -26,7 +26,7 @@ pub fn handle_request(
                 let event: AppEvent = event.into();
                 match event.r#type() {
                     messages::app_event::AppEventType::Close => {
-                        server.close_notification(0);
+                        server.close_notification(event.notification_id.unwrap());
                     }
                     messages::app_event::AppEventType::CloseAll => {
                         server.close_all_notifications();

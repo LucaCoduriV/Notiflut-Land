@@ -8,7 +8,6 @@ use crate::{
 };
 
 use nanoid::nanoid;
-use tokio::runtime::Runtime;
 use tracing::info;
 use tracing::{debug, error};
 
@@ -52,11 +51,10 @@ impl NotificationServer {
         let db_clone2 = Arc::clone(&self.db);
         let db_clone3 = Arc::clone(&self.db);
         let db_clone4 = Arc::clone(&self.db);
-        // TODO load last id from database
-        // TODO create callback on new generated id
+
         let id = match db_clone4.get_app_settings().await.unwrap_or(None) {
             Some(a) => a.id_count,
-            None => 0,
+            None => 1,
         };
 
         let core = NotificationServerCore::run(
@@ -164,7 +162,6 @@ impl NotificationServer {
     }
 
     async fn delete_file_cache(key: &str) {
-        println!("hello !");
         match cacache::remove("/tmp/notiflut-cache", key).await {
             Ok(_) => debug!("Notification {} deleted from cache", key),
             Err(_) => debug!("Couldn't file notification {}", key),
@@ -189,7 +186,7 @@ impl NotificationServer {
                 Ok(_) => (),
                 Err(e) => error!("{}", e),
             };
-            // TODO delete cache files
+            cacache::clear("/tmp/notiflut-cache").await.unwrap();
         });
     }
     pub fn close_all_notification_from_app(&self, app_name: String) {
