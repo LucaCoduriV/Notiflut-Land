@@ -8,6 +8,7 @@ use crate::{
 };
 
 use nanoid::nanoid;
+use tokio::runtime::Runtime;
 use tracing::info;
 use tracing::{debug, error};
 
@@ -30,7 +31,7 @@ impl NotificationServer {
         }
     }
 
-    pub fn run<F1, F2, F3>(
+    pub async fn run<F1, F2, F3>(
         &mut self,
         on_notification: F1,
         on_close: F2,
@@ -50,10 +51,16 @@ impl NotificationServer {
         let db_clone1 = Arc::clone(&self.db);
         let db_clone2 = Arc::clone(&self.db);
         let db_clone3 = Arc::clone(&self.db);
+        let db_clone4 = Arc::clone(&self.db);
         // TODO load last id from database
         // TODO create callback on new generated id
+        let id = match db_clone4.get_app_settings().await.unwrap_or(None) {
+            Some(a) => a.id_count,
+            None => 0,
+        };
+
         let core = NotificationServerCore::run(
-            0,
+            id,
             move |n| {
                 let n2 = n.clone();
                 let db = db_clone1.clone();

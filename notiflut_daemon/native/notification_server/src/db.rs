@@ -103,7 +103,7 @@ impl Database {
             .db
             .select((TABLE_APP_SETTINGS, SETTINGS_ID))
             .await?
-            .unwrap();
+            .unwrap_or(None);
 
         let _result: Option<AppSettings> = if db_settings.is_some() {
             self.db
