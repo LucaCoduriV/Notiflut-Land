@@ -1,7 +1,7 @@
 mod dbus_definition;
 mod dbus_notification_handler;
 mod models;
-pub mod notification_server;
+pub mod notification_server_core;
 
 pub use models::notification::Hints;
 pub use models::notification::ImageData;

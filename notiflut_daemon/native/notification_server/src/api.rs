@@ -2,9 +2,9 @@
 use std::sync::Arc;
 
 use crate::{
-    db::Database,
+    db::{AppSettings, Database},
     notification_dbus::ImageSource,
-    notification_dbus::{notification_server::NotificationServerCore, Notification},
+    notification_dbus::{notification_server_core::NotificationServerCore, Notification},
 };
 
 use nanoid::nanoid;
@@ -49,6 +49,9 @@ impl NotificationServer {
         self.load_db(on_notification.clone());
         let db_clone1 = Arc::clone(&self.db);
         let db_clone2 = Arc::clone(&self.db);
+        let db_clone3 = Arc::clone(&self.db);
+        // TODO load last id from database
+        // TODO create callback on new generated id
         let core = NotificationServerCore::run(
             0,
             move |n| {
@@ -85,6 +88,20 @@ impl NotificationServer {
             },
             move || {
                 on_state_change_notification_center_clone2(NotificationCenterCommand::Toggle);
+            },
+            move |new_id| {
+                let db = db_clone3.clone();
+                tokio::spawn(async move {
+                    let mut app_settings = db
+                        .get_app_settings()
+                        .await
+                        .unwrap_or(Some(AppSettings::default()))
+                        .unwrap_or(AppSettings::default());
+
+                    app_settings.id_count = new_id;
+
+                    db.put_appsettings(app_settings).await.unwrap();
+                });
             },
         )?;
 
@@ -140,7 +157,11 @@ impl NotificationServer {
     }
 
     async fn delete_file_cache(key: &str) {
-        cacache::remove("/tmp/notiflut-cache", key).await.unwrap();
+        println!("hello !");
+        match cacache::remove("/tmp/notiflut-cache", key).await {
+            Ok(_) => debug!("Notification {} deleted from cache", key),
+            Err(_) => debug!("Couldn't file notification {}", key),
+        };
     }
 
     pub fn close_notification(&self, notification_id: u32) {
@@ -150,6 +171,7 @@ impl NotificationServer {
                 Ok(_) => (),
                 Err(e) => error!("{}", e),
             };
+            Self::delete_file_cache(&notification_id.to_string()).await;
         });
     }
 
@@ -160,6 +182,7 @@ impl NotificationServer {
                 Ok(_) => (),
                 Err(e) => error!("{}", e),
             };
+            // TODO delete cache files
         });
     }
     pub fn close_all_notification_from_app(&self, app_name: String) {
@@ -169,6 +192,7 @@ impl NotificationServer {
                 Ok(_) => (),
                 Err(e) => error!("{}", e),
             };
+            // TODO delete cache files
         });
     }
     pub fn invoke_action(&self, notification_id: u32, action: String) {

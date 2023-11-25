@@ -22,13 +22,14 @@ pub struct NotificationServerCore {
 }
 
 impl NotificationServerCore {
-    pub fn run<F1, F2, F3, F4, F5>(
+    pub fn run<F1, F2, F3, F4, F5, F6>(
         id_start: u32,
         on_notification: F1,
         on_close: F2,
         on_open_notification_center: F3,
         on_close_notification_center: F4,
         on_toggle_notification_center: F5,
+        on_new_id: F6,
     ) -> anyhow::Result<Self>
     where
         F1: Fn(Notification) + Send + Clone + 'static,
@@ -36,6 +37,7 @@ impl NotificationServerCore {
         F3: Fn() + Send + Clone + 'static,
         F4: Fn() + Send + Clone + 'static,
         F5: Fn() + Send + Clone + 'static,
+        F6: Fn(u32) + Send + Clone + 'static,
     {
         // Connect to the D-Bus session bus (this is blocking, unfortunately).
         let (resource, c) = connection::new_session_sync()?;
@@ -82,6 +84,7 @@ impl NotificationServerCore {
                     id_count: Arc::new(id_start.into()),
                     on_notification,
                     on_close,
+                    on_new_id,
                 },
             );
 
