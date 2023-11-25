@@ -62,7 +62,12 @@ class NotificationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttons = actions
-        ?.map((v) => TextButton(onPressed: v.action, child: Text(v.label)))
+        ?.map((v) => TextButton(
+            onPressed: v.action,
+            child: Text(
+              v.label,
+              style: const TextStyle(color: Colors.black),
+            )))
         .toList();
     String time = "";
     if (createdAt != null) {
@@ -126,11 +131,17 @@ class NotificationTile extends StatelessWidget {
                       networkSchemas: {"file"},
                       builder: (extensionContext) {
                         final element = extensionContext.styledElement;
+                        String src = element!.attributes["src"]!;
+                        if (src.contains("file://")) {
+                          src = src.replaceAll("file://", "");
+
+                          final alt = element.attributes["alt"]!;
+                          if (!File(src).existsSync()) {
+                            return Text(alt);
+                          }
+                        }
                         return Image.file(
-                          File(element!.attributes["src"]!
-                              .replaceAll("file://", "")),
-                          // width: double.infinity,
-                          // height: 200.0,
+                          File(src),
                         );
                       }),
                 ],

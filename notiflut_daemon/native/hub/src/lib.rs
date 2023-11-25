@@ -39,6 +39,7 @@ async fn main() {
             on_notification_close,
             on_notification_center_state_change,
         )
+        .await
         .unwrap();
     let server = Arc::new(server);
 

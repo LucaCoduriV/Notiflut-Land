@@ -135,7 +135,22 @@ class MainWindowService extends ChangeNotifier {
     }
   }
 
-  void closeNotification(int id) {
+  void closeNotification(int id) async {
+    final event = app_event.AppEvent(
+      type: app_event.AppEventType.Close,
+      data: null,
+      notificationId: id,
+    );
+    final request = RustRequest(
+      resource: app_event.ID,
+      operation: RustOperation.Create,
+      message: event.writeToBuffer(),
+    );
+    final response = await requestToRust(request);
+    if (!response.successful) {
+      print("Error while closing notification $id");
+    } 
+
     notifications = List.from(notifications..removeWhere(((n) => n.id == id)));
     notifyListeners();
   }

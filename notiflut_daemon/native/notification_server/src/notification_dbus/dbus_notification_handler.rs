@@ -58,20 +58,24 @@ const SERVER_CAPABILITIES: [&str; 8] = [
 ];
 
 #[derive(Clone)]
-pub struct DbusNotificationHandler<F1, F2>
+pub struct DbusNotificationHandler<F1, F2, F3>
 where
     F1: Fn(Notification),
     F2: Fn(u32),
+    F3: Fn(u32),
 {
     pub id_count: Arc<Mutex<u32>>,
     pub on_notification: F1,
     pub on_close: F2,
+    pub on_new_id: F3,
 }
 
-impl<F1, F2> dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler<F1, F2>
+impl<F1, F2, F3> dbus_definition::OrgFreedesktopNotifications
+    for DbusNotificationHandler<F1, F2, F3>
 where
     F1: Fn(Notification),
     F2: Fn(u32),
+    F3: Fn(u32),
 {
     fn notify(
         &mut self,
@@ -95,6 +99,7 @@ where
                 replaces_id
             }
         };
+        (self.on_new_id)(id);
 
         let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&hints, "image-data") {
             Some(v) => ImageData::try_from(v).ok(),
