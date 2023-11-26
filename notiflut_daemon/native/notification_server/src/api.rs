@@ -8,8 +8,7 @@ use crate::{
 };
 
 use nanoid::nanoid;
-use tracing::info;
-use tracing::{debug, error};
+use tracing::{info, debug, error, trace};
 
 pub enum NotificationCenterCommand {
     Open,
@@ -169,6 +168,7 @@ impl NotificationServer {
     }
 
     pub fn close_notification(&self, notification_id: u32) {
+        trace!("Closing notification {}", notification_id);
         let db = self.db.clone();
         tokio::spawn(async move {
             match db.delete_notification(notification_id.into()).await {
@@ -180,6 +180,7 @@ impl NotificationServer {
     }
 
     pub fn close_all_notifications(&self) {
+        trace!("Closing all notifications");
         let db = self.db.clone();
         tokio::spawn(async move {
             match db.delete_notifications().await {
@@ -190,6 +191,7 @@ impl NotificationServer {
         });
     }
     pub fn close_all_notification_from_app(&self, app_name: String) {
+        trace!("Closing all notifications of {}", app_name);
         let db = self.db.clone();
         tokio::spawn(async move {
             match db.delete_notification_with_app_name(&app_name).await {
@@ -200,6 +202,7 @@ impl NotificationServer {
         });
     }
     pub fn invoke_action(&self, notification_id: u32, action: String) {
+        trace!("Invoking {} for notification {}", action, notification_id);
         let core = self.core.clone();
         let db = self.db.clone();
         tokio::spawn(async move {

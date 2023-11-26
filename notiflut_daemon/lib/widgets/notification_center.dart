@@ -57,8 +57,8 @@ class _NotificationCenterState extends State<NotificationCenter> {
     });
 
     final keys = notificationByCategory.keys;
-    final categoryWidgets = keys.map((e) {
-      final notifications = notificationByCategory[e]!;
+    final categoryWidgets = keys.map((appName) {
+      final notifications = notificationByCategory[appName]!;
 
       final notificationTiles = notifications.map((n) {
         ImageProvider<Object>? imageProvider = _imageCache.getOrPut(
@@ -91,9 +91,12 @@ class _NotificationCenterState extends State<NotificationCenter> {
       }).toList();
 
       return NotificationCategory(
-        key: Key(e),
-        appName: e,
+        key: Key(appName),
+        appName: appName,
         children: notificationTiles,
+        onClose: (){
+          di<MainWindowService>().closeAllAppNotifications(appName);
+        },
       );
     }).toList();
 

@@ -107,6 +107,7 @@ class MediaPlayerService extends ChangeNotifier {
       playbackStatus = null;
       notifyListeners();
     });
+    // TODO subscribe to currentPlayer
   }
 
   void deinit() {

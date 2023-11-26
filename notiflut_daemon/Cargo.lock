@@ -1619,7 +1619,7 @@ checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
 
 [[package]]
 name = "hub"
-version = "0.1.0"
+version = "0.5.0"
 dependencies = [
  "notification_server",
  "prost",
@@ -2190,7 +2190,7 @@ dependencies = [
 
 [[package]]
 name = "notification_server"
-version = "0.2.0"
+version = "0.5.0"
 dependencies = [
  "anyhow",
  "cacache",

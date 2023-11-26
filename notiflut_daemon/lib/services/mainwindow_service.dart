@@ -99,8 +99,7 @@ class MainWindowService extends ChangeNotifier {
         }
 
         if (notification.id != 0) {
-          notifications.removeWhere(
-              (element) => element.id == notification.id);
+          notifications.removeWhere((element) => element.id == notification.id);
         }
 
         notifications.add(notification);
@@ -149,9 +148,49 @@ class MainWindowService extends ChangeNotifier {
     final response = await requestToRust(request);
     if (!response.successful) {
       print("Error while closing notification $id");
-    } 
+    }
 
-    notifications = List.from(notifications..removeWhere(((n) => n.id == id)));
+    notifications.removeWhere(((n) => n.id == id));
+    notifyListeners();
+  }
+
+  void closeAllAppNotifications(String appName) async {
+    final event = app_event.AppEvent(
+      type: app_event.AppEventType.CloseAllApp,
+      data: appName,
+      notificationId: null,
+    );
+    final request = RustRequest(
+      resource: app_event.ID,
+      operation: RustOperation.Create,
+      message: event.writeToBuffer(),
+    );
+    final response = await requestToRust(request);
+    if (!response.successful) {
+      print("Error while closing all $appName notifications");
+    }
+
+    notifications.removeWhere(((n) => n.appName == appName));
+    notifyListeners();
+  }
+
+  void closeAllNotifications() async {
+    final event = app_event.AppEvent(
+      type: app_event.AppEventType.CloseAll,
+      data: null,
+      notificationId: null,
+    );
+    final request = RustRequest(
+      resource: app_event.ID,
+      operation: RustOperation.Create,
+      message: event.writeToBuffer(),
+    );
+    final response = await requestToRust(request);
+    if (!response.successful) {
+      print("Error while closing all notifications");
+    }
+
+    notifications = [];
     notifyListeners();
   }
 

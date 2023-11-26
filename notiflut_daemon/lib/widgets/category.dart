@@ -6,12 +6,14 @@ import 'package:notiflut/widgets/notification.dart';
 class NotificationCategory extends StatefulWidget {
   final String appName;
   final List<NotificationTile> children;
+  final Function()? onClose;
   final bool defaultState;
 
   const NotificationCategory({
     required this.appName,
     this.defaultState = false,
     this.children = const [],
+    this.onClose,
     super.key,
   });
 
@@ -72,7 +74,7 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                         Icons.close,
                         color: Colors.black,
                       ),
-                      onPressed: () {},
+                      onPressed: widget.onClose,
                     ),
                   ),
                   const SizedBox(width: 5),

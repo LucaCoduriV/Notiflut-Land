@@ -84,7 +84,7 @@ impl Database {
     pub async fn delete_notification_with_app_name(&self, app_name: &str) -> anyhow::Result<()> {
         let _result = self
             .db
-            .query("DELETE type::table($table) WHERE name = $app_name;")
+            .query("DELETE type::table($table) WHERE app_name = $app_name;")
             .bind(("table", TABLE_NOTIFICATION))
             .bind(("app_name", app_name))
             .await?;
