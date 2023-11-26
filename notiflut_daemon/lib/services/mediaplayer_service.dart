@@ -107,7 +107,8 @@ class MediaPlayerService extends ChangeNotifier {
       playbackStatus = null;
       notifyListeners();
     });
-    // TODO subscribe to currentPlayer
+      _currentPlayerEventSub?.cancel();
+      _currentPlayerEventSub = currentPlayer?.$1.propertiesChanged().listen(_propertiesChanged);
   }
 
   void deinit() {
@@ -135,11 +136,7 @@ class MediaPlayerService extends ChangeNotifier {
     return players.map((e) => e.$2).toList();
   }
 
-  void selectPlayer(String id) {
-    _currentPlayerEventSub?.cancel();
-    final tuple = players.where((player) => player.$2 == id).firstOrNull;
-    final player = tuple?.$1;
-    _currentPlayerEventSub = player?.propertiesChanged().listen((event) {
+  void _propertiesChanged(PropertyChangedEvent event){
       switch (event) {
         case UnsuportedEvent(:final value):
           print(value);
@@ -165,7 +162,14 @@ class MediaPlayerService extends ChangeNotifier {
           this.volume = volume;
       }
       notifyListeners();
-    });
+
+  }
+
+  void selectPlayer(String id) {
+    _currentPlayerEventSub?.cancel();
+    final tuple = players.where((player) => player.$2 == id).firstOrNull;
+    final player = tuple?.$1;
+    _currentPlayerEventSub = player?.propertiesChanged().listen(_propertiesChanged);
     if (player != null) {
       currentPlayer = (player, id);
       _getAllCurrentPlayerData();
