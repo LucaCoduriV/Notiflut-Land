@@ -51,8 +51,30 @@ If you have any trouble running these commands look first for help here: https:/
 
 Now you should be able to compile the code with: `flutter build linux --release`
 
-## Installation
-To be done...    
+Certainly! Here's an improved version of your installation guide with clearer instructions and additional details:
+
+## Installation Guide
+
+1. **Navigate to the Build Scripts Directory:**
+   ```bash
+   cd ./build_scripts
+   ```
+
+2. **Install Dependencies:**
+   If the `makepkg -si` command fails due to missing dependencies, manually download and install them. You can usually find dependency information in the project documentation or README file.
+
+3. **Build and Install Package:**
+   If you have resolved the dependencies, run the following command to build and install the package:
+   ```bash
+   makepkg -si
+   ```
+
+   If you needed to install dependencies manually, use the following command instead:
+   ```bash
+   makepkg -di
+   ```
+
+   This will build the package and install it along with its dependencies.
 ## how to use
 
 Once notiflut is running, use notiflut_ctl to control it.
