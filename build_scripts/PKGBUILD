@@ -13,7 +13,7 @@ license=('Apache-2.0')
 depends=("gtk3" "gtk-layer-shell" "dbus" "glib2" "gobject-introspection" "libgee" "json-glib" "libhandy" "libpulse" )
 conflicts=("notiflut" "notiflut_ctl")
 provides=("notiflut" "notiflut_ctl")
-makedepends=('flutter' 'clang' 'cmake' 'ninja' 'gtk3' 'pkgconf' 'xz' 'rust')
+makedepends=('flutter' 'clang' 'cmake' 'ninja' 'gtk3' 'pkgconf' 'xz' 'rust' 'protobuf')
 source=('git+https://github.com/LucaCoduriV/Notiflut-Land.git')
 sha256sums=('SKIP')
 
