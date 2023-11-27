@@ -56,5 +56,5 @@ To be done...
 ## how to use
 
 Once notiflut is running, use notiflut_ctl to control it.
-For help menu use notiflut_ctl -h
+For help menu use `notiflut_ctl -h`
 
