@@ -81,14 +81,15 @@ impl Database {
         Ok(())
     }
 
-    pub async fn delete_notification_with_app_name(&self, app_name: &str) -> anyhow::Result<()> {
-        let _result = self
+    pub async fn delete_notification_with_app_name(&self, app_name: &str) -> anyhow::Result<Vec<Notification>> {
+        let mut result = self
             .db
-            .query("DELETE type::table($table) WHERE app_name = $app_name;")
+            .query("DELETE type::table($table) WHERE app_name = $app_name RETURN BEFORE;")
             .bind(("table", TABLE_NOTIFICATION))
             .bind(("app_name", app_name))
             .await?;
-        Ok(())
+        let deleted_notifications: Result<Vec<Notification>, _> = result.take(0);
+        Ok(deleted_notifications?)
     }
 
     pub async fn get_app_settings(&self) -> anyhow::Result<Option<AppSettings>> {

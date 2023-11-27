@@ -2,6 +2,7 @@ mod api;
 mod db;
 mod desktop_file_manager;
 mod notification_dbus;
+mod cache;
 
 pub use api::NotificationCenterCommand;
 pub use api::NotificationServer;

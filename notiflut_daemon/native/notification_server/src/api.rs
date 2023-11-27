@@ -2,13 +2,13 @@
 use std::sync::Arc;
 
 use crate::{
+    cache,
     db::{AppSettings, Database},
     notification_dbus::ImageSource,
     notification_dbus::{notification_server_core::NotificationServerCore, Notification},
 };
 
-use nanoid::nanoid;
-use tracing::{info, debug, error, trace};
+use tracing::{debug, error, info, trace};
 
 pub enum NotificationCenterCommand {
     Open,
@@ -68,7 +68,7 @@ impl NotificationServer {
                     };
                     if let Some(ImageSource::Path(ref path)) = n2.app_image {
                         debug!("New image: {}", path);
-                        Self::insert_file_cache(&n2.n_id.to_string(), path).await;
+                        cache::insert_file_cache(&n2.n_id.to_string(), path).await;
                     }
                 });
                 on_notification(n);
@@ -80,7 +80,7 @@ impl NotificationServer {
                         Ok(_) => (),
                         Err(e) => error!("{}", e),
                     };
-                    Self::delete_file_cache(&id.to_string()).await;
+                    cache::delete_file_cache(&id.to_string()).await;
                 });
                 on_close(id);
             },
@@ -134,7 +134,7 @@ impl NotificationServer {
                     tokio::spawn(async move {
                         if let Some(ImageSource::Path(old_path)) = noti.app_image {
                             tracing::debug!("New image: {}", old_path);
-                            let path = Self::load_cache(&noti.n_id.to_string()).await;
+                            let path = cache::load_cache(&noti.n_id.to_string()).await;
                             noti.app_image = Some(ImageSource::Path(path));
                         }
                         on_notification(noti);
@@ -142,29 +142,6 @@ impl NotificationServer {
                 }
             }
         });
-    }
-
-    async fn load_cache(key: &str) -> String {
-        let id = nanoid!();
-        let filepath = format!("/tmp/notiflu-{}", id);
-        cacache::copy("/tmp/notiflut-cache", key, &filepath)
-            .await
-            .unwrap();
-        filepath
-    }
-
-    async fn insert_file_cache(key: &str, file_path: &str) {
-        let data = tokio::fs::read(file_path).await.unwrap();
-        cacache::write("/tmp/notiflut-cache", key, &data)
-            .await
-            .unwrap();
-    }
-
-    async fn delete_file_cache(key: &str) {
-        match cacache::remove("/tmp/notiflut-cache", key).await {
-            Ok(_) => debug!("Notification {} deleted from cache", key),
-            Err(_) => debug!("Couldn't file notification {}", key),
-        };
     }
 
     pub fn close_notification(&self, notification_id: u32) {
@@ -175,7 +152,7 @@ impl NotificationServer {
                 Ok(_) => (),
                 Err(e) => error!("{}", e),
             };
-            Self::delete_file_cache(&notification_id.to_string()).await;
+            cache::delete_file_cache(&notification_id.to_string()).await;
         });
     }
 
@@ -187,18 +164,28 @@ impl NotificationServer {
                 Ok(_) => (),
                 Err(e) => error!("{}", e),
             };
-            cacache::clear("/tmp/notiflut-cache").await.unwrap();
+            cache::clear_cache().await;
         });
     }
     pub fn close_all_notification_from_app(&self, app_name: String) {
         trace!("Closing all notifications of {}", app_name);
         let db = self.db.clone();
         tokio::spawn(async move {
-            match db.delete_notification_with_app_name(&app_name).await {
-                Ok(_) => (),
-                Err(e) => error!("{}", e),
+            let deleted_notifications = match db.delete_notification_with_app_name(&app_name).await
+            {
+                Ok(notifications) => Some(notifications),
+                Err(e) => {
+                    error!("{}", e);
+                    None
+                }
             };
-            // TODO delete cache files
+            if let Some(notifications) = deleted_notifications {
+                for n in notifications {
+                    tokio::spawn(async move {
+                        cache::delete_file_cache(&n.n_id.to_string()).await;
+                    });
+                }
+            }
         });
     }
     pub fn invoke_action(&self, notification_id: u32, action: String) {

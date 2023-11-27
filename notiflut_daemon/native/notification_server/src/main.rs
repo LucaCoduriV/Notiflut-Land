@@ -2,6 +2,7 @@ mod api;
 mod db;
 mod desktop_file_manager;
 mod notification_dbus;
+mod cache;
 
 use futures::future;
 
@@ -19,6 +20,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             |id| println!("{}", id),
             |state| println!("STATE: {}", true),
         )
+        .await
         .unwrap();
 
     for notification in recv {
