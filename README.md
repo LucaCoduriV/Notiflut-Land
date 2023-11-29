@@ -1,4 +1,4 @@
-![logo](/images/notiflut-logo.png)
+![Notiflut-Land logo](/images/notiflut-logo.png)
 # Notiflut-Land [Work in progress]
 
 This project is a notification center designed specifically for Wayland, implemented using Rust and Flutter. The notification center provides a seamless and intuitive user interface for managing and interacting with notifications on Wayland-based systems.
@@ -7,8 +7,8 @@ This project is a notification center designed specifically for Wayland, impleme
 ## Screenshots
 
 ⚠️ It's not the final look !
-![App Screenshot](/images/NotificationCenterExample.png)
-![App Screenshot](/images/notification_popup.png)
+![Notification center sreenshot](/images/NotificationCenterExample.png)
+![Notification popup screenshot](/images/notification_popup.png)
 
 
 ## Features (Checked if done)
@@ -28,8 +28,8 @@ This project is a notification center designed specifically for Wayland, impleme
 - [x] notification group
 - [ ] custom styling
 - [ ] Filter notifications
-- [ ] support for waybar
-- [ ] Widgets
+- [x] support for waybar
+- [ ] Widgets (Maybe a bad idea)
 - [x] Media player controller
 
 ## requirement
@@ -80,3 +80,30 @@ Certainly! Here's an improved version of your installation guide with clearer in
 Once notiflut is running, use notiflut_ctl to control it.
 For help menu use `notiflut_ctl -h`
 
+## Waybar
+Here is an example of a custom module that can be used with Waybar.
+```
+    "custom/notification": {
+      "tooltip": false,
+      "format": "{icon}",
+      "format-icons": {
+        "0": "",
+        "1": "<span foreground='red'><sup>1</sup></span>",
+        "2": "<span foreground='red'><sup>2</sup></span>",
+        "3": "<span foreground='red'><sup>3</sup></span>",
+        "4": "<span foreground='red'><sup>4</sup></span>",
+        "5": "<span foreground='red'><sup>5</sup></span>",
+        "6": "<span foreground='red'><sup>6</sup></span>",
+        "7": "<span foreground='red'><sup>7</sup></span>",
+        "8": "<span foreground='red'><sup>8</sup></span>",
+        "9": "<span foreground='red'><sup>9</sup></span>",
+        "more": "<span foreground='red'><sup>9+</sup></span>"
+      },
+      "return-type": "json",
+      "exec-if": "which notiflut_ctl",
+      "exec": "notiflut_ctl status",
+      "on-click": "notiflut_ctl toggle",
+      "interval": 5,
+      "escape": true
+    },
+```
