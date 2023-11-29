@@ -8,6 +8,7 @@ use crate::{
     notification_dbus::{notification_server_core::NotificationServerCore, Notification},
 };
 
+use futures::FutureExt;
 use tracing::{debug, error, info, trace};
 
 pub enum NotificationCenterCommand {
@@ -50,6 +51,7 @@ impl NotificationServer {
         let db_clone2 = Arc::clone(&self.db);
         let db_clone3 = Arc::clone(&self.db);
         let db_clone4 = Arc::clone(&self.db);
+        let db_clone5 = Arc::clone(&self.db);
 
         let id = match db_clone4.get_app_settings().await.unwrap_or(None) {
             Some(a) => a.id_count,
@@ -106,6 +108,20 @@ impl NotificationServer {
 
                     db.put_appsettings(app_settings).await.unwrap();
                 });
+            },
+            move || {
+                let db = db_clone5.clone();
+                async move {
+                    let count = match db.get_notifications_count().await {
+                        Ok(res) => res.unwrap_or(0),
+                        Err(err) => {
+                            error!("{}", err);
+                            0
+                        }
+                    };
+
+                    count
+                }
             },
         )?;
 

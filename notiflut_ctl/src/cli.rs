@@ -18,4 +18,6 @@ pub enum Commands {
     Toggle,
     /// Get notifications status
     Status,
+    /// get notifications count
+    Count,
 }

@@ -1,8 +1,8 @@
 mod api;
+mod cache;
 mod db;
 mod desktop_file_manager;
 mod notification_dbus;
-mod cache;
 
 use futures::future;
 

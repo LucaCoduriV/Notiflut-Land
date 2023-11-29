@@ -6,12 +6,13 @@ use dbus::nonblock::SyncConnection;
 use dbus::Path;
 use dbus_crossroads::Crossroads;
 use dbus_tokio::connection;
+use futures::Future;
 use tokio::task::JoinHandle;
 
 use crate::notification_dbus::dbus_notification_handler::DbusNotificationHandler;
 use crate::notification_dbus::Notification;
 
-use super::{dbus_definition, dbus_notification_handler};
+use super::dbus_definition;
 
 pub const NOTIFICATION_INTERFACE: &str = "org.freedesktop.Notifications";
 pub const NOTIFICATION_PATH: &str = "/org/freedesktop/Notifications";
@@ -22,7 +23,7 @@ pub struct NotificationServerCore {
 }
 
 impl NotificationServerCore {
-    pub fn run<F1, F2, F3, F4, F5, F6>(
+    pub fn run<F1, F2, F3, F4, F5, F6, F7, F7Fut>(
         id_start: u32,
         on_notification: F1,
         on_close: F2,
@@ -30,6 +31,7 @@ impl NotificationServerCore {
         on_close_notification_center: F4,
         on_toggle_notification_center: F5,
         on_new_id: F6,
+        notification_count: F7,
     ) -> anyhow::Result<Self>
     where
         F1: Fn(Notification) + Send + Clone + 'static,
@@ -38,6 +40,8 @@ impl NotificationServerCore {
         F4: Fn() + Send + Clone + 'static,
         F5: Fn() + Send + Clone + 'static,
         F6: Fn(u32) + Send + Clone + 'static,
+        F7: Fn() -> F7Fut + Send + Clone + 'static,
+        F7Fut: Future<Output = u64> + Send + 'static,
     {
         // Connect to the D-Bus session bus (this is blocking, unfortunately).
         let (resource, c) = connection::new_session_sync()?;
@@ -107,6 +111,20 @@ impl NotificationServerCore {
                     let message = (String::from("Notification center toggled"),);
                     async move { ctx.reply(Ok(message)) }
                 });
+
+                builder.method_with_cr_async(
+                    "notificationCount",
+                    (),
+                    ("reply",),
+                    move |mut ctx, _, ()| {
+                        let callback = notification_count.clone();
+                        async move {
+                            let future = callback();
+                            let result = future.await as u64;
+                            ctx.reply(Ok((result,)))
+                        }
+                    },
+                );
             });
 
             cr.insert(format!("{NOTIFICATION_PATH}/ctl"), &[token], ());
