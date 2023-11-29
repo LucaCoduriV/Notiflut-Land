@@ -41,7 +41,7 @@ impl NotificationServerCore {
         F5: Fn() + Send + Clone + 'static,
         F6: Fn(u32) + Send + Clone + 'static,
         F7: Fn() -> F7Fut + Send + Clone + 'static,
-        F7Fut: Future<Output =usize> + Send + 'static,
+        F7Fut: Future<Output = u64> + Send + 'static,
     {
         // Connect to the D-Bus session bus (this is blocking, unfortunately).
         let (resource, c) = connection::new_session_sync()?;
@@ -112,14 +112,19 @@ impl NotificationServerCore {
                     async move { ctx.reply(Ok(message)) }
                 });
 
-                builder.method_with_cr_async("notificationCount", (), ("reply",), move |mut ctx, _, ()| {
-                    let callback = notification_count.clone();
-                    async move { 
-                        let future = callback();
-                        let result = future.await as i32;
-                        ctx.reply(Ok((result,)))
-                    }
-                });
+                builder.method_with_cr_async(
+                    "notificationCount",
+                    (),
+                    ("reply",),
+                    move |mut ctx, _, ()| {
+                        let callback = notification_count.clone();
+                        async move {
+                            let future = callback();
+                            let result = future.await as u64;
+                            ctx.reply(Ok((result,)))
+                        }
+                    },
+                );
             });
 
             cr.insert(format!("{NOTIFICATION_PATH}/ctl"), &[token], ());

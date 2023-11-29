@@ -4,6 +4,7 @@ use surrealdb::{
     sql::Thing,
     Surreal,
 };
+use tracing::debug;
 
 use crate::notification_dbus::Notification;
 
@@ -46,6 +47,17 @@ impl Database {
         Ok(notifications)
     }
 
+    pub async fn get_notifications_count(&self) -> anyhow::Result<Option<u64>> {
+        let mut result = self
+            .db
+            .query("SELECT count() from type::table($table) GROUP BY count")
+            .bind(("table", TABLE_NOTIFICATION))
+            .await?;
+        debug!("{:?}", result);
+        let count: Option<u64> = result.take((0, "count"))?;
+        Ok(count)
+    }
+
     pub async fn put_notification(&self, notification: &Notification) -> anyhow::Result<()> {
         let _result: Option<Notification> = self
             .db
@@ -81,7 +93,10 @@ impl Database {
         Ok(())
     }
 
-    pub async fn delete_notification_with_app_name(&self, app_name: &str) -> anyhow::Result<Vec<Notification>> {
+    pub async fn delete_notification_with_app_name(
+        &self,
+        app_name: &str,
+    ) -> anyhow::Result<Vec<Notification>> {
         let mut result = self
             .db
             .query("DELETE type::table($table) WHERE app_name = $app_name RETURN BEFORE;")

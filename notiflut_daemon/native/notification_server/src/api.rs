@@ -8,7 +8,7 @@ use crate::{
     notification_dbus::{notification_server_core::NotificationServerCore, Notification},
 };
 
-use futures::{FutureExt, TryFutureExt};
+use futures::FutureExt;
 use tracing::{debug, error, info, trace};
 
 pub enum NotificationCenterCommand {
@@ -112,14 +112,15 @@ impl NotificationServer {
             move || {
                 let db = db_clone5.clone();
                 async move {
-                    db.get_notifications()
-                        .then(|x| async {
-                            match x {
-                                Ok(v) => v.len(),
-                                Err(_) => 0,
-                            }
-                        })
-                        .await
+                    let count = match db.get_notifications_count().await {
+                        Ok(res) => res.unwrap_or(0),
+                        Err(err) => {
+                            error!("{}", err);
+                            0
+                        }
+                    };
+
+                    count
                 }
             },
         )?;

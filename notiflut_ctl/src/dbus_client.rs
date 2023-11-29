@@ -53,4 +53,12 @@ impl<'a> DbusClient<'a> {
 
         Ok(result.0)
     }
+
+    pub fn get_notification_count(&self) -> Result<u64> {
+        let result: (u64,) =
+            self.proxy
+                .method_call(NOTIFICATION_INTERFACE, "notificationCount", ())?;
+
+        Ok(result.0)
+    }
 }
