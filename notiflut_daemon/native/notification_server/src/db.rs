@@ -8,8 +8,8 @@ use tracing::debug;
 
 use crate::notification_dbus::Notification;
 
-static TABLE_NOTIFICATION: &'static str = "notification";
-static TABLE_APP_SETTINGS: &'static str = "settings";
+const TABLE_NOTIFICATION: &str = "notification";
+const TABLE_APP_SETTINGS: &str = "settings";
 
 #[derive(Debug, Deserialize)]
 struct Record {
@@ -72,6 +72,7 @@ impl Database {
     }
 
     pub async fn update_notification(&self, notification: &Notification) -> anyhow::Result<()> {
+        #![allow(dead_code)]
         let _result: Option<Notification> = self
             .db
             .update((TABLE_NOTIFICATION, notification.n_id as i64))

@@ -17,22 +17,119 @@ use super::dbus_definition;
 pub const NOTIFICATION_INTERFACE: &str = "org.freedesktop.Notifications";
 pub const NOTIFICATION_PATH: &str = "/org/freedesktop/Notifications";
 
+pub struct NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>
+where
+    F1: Fn(Notification) + Send + Clone + 'static,
+    F2: Fn(u32) + Send + Clone + 'static,
+    F3: Fn() + Send + Clone + 'static,
+    F4: Fn() + Send + Clone + 'static,
+    F5: Fn() + Send + Clone + 'static,
+    F6: Fn(u32) + Send + Clone + 'static,
+    F7: Fn() -> F7Fut + Send + Clone + 'static,
+    F7Fut: Future<Output = u64> + Send + 'static,
+{
+    start_id: Option<u32>,
+    on_notification: Option<F1>,
+    on_close: Option<F2>,
+    on_open_notification_center: Option<F3>,
+    on_close_notification_center: Option<F4>,
+    on_toggle_notification_center: Option<F5>,
+    on_new_id: Option<F6>,
+    notification_count: Option<F7>,
+}
+
+impl<F1, F2, F3, F4, F5, F6, F7, F7Fut>
+    NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>
+where
+    F1: Fn(Notification) + Send + Clone + 'static,
+    F2: Fn(u32) + Send + Clone + 'static,
+    F3: Fn() + Send + Clone + 'static,
+    F4: Fn() + Send + Clone + 'static,
+    F5: Fn() + Send + Clone + 'static,
+    F6: Fn(u32) + Send + Clone + 'static,
+    F7: Fn() -> F7Fut + Send + Clone + 'static,
+    F7Fut: Future<Output = u64> + Send + 'static,
+{
+    fn new() -> Self {
+        NotificationServerCoreBuilder {
+            start_id: None,
+            on_notification: None,
+            on_close: None,
+            on_open_notification_center: None,
+            on_close_notification_center: None,
+            on_toggle_notification_center: None,
+            on_new_id: None,
+            notification_count: None,
+        }
+    }
+    pub fn on_notification(mut self, f: F1) -> Self {
+        self.on_notification = Some(f);
+        self
+    }
+    pub fn on_close(mut self, f: F2) -> Self {
+        self.on_close = Some(f);
+        self
+    }
+    pub fn on_open_notification_center(mut self, f: F3) -> Self {
+        self.on_open_notification_center = Some(f);
+        self
+    }
+    pub fn on_close_notification_center(mut self, f: F4) -> Self {
+        self.on_close_notification_center = Some(f);
+        self
+    }
+    pub fn on_toggle_notification_center(mut self, f: F5) -> Self {
+        self.on_toggle_notification_center = Some(f);
+        self
+    }
+    pub fn on_new_id(mut self, f: F6) -> Self {
+        self.on_new_id = Some(f);
+        self
+    }
+    pub fn notification_count(mut self, f: F7) -> Self {
+        self.notification_count = Some(f);
+        self
+    }
+    pub fn start_id(mut self, id: u32) -> Self {
+        self.start_id = Some(id);
+        self
+    }
+    pub fn run(self) -> anyhow::Result<NotificationServerCore> {
+        let mut core = NotificationServerCore {
+            handle: None,
+            connection: None,
+        };
+
+        core.run(self)?;
+
+        Ok(core)
+    }
+}
+
 pub struct NotificationServerCore {
-    handle: JoinHandle<()>,
-    connection: std::sync::Arc<SyncConnection>,
+    handle: Option<JoinHandle<()>>,
+    connection: Option<std::sync::Arc<SyncConnection>>,
 }
 
 impl NotificationServerCore {
+    pub fn builder<F1, F2, F3, F4, F5, F6, F7, F7Fut>(
+    ) -> NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>
+    where
+        F1: Fn(Notification) + Send + Clone + 'static,
+        F2: Fn(u32) + Send + Clone + 'static,
+        F3: Fn() + Send + Clone + 'static,
+        F4: Fn() + Send + Clone + 'static,
+        F5: Fn() + Send + Clone + 'static,
+        F6: Fn(u32) + Send + Clone + 'static,
+        F7: Fn() -> F7Fut + Send + Clone + 'static,
+        F7Fut: Future<Output = u64> + Send + 'static,
+    {
+        NotificationServerCoreBuilder::new()
+    }
     pub fn run<F1, F2, F3, F4, F5, F6, F7, F7Fut>(
-        id_start: u32,
-        on_notification: F1,
-        on_close: F2,
-        on_open_notification_center: F3,
-        on_close_notification_center: F4,
-        on_toggle_notification_center: F5,
-        on_new_id: F6,
-        notification_count: F7,
-    ) -> anyhow::Result<Self>
+        &mut self,
+        mut core_builder: NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>,
+    ) -> anyhow::Result<()>
     where
         F1: Fn(Notification) + Send + Clone + 'static,
         F2: Fn(u32) + Send + Clone + 'static,
@@ -85,29 +182,35 @@ impl NotificationServerCore {
                 NOTIFICATION_PATH,
                 &[token],
                 DbusNotificationHandler {
-                    id_count: Arc::new(id_start.into()),
-                    on_notification,
-                    on_close,
-                    on_new_id,
+                    id_count: Arc::new(core_builder.start_id.unwrap().into()),
+                    on_notification: core_builder.on_notification.unwrap(),
+                    on_close: core_builder.on_close.unwrap(),
+                    on_new_id: core_builder.on_new_id.unwrap(),
                 },
             );
 
             // register our custom methods
             let token = cr.register(NOTIFICATION_INTERFACE, |builder| {
                 builder.method_with_cr_async("OpenNC", (), ("reply",), move |mut ctx, _, ()| {
-                    on_open_notification_center();
+                    if let Some(func) = core_builder.on_open_notification_center.take() {
+                        func()
+                    }
                     let message = (String::from("Notification center open"),);
                     async move { ctx.reply(Ok(message)) }
                 });
 
                 builder.method_with_cr_async("CloseNC", (), ("reply",), move |mut ctx, _, ()| {
-                    on_close_notification_center();
+                    if let Some(func) = core_builder.on_close_notification_center.take() {
+                        func();
+                    }
                     let message = (String::from("Notification center closed"),);
                     async move { ctx.reply(Ok(message)) }
                 });
 
                 builder.method_with_cr_async("ToggleNC", (), ("reply",), move |mut ctx, _, ()| {
-                    on_toggle_notification_center();
+                    if let Some(func) = core_builder.on_toggle_notification_center.take() {
+                        func();
+                    }
                     let message = (String::from("Notification center toggled"),);
                     async move { ctx.reply(Ok(message)) }
                 });
@@ -117,10 +220,15 @@ impl NotificationServerCore {
                     (),
                     ("reply",),
                     move |mut ctx, _, ()| {
-                        let callback = notification_count.clone();
+                        let callback = core_builder.notification_count.take().clone();
                         async move {
-                            let future = callback();
-                            let result = future.await as u64;
+                            let result = match callback {
+                                Some(func) => {
+                                    let future = func();
+                                    future.await as u64
+                                }
+                                None => 0,
+                            };
                             ctx.reply(Ok((result,)))
                         }
                     },
@@ -139,13 +247,17 @@ impl NotificationServerCore {
             );
         });
 
-        Ok(NotificationServerCore { handle, connection })
+        self.handle = Some(handle);
+        self.connection = Some(connection);
+        Ok(())
     }
 
     pub fn invoke_action(&self, id: u32, action_key: String) {
         let message = dbus_definition::OrgFreedesktopNotificationsActionInvoked { id, action_key };
         let path = Path::new(NOTIFICATION_PATH).unwrap();
         self.connection
+            .as_ref()
+            .unwrap()
             .send(message.to_emit_message(&path))
             .unwrap();
     }

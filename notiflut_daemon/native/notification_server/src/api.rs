@@ -8,7 +8,6 @@ use crate::{
     notification_dbus::{notification_server_core::NotificationServerCore, Notification},
 };
 
-use futures::FutureExt;
 use tracing::{debug, error, info, trace};
 
 pub enum NotificationCenterCommand {
@@ -58,9 +57,9 @@ impl NotificationServer {
             None => 1,
         };
 
-        let core = NotificationServerCore::run(
-            id,
-            move |n| {
+        let core = NotificationServerCore::builder()
+            .start_id(id)
+            .on_notification(move |n| {
                 let n2 = n.clone();
                 let db = db_clone1.clone();
                 tokio::spawn(async move {
@@ -74,8 +73,8 @@ impl NotificationServer {
                     }
                 });
                 on_notification(n);
-            },
-            move |id| {
+            })
+            .on_close(move |id| {
                 let db = db_clone2.clone();
                 tokio::spawn(async move {
                     match db.delete_notification(id.into()).await {
@@ -85,17 +84,17 @@ impl NotificationServer {
                     cache::delete_file_cache(&id.to_string()).await;
                 });
                 on_close(id);
-            },
-            move || {
+            })
+            .on_open_notification_center(move || {
                 on_state_change_notification_center(NotificationCenterCommand::Open);
-            },
-            move || {
+            })
+            .on_close_notification_center(move || {
                 on_state_change_notification_center_clone1(NotificationCenterCommand::Close);
-            },
-            move || {
+            })
+            .on_toggle_notification_center(move || {
                 on_state_change_notification_center_clone2(NotificationCenterCommand::Toggle);
-            },
-            move |new_id| {
+            })
+            .on_new_id(move |new_id| {
                 let db = db_clone3.clone();
                 tokio::spawn(async move {
                     let mut app_settings = db
@@ -108,22 +107,20 @@ impl NotificationServer {
 
                     db.put_appsettings(app_settings).await.unwrap();
                 });
-            },
-            move || {
+            })
+            .notification_count(move || {
                 let db = db_clone5.clone();
                 async move {
-                    let count = match db.get_notifications_count().await {
+                    match db.get_notifications_count().await {
                         Ok(res) => res.unwrap_or(0),
                         Err(err) => {
                             error!("{}", err);
                             0
                         }
-                    };
-
-                    count
+                    }
                 }
-            },
-        )?;
+            })
+            .run()?;
 
         self.core = Some(core.into());
         info!("Listening for new notification");

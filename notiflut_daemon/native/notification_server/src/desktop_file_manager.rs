@@ -13,9 +13,9 @@ impl DesktopFileManager {
         let mut data = HashMap::new();
 
         Iter::new(default_paths()).for_each(|path_buf| {
-            let path = path_buf.as_path().clone();
-            if let Ok(bytes) = fs::read_to_string(&path) {
-                if let Ok(entry) = DesktopEntry::decode(&path, &bytes) {
+            let path = path_buf.as_path();
+            if let Ok(bytes) = fs::read_to_string(path) {
+                if let Ok(entry) = DesktopEntry::decode(path, &bytes) {
                     let filename = path
                         .file_name()
                         .unwrap()
@@ -35,6 +35,7 @@ impl DesktopFileManager {
     }
 
     pub fn get(&self, name: &str) -> Option<DesktopFile> {
+        #![allow(dead_code)]
         self.data.get(name).cloned()
     }
 

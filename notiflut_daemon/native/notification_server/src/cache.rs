@@ -2,8 +2,8 @@ use const_format::formatcp;
 use nanoid::nanoid;
 use tracing::{debug, error};
 
-const CACHE_PATH_PREFIX: &'static str = "/tmp/notiflut-";
-const CACHE_PATH: &'static str = formatcp!("{}cache", CACHE_PATH_PREFIX);
+const CACHE_PATH_PREFIX: &str = "/tmp/notiflut-";
+const CACHE_PATH: &str = formatcp!("{}cache", CACHE_PATH_PREFIX);
 
 pub async fn delete_file_cache(key: &str) {
     match cacache::remove(CACHE_PATH, key).await {

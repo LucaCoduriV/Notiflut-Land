@@ -125,7 +125,7 @@ where
                         .replace("org", "")
                         .replace(".desktop", "")
                         .replace("com", "")
-                        .replace(".", "")
+                        .replace('.', "")
                         .replace("freedesktop", "")
                 })
                 .unwrap_or(String::from("Unknown"))
@@ -207,8 +207,8 @@ fn get_icon_and_image(
             .or(freedesktop_icons::lookup(&app_icon)
                 .with_size(48)
                 .find()
-                .and_then(|p| Some(p.to_str().unwrap().to_string()))
-                .and_then(|p| Some(ImageSource::Path(p))))
+                .map(|p| p.to_str().unwrap().to_string())
+                .map(ImageSource::Path))
     } else {
         let desk = DesktopFileManager::new();
         let file_name = desktop_entry_name.unwrap_or_else(|| app_name.to_lowercase());
@@ -221,13 +221,13 @@ fn get_icon_and_image(
                 .or(freedesktop_icons::lookup(&icon)
                     .with_size(48)
                     .find()
-                    .and_then(|p| Some(p.to_str().unwrap().to_string()))
-                    .and_then(|p| Some(ImageSource::Path(p))))
+                    .map(|p| p.to_str().unwrap().to_string())
+                    .map(ImageSource::Path))
         })
     };
 
-    let image: Option<ImageSource> = if image_data.is_some() {
-        Some(ImageSource::Data(image_data.unwrap()))
+    let image: Option<ImageSource> = if let Some(data) = image_data {
+        Some(ImageSource::Data(data))
     } else if let Some(image) = image_path {
         image
             .starts_with("file://")
@@ -235,10 +235,10 @@ fn get_icon_and_image(
             .or(freedesktop_icons::lookup(&image)
                 .with_size(48)
                 .find()
-                .and_then(|p| Some(p.to_str().unwrap().to_string()))
-                .and_then(|p| Some(ImageSource::Path(p))))
+                .map(|p| p.to_str().unwrap().to_string())
+                .map(ImageSource::Path))
     } else {
-        icon_data.map(|data| ImageSource::Data(data))
+        icon_data.map(ImageSource::Data)
     };
 
     (icon, image)
