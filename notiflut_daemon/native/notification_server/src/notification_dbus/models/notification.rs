@@ -75,17 +75,17 @@ impl std::fmt::Debug for Hints {
 
 impl From<&PropMap> for Hints {
     fn from(map: &PropMap) -> Self {
-        let actions_icon = prop_cast::<bool>(&map, "action-icons").copied();
-        let category = prop_cast::<String>(&map, "category").cloned();
-        let desktop_entry = prop_cast::<String>(&map, "desktop-entry").cloned();
-        let resident = prop_cast::<bool>(&map, "resident").copied();
-        let sound_file = prop_cast::<String>(&map, "sound-file").cloned();
-        let sound_name = prop_cast::<String>(&map, "sound-name").cloned();
-        let suppress_sound = prop_cast::<bool>(&map, "suppress-sound").copied();
-        let transient = prop_cast::<bool>(&map, "transient").copied();
-        let pos_x = prop_cast::<i32>(&map, "x").copied();
-        let pos_y = prop_cast::<i32>(&map, "y").copied();
-        let urgency = match prop_cast::<u8>(&map, "urgency").copied() {
+        let actions_icon = prop_cast::<bool>(map, "action-icons").copied();
+        let category = prop_cast::<String>(map, "category").cloned();
+        let desktop_entry = prop_cast::<String>(map, "desktop-entry").cloned();
+        let resident = prop_cast::<bool>(map, "resident").copied();
+        let sound_file = prop_cast::<String>(map, "sound-file").cloned();
+        let sound_name = prop_cast::<String>(map, "sound-name").cloned();
+        let suppress_sound = prop_cast::<bool>(map, "suppress-sound").copied();
+        let transient = prop_cast::<bool>(map, "transient").copied();
+        let pos_x = prop_cast::<i32>(map, "x").copied();
+        let pos_y = prop_cast::<i32>(map, "y").copied();
+        let urgency = match prop_cast::<u8>(map, "urgency").copied() {
             Some(v) => Urgency::try_from(v).ok(),
             None => None,
         };

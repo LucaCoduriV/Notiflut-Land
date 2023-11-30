@@ -3,6 +3,7 @@ use std::sync::Arc;
 
 use crate::{
     cache,
+    config::{find_notification_emitter_settings, read_config_file, Configuration},
     db::{AppSettings, Database},
     notification_dbus::ImageSource,
     notification_dbus::{notification_server_core::NotificationServerCore, Notification},
@@ -20,13 +21,23 @@ pub enum NotificationCenterCommand {
 pub struct NotificationServer {
     core: Option<Arc<NotificationServerCore>>,
     db: Arc<Database>,
+    config: Arc<Configuration>,
 }
 
 impl NotificationServer {
     pub async fn new() -> Self {
+        let config = match read_config_file() {
+            Ok(cfg) => Arc::new(cfg),
+            Err(err) => {
+                error!("{}", err);
+                Arc::new(Configuration::default())
+            }
+        };
+
         Self {
             core: None,
             db: Arc::new(Database::new().await),
+            config,
         }
     }
 
@@ -46,12 +57,13 @@ impl NotificationServer {
         let on_state_change_notification_center_clone2 =
             on_state_change_notification_center.clone();
 
-        self.load_db(on_notification.clone());
+        self.send_notification_in_db(on_notification.clone());
         let db_clone1 = Arc::clone(&self.db);
         let db_clone2 = Arc::clone(&self.db);
         let db_clone3 = Arc::clone(&self.db);
         let db_clone4 = Arc::clone(&self.db);
         let db_clone5 = Arc::clone(&self.db);
+        let config = Arc::clone(&self.config);
 
         let id = match db_clone4.get_app_settings().await.unwrap_or(None) {
             Some(a) => a.id_count,
@@ -60,7 +72,27 @@ impl NotificationServer {
 
         let core = NotificationServerCore::builder()
             .start_id(id)
-            .on_notification(move |n| {
+            .on_notification(move |mut n| {
+                if let Some(emit_cfg) = find_notification_emitter_settings(&config, &n.app_name) {
+                    if emit_cfg.ignore {
+                        return;
+                    }
+
+                    if let Some(urgency) = n.hints.urgency {
+                        match urgency {
+                            crate::Urgency::Low => {
+                                n.hints.urgency = Some((&emit_cfg.urgency_low_as).into())
+                            }
+                            crate::Urgency::Normal => {
+                                n.hints.urgency = Some((&emit_cfg.urgency_normal_as).into())
+                            }
+                            crate::Urgency::Critical => {
+                                n.hints.urgency = Some((&emit_cfg.urgency_critical_as).into())
+                            }
+                        }
+                    }
+                }
+
                 let n2 = n.clone();
                 let db = db_clone1.clone();
                 tokio::spawn(async move {
@@ -128,7 +160,7 @@ impl NotificationServer {
         Ok(())
     }
 
-    fn load_db<F1>(&self, on_notification: F1)
+    fn send_notification_in_db<F1>(&self, on_notification: F1)
     where
         F1: Fn(Notification) + Send + Clone + 'static,
     {
