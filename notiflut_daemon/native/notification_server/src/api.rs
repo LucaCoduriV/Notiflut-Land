@@ -10,6 +10,7 @@ use crate::{
 
 use tracing::{debug, error, info, trace};
 
+#[derive(Debug)]
 pub enum NotificationCenterCommand {
     Open,
     Close,
@@ -212,5 +213,36 @@ impl NotificationServer {
                 Err(e) => error!("{}", e),
             };
         });
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::future;
+
+    use crate::{api::NotificationServer, notification_dbus::Notification};
+
+    #[ignore]
+    #[tokio::test]
+    async fn notification_server_live_test() -> Result<(), Box<dyn std::error::Error>> {
+        let (send, recv) = std::sync::mpsc::channel::<Notification>();
+        let mut _server = NotificationServer::new().await;
+        _server
+            .run(
+                move |n| {
+                    send.send(n).unwrap();
+                },
+                |id| println!("{}", id),
+                |state| println!("STATE: {:?}", state),
+            )
+            .await
+            .unwrap();
+
+        for notification in recv {
+            println!("{:?}", notification);
+        }
+
+        future::pending::<()>().await;
+        unreachable!()
     }
 }
