@@ -16,6 +16,7 @@ pub fn read_config_file() -> anyhow::Result<Configuration> {
 
 /// Writes the config to the config file using the xdg dir.
 pub fn write_config_file(config: &Configuration) -> anyhow::Result<()> {
+    #![allow(dead_code)]
     let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
     let config_path = xdg_dirs.place_config_file("config.toml")?;
     let config_str = toml::to_string(config)?;
@@ -40,7 +41,7 @@ mod test {
     use super::{write_config_file, NotificationEmitterSettings};
 
     #[test]
-    fn test_write_config() {
+    fn test_write_config() -> anyhow::Result<()> {
         write_config_file(&super::Configuration {
             do_not_disturb: false,
             emitters_settings: vec![NotificationEmitterSettings {
@@ -50,6 +51,7 @@ mod test {
                 urgency_normal_as: super::UrgencyLevel::Normal,
                 urgency_critical_as: super::UrgencyLevel::Critical,
             }],
-        });
+        })?;
+        Ok(())
     }
 }
