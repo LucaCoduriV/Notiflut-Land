@@ -7,8 +7,8 @@ This project is a notification center designed specifically for Wayland, impleme
 ## Screenshots
 
 ⚠️ It's not the final look !
-![Notification center sreenshot](/images/NotificationCenterExample.png)
-![Notification popup screenshot](/images/notification_popup.png)
+![Notification center sreenshot](/images/notification_center_screenshot.png)
+![Notification popup screenshot](/images/popup_screenshot.png)
 
 
 ## Features (Checked if done)
