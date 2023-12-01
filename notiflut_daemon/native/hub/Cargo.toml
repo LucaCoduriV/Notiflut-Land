@@ -1,7 +1,7 @@
 [package]
 # Do not change the name of this crate.
 name = "hub"
-version = "0.5.0"
+version = "1.0.0"
 edition = "2021"
 
 [lib]
@@ -19,4 +19,4 @@ prost = "0.12.1"
 prost-types = "0.12.1"
 notification_server = { path = "../notification_server" }
 tracing = "0.1.40"
-tracing-subscriber = {version = "0.3.18", features = ["env-filter"]}
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
