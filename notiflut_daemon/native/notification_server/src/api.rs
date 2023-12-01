@@ -119,12 +119,15 @@ impl NotificationServer {
                 on_close(id);
             })
             .on_open_notification_center(move || {
+                trace!("Open NotificationCenter");
                 on_state_change_notification_center(NotificationCenterCommand::Open);
             })
             .on_close_notification_center(move || {
+                trace!("Close NotificationCenter");
                 on_state_change_notification_center_clone1(NotificationCenterCommand::Close);
             })
             .on_toggle_notification_center(move || {
+                trace!("Toggle NotificationCenter");
                 on_state_change_notification_center_clone2(NotificationCenterCommand::Toggle);
             })
             .on_new_id(move |new_id| {

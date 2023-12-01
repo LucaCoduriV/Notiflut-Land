@@ -8,6 +8,7 @@ use dbus_crossroads::Crossroads;
 use dbus_tokio::connection;
 use futures::Future;
 use tokio::task::JoinHandle;
+use tracing::trace;
 
 use crate::notification_dbus::dbus_notification_handler::DbusNotificationHandler;
 use crate::notification_dbus::Notification;
@@ -192,7 +193,7 @@ impl NotificationServerCore {
             // register our custom methods
             let token = cr.register(NOTIFICATION_INTERFACE, |builder| {
                 builder.method_with_cr_async("OpenNC", (), ("reply",), move |mut ctx, _, ()| {
-                    if let Some(func) = core_builder.on_open_notification_center.take() {
+                    if let Some(func) = core_builder.on_open_notification_center.clone().take() {
                         func()
                     }
                     let message = (String::from("Notification center open"),);
@@ -200,7 +201,7 @@ impl NotificationServerCore {
                 });
 
                 builder.method_with_cr_async("CloseNC", (), ("reply",), move |mut ctx, _, ()| {
-                    if let Some(func) = core_builder.on_close_notification_center.take() {
+                    if let Some(func) = core_builder.on_close_notification_center.clone().take() {
                         func();
                     }
                     let message = (String::from("Notification center closed"),);
@@ -208,7 +209,7 @@ impl NotificationServerCore {
                 });
 
                 builder.method_with_cr_async("ToggleNC", (), ("reply",), move |mut ctx, _, ()| {
-                    if let Some(func) = core_builder.on_toggle_notification_center.take() {
+                    if let Some(func) = core_builder.on_toggle_notification_center.clone().take() {
                         func();
                     }
                     let message = (String::from("Notification center toggled"),);

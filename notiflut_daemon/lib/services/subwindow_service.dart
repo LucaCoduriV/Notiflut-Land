@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:notiflut/messages/daemon_event.pbserver.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
 
 import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
@@ -15,14 +16,13 @@ enum SubWindowEvents {
   notificationClosed;
 
   factory SubWindowEvents.fromString(String value) {
-    return SubWindowEvents.values.firstWhere(
-        (e) => e.toString() == value,
+    return SubWindowEvents.values.firstWhere((e) => e.toString() == value,
         orElse: () => throw Exception("Not an element of SubWindowEvents"));
   }
 }
 
 class SubWindowService extends ChangeNotifier {
-  List<(daemon_event.Notification, Timer)> popups = [];
+  List<(daemon_event.Notification, Timer?)> popups = [];
   bool isHidden = true;
   final int windowId;
   final LayerShellController layerController;
@@ -48,7 +48,11 @@ class SubWindowService extends ChangeNotifier {
       layerController.show();
     }
 
-    final timer = schedulePopupCleanUp(notification.id, notification.createdAt);
+    final timer = switch (notification.hints.urgency) {
+      Hints_Urgency.Critical => null,
+      _ => schedulePopupCleanUp(notification.id, notification.createdAt),
+    };
+
     popups.insert(0, (notification, timer));
     popups = List.from(popups);
 
@@ -115,7 +119,7 @@ class SubWindowService extends ChangeNotifier {
 
   void cancelClosePopupTimer(int id) {
     final timer = popups.firstWhere((tuple) => tuple.$1.id == id).$2;
-    timer.cancel();
+    timer?.cancel();
   }
 
   Future<void> setLayerSize(Size size) async {

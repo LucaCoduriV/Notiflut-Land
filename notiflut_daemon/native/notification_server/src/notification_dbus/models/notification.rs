@@ -6,6 +6,7 @@ use dbus::arg::PropMap;
 use dbus::arg::RefArg;
 use serde::Deserialize;
 use serde::Serialize;
+use tracing::error;
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Notification {
@@ -86,8 +87,14 @@ impl From<&PropMap> for Hints {
         let pos_x = prop_cast::<i32>(map, "x").copied();
         let pos_y = prop_cast::<i32>(map, "y").copied();
         let urgency = match prop_cast::<u8>(map, "urgency").copied() {
-            Some(v) => Urgency::try_from(v).ok(),
-            None => None,
+            Some(v) => match Urgency::try_from(v) {
+                Ok(urg) => Some(urg),
+                Err(_) => {
+                    error!("Couldn't parse value {}", v);
+                    Some(Urgency::Normal)
+                }
+            },
+            None => Some(Urgency::Normal),
         };
         Hints {
             actions_icon,

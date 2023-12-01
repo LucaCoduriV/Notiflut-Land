@@ -98,6 +98,11 @@ class MainWindowService extends ChangeNotifier {
           );
         }
 
+        // If urgency is low we don't store it in the notification center
+        if (notification.hints.urgency == Hints_Urgency.Low) {
+          return;
+        }
+
         if (notification.id != 0) {
           notifications.removeWhere((element) => element.id == notification.id);
         }
