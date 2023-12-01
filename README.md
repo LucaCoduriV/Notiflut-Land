@@ -26,11 +26,11 @@ This project is a notification center designed specifically for Wayland, impleme
 
 ### More
 - [x] notification group
-- [ ] custom styling
-- [ ] Filter notifications
+- [x] Filter notifications
 - [x] support for waybar
-- [ ] Widgets (Maybe a bad idea)
 - [x] Media player controller
+- [ ] Widgets (Maybe a bad idea)
+- [ ] custom styling
 
 ## requirement
 - Flutter v. > 3.0 [Download](https://docs.flutter.dev/get-started/install)
@@ -61,7 +61,7 @@ Certainly! Here's an improved version of your installation guide with clearer in
    ```
 
 2. **Install Dependencies:**
-   If the `makepkg -si` command fails due to missing dependencies, manually download and install them. You can usually find dependency information in the project documentation or README file.
+   If the `makepkg -si` command fails due to missing dependencies, manually download and install them. You can find dependency information higher in this file.
 
 3. **Build and Install Package:**
    If you have resolved the dependencies, run the following command to build and install the package:
@@ -80,9 +80,33 @@ Certainly! Here's an improved version of your installation guide with clearer in
 Once notiflut is running, use notiflut_ctl to control it.
 For help menu use `notiflut_ctl -h`
 
+## configuration
+The configuration file is typically located in the default XDG configuration directory. In most cases, it should be: `$HOME/.config/notiflut/conf.toml`
+
+### Configuration File Example
+```toml
+do_not_disturb = false
+
+[[emitters_settings]]
+name = "spotify"
+ignore = true
+urgency_low_as = "Critical"
+urgency_normal_as = "Normal"
+urgency_critical_as = "Low"
+```
+### Do Not Disturb Mode
+- do_not_disturb: Set this to true to enable "Do Not Disturb" mode and suppress notifications temporarily.
+### Emitter Settings
+- **name**: Assign a unique name to each emitter for identification purposes.
+- **ignore**: Toggle the ignore flag to true if you want to ignore notifications from a specific emitter.
+- **Urgency Level Mapping (Low, Normal, Critical)**: Low -> do not persist in center, Normal -> persist in center, Critical -> persist in center + popup need user action to close.
+   - urgency_low_as: Customize the behavior of low urgency notifications. In this example, it's set to "Critical," allowing you to elevate the importance of low urgency notifications.
+   - urgency_normal_as: Map normal urgency notifications to a custom urgency (same as urgency low).
+   - urgency_critical_as: Map critical urgency notifications to a custom urgency (same as urgency low).
+
 ## Waybar
 Here is an example of a custom module that can be used with Waybar.
-```
+```json
     "custom/notification": {
       "tooltip": false,
       "format": "{icon}",
@@ -105,5 +129,5 @@ Here is an example of a custom module that can be used with Waybar.
       "on-click": "notiflut_ctl toggle",
       "interval": 5,
       "escape": true
-    },
+    }
 ```
