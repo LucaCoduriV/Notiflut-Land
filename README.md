@@ -61,7 +61,7 @@ Certainly! Here's an improved version of your installation guide with clearer in
    ```
 
 2. **Install Dependencies:**
-   If the `makepkg -si` command fails due to missing dependencies, manually download and install them. You can usually find dependency information in the project documentation or README file.
+   If the `makepkg -si` command fails due to missing dependencies, manually download and install them. You can find dependency information higher in this file.
 
 3. **Build and Install Package:**
    If you have resolved the dependencies, run the following command to build and install the package:
