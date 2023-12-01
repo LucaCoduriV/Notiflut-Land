@@ -34,3 +34,22 @@ pub fn find_notification_emitter_settings<'a>(
         .iter()
         .find(|&emit_cfg| emit_cfg.name == name)
 }
+
+#[cfg(test)]
+mod test {
+    use super::{write_config_file, NotificationEmitterSettings};
+
+    #[test]
+    fn test_write_config() {
+        write_config_file(&super::Configuration {
+            do_not_disturb: false,
+            emitters_settings: vec![NotificationEmitterSettings {
+                name: "test".to_string(),
+                ignore: true,
+                urgency_low_as: super::UrgencyLevel::Low,
+                urgency_normal_as: super::UrgencyLevel::Normal,
+                urgency_critical_as: super::UrgencyLevel::Critical,
+            }],
+        });
+    }
+}
