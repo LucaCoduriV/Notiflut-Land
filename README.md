@@ -6,9 +6,8 @@ This project is a notification center designed specifically for Wayland, impleme
 
 ## Screenshots
 
-⚠️ It's not the final look !
-![Notification center sreenshot](/images/NotificationCenterExample.png)
-![Notification popup screenshot](/images/notification_popup.png)
+![Notification center sreenshot](/images/notification_center_screenshot.png)
+![Notification popup screenshot](/images/popup_screenshot.png)
 
 
 ## Features (Checked if done)
@@ -78,7 +77,21 @@ Certainly! Here's an improved version of your installation guide with clearer in
 ## how to use
 
 Once notiflut is running, use notiflut_ctl to control it.
-For help menu use `notiflut_ctl -h`
+```
+Usage: notiflut_ctl <COMMAND>
+
+Commands:
+  show    Shows the notification center
+  hide    Hides the notification center
+  toggle  Toggle the notification center
+  status  Get notifications status
+  count   get notifications count
+  help    Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version
+```
 
 ## configuration
 The configuration file is typically located in the default XDG configuration directory. In most cases, it should be: `$HOME/.config/notiflut/conf.toml`
