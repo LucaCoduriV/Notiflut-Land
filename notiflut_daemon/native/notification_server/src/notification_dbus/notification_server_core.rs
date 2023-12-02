@@ -221,7 +221,7 @@ impl NotificationServerCore {
                     (),
                     ("reply",),
                     move |mut ctx, _, ()| {
-                        let callback = core_builder.notification_count.take().clone();
+                        let callback = core_builder.notification_count.clone().take();
                         async move {
                             let result = match callback {
                                 Some(func) => {

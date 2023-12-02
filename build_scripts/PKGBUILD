@@ -1,16 +1,16 @@
 pkgname=notiflut
-pkgver=0.5.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="A simple notificaion daemon with a notification center panel for checking previous notifications like other DEs"
 _pkgfoldername=Notiflut-Land
 url="https://github.com/LucaCoduriV/$_pkgfoldername"
 arch=(
-    'x86_64'
-    'aarch64' # ARM v8 64-bit
-    'armv7h'  # ARM v7 hardfloat
+	'x86_64'
+	'aarch64' # ARM v8 64-bit
+	'armv7h'  # ARM v7 hardfloat
 )
 license=('Apache-2.0')
-depends=("gtk3" "gtk-layer-shell" "dbus" "glib2" "gobject-introspection" "libgee" "json-glib" "libhandy" "libpulse" )
+depends=("gtk3" "gtk-layer-shell" "dbus" "glib2" "gobject-introspection" "libgee" "json-glib" "libhandy" "libpulse")
 conflicts=("notiflut" "notiflut_ctl")
 provides=("notiflut" "notiflut_ctl")
 makedepends=('flutter' 'clang' 'cmake' 'ninja' 'gtk3' 'pkgconf' 'xz' 'rust' 'protobuf')
@@ -18,36 +18,36 @@ source=('git+https://github.com/LucaCoduriV/Notiflut-Land.git')
 sha256sums=('SKIP')
 
 build() {
-    cd "$srcdir/$_pkgfoldername/notiflut_daemon"
-    mkdir -p ./lib/messages
-    echo 'Running rift message'
-    dart run rinf message
-    echo 'Running protoc google'
-    protoc --dart_out=./lib/messages google/protobuf/timestamp.proto 
-    echo 'Running flutter build'
-    flutter build linux --release
+	cd "$srcdir/$_pkgfoldername/notiflut_daemon"
+	mkdir -p ./lib/messages
+	echo 'Running rift message'
+	dart run rinf message
+	echo 'Running protoc google'
+	protoc --dart_out=./lib/messages google/protobuf/timestamp.proto
+	echo 'Running flutter build'
+	flutter build linux --release
 
-    cd "$srcdir/$_pkgfoldername/notiflut_ctl"
-    echo 'Running cargo build'
-    cargo build --release
+	cd "$srcdir/$_pkgfoldername/notiflut_ctl"
+	echo 'Running cargo build'
+	cargo build --release
 }
 
 package() {
-  echo 'Installing notiflut_daemon'
+	echo 'Installing notiflut_daemon'
 	install -dm 755 "${pkgdir}/opt/${pkgname}"
-  cp -a "$_pkgfoldername/notiflut_daemon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
+	cp -a "$_pkgfoldername/notiflut_daemon/build/linux/x64/release/bundle/." -t "${pkgdir}/opt/${pkgname}"
 
-  echo 'Creating link to notiflut'
-  install -d "$pkgdir/usr/bin/"
-  ln -s /opt/${pkgname}/notiflut ${pkgdir}/usr/bin/notiflut
+	echo 'Creating link to notiflut'
+	install -d "$pkgdir/usr/bin/"
+	ln -s /opt/${pkgname}/notiflutland ${pkgdir}/usr/bin/notiflut
 
-  #install service
-  echo 'Installing service'
-  mv $_pkgfoldername/notiflut_daemon/notiflut.systemd.service $_pkgfoldername/notiflut_daemon/notiflut.service
-  install -Dm 644 $_pkgfoldername/notiflut_daemon/notiflut.service -t ${pkgdir}/etc/systemd/user/
-  install -Dm 644 $_pkgfoldername/notiflut_daemon/org.lucacoduriv.notiflut.service -t ${pkgdir}/usr/share/dbus-1/services/
+	#install service
+	echo 'Installing service'
+	mv $_pkgfoldername/notiflut_daemon/notiflut.systemd.service $_pkgfoldername/notiflut_daemon/notiflut.service
+	install -Dm 644 $_pkgfoldername/notiflut_daemon/notiflut.service -t ${pkgdir}/etc/systemd/user/
+	install -Dm 644 $_pkgfoldername/notiflut_daemon/org.lucacoduriv.notiflut.service -t ${pkgdir}/usr/share/dbus-1/services/
 
-  #install ctl (TODO CHECK PERMISSION)
-  echo 'Installing notiflut_ctl'
+	#install ctl (TODO CHECK PERMISSION)
+	echo 'Installing notiflut_ctl'
 	install -Dm 777 "$_pkgfoldername/notiflut_ctl/target/release/notiflut_ctl" -t "${pkgdir}/usr/bin/"
 }
