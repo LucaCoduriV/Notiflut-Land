@@ -50,8 +50,6 @@ If you have any trouble running these commands look first for help here: https:/
 
 Now you should be able to compile the code with: `flutter build linux --release`
 
-Certainly! Here's an improved version of your installation guide with clearer instructions and additional details:
-
 ## Installation Guide
 
 1. **Navigate to the Build Scripts Directory:**
