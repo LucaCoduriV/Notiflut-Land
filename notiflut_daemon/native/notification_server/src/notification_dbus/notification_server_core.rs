@@ -8,7 +8,6 @@ use dbus_crossroads::Crossroads;
 use dbus_tokio::connection;
 use futures::Future;
 use tokio::task::JoinHandle;
-use tracing::trace;
 
 use crate::notification_dbus::dbus_notification_handler::DbusNotificationHandler;
 use crate::notification_dbus::Notification;
@@ -129,7 +128,7 @@ impl NotificationServerCore {
     }
     pub fn run<F1, F2, F3, F4, F5, F6, F7, F7Fut>(
         &mut self,
-        mut core_builder: NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>,
+        core_builder: NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>,
     ) -> anyhow::Result<()>
     where
         F1: Fn(Notification) + Send + Clone + 'static,

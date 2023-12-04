@@ -73,6 +73,7 @@ impl NotificationServer {
         let core = NotificationServerCore::builder()
             .start_id(id)
             .on_notification(move |mut n| {
+                debug!("{:?}", n);
                 if let Some(emit_cfg) = find_notification_emitter_settings(&config, &n.app_name) {
                     if emit_cfg.ignore {
                         return;
