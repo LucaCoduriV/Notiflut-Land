@@ -10,7 +10,7 @@ This project is a notification center designed specifically for Wayland, impleme
 ![Notification popup screenshot](/images/popup_screenshot.png)
 
 
-## Features (Checked if done)
+## Features
 
 ### Freedesktop specifications:
 
