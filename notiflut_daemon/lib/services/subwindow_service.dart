@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:notiflut/messages/daemon_event.pbserver.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
 
 import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
@@ -48,9 +47,14 @@ class SubWindowService extends ChangeNotifier {
       layerController.show();
     }
 
-    final timer = switch (notification.hints.urgency) {
-      Hints_Urgency.Critical => null,
-      _ => schedulePopupCleanUp(notification.id, notification.createdAt),
+    final timer = switch (notification.timeout) {
+      -1 => schedulePopupCleanUp(notification.id, notification.createdAt),
+      0 => null,
+      _ => schedulePopupCleanUp(
+          notification.id,
+          notification.createdAt,
+          duration: Duration(milliseconds: notification.timeout),
+        ),
     };
 
     popups.insert(0, (notification, timer));
@@ -78,8 +82,12 @@ class SubWindowService extends ChangeNotifier {
     );
   }
 
-  Timer schedulePopupCleanUp(int id, Timestamp date) {
-    return Timer(const Duration(seconds: 5), () {
+  Timer schedulePopupCleanUp(
+    int id,
+    Timestamp date, {
+    Duration duration = const Duration(seconds: 4),
+  }) {
+    return Timer(duration, () {
       closePopupWithDate(id, date);
 
       if (popups.isEmpty) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:notiflut/services/mediaplayer_service.dart';
 import 'package:notiflut/services/subwindow_service.dart';
 import 'package:notiflut/utils.dart';
 import 'package:notiflut/widgets/notification.dart';
@@ -55,8 +54,11 @@ class _PopupsListState extends State<PopupsList> {
             notificationService.cancelClosePopupTimer(n.id);
           },
           onHoverExit: (pointer) {
-            final timer =
-                notificationService.schedulePopupCleanUp(n.id, n.createdAt);
+            final timer = notificationService.schedulePopupCleanUp(
+              n.id,
+              n.createdAt,
+              duration: const Duration(seconds: 2),
+            );
             notificationService.updateTimer(n.id, timer);
           },
         );
