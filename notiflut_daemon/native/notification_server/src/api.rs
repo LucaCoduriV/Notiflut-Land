@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use crate::{
     cache,
-    config::{find_notification_emitter_settings, read_config_file, Configuration},
+    config::{ConfigIO, Configuration},
     db::{AppSettings, Database},
     notification_dbus::ImageSource,
     notification_dbus::{notification_server_core::NotificationServerCore, Notification},
@@ -26,14 +26,7 @@ pub struct NotificationServer {
 
 impl NotificationServer {
     pub async fn new() -> Self {
-        let config = match read_config_file() {
-            Ok(cfg) => Arc::new(cfg),
-            Err(err) => {
-                error!("{}", err);
-                Arc::new(Configuration::default())
-            }
-        };
-
+        let config = Arc::new(Configuration::from_file());
         Self {
             core: None,
             db: Arc::new(Database::new().await),
@@ -74,7 +67,7 @@ impl NotificationServer {
             .start_id(id)
             .on_notification(move |mut n| {
                 debug!("{:?}", n);
-                if let Some(emit_cfg) = find_notification_emitter_settings(&config, &n.app_name) {
+                if let Some(emit_cfg) = config.find_notification_emitter_settings(&n.app_name) {
                     if emit_cfg.ignore {
                         return;
                     }

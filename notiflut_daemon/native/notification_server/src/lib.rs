@@ -4,6 +4,7 @@ mod config;
 mod db;
 mod desktop_file_manager;
 mod notification_dbus;
+mod theme;
 
 pub use api::NotificationCenterCommand;
 pub use api::NotificationServer;

@@ -2,10 +2,33 @@ use serde::{Deserialize, Serialize};
 
 use crate::Urgency;
 
+use super::HasFileName;
+
 #[derive(Default, Deserialize, Serialize)]
 pub struct Configuration {
     pub do_not_disturb: bool,
     pub emitters_settings: Vec<NotificationEmitterSettings>,
+}
+
+impl Configuration {
+    pub fn find_notification_emitter_settings<'a>(
+        &'a self,
+        name: &str,
+    ) -> Option<&'a NotificationEmitterSettings> {
+        self.emitters_settings
+            .iter()
+            .find(|&emit_cfg| emit_cfg.name == name)
+    }
+}
+
+impl HasFileName for Configuration {
+    fn file_name() -> &'static str {
+        if cfg!(test) {
+            "config_test.toml"
+        } else {
+            "config.toml"
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize)]
@@ -53,5 +76,38 @@ impl Default for NotificationEmitterSettings {
             urgency_normal_as: UrgencyLevel::Normal,
             urgency_critical_as: UrgencyLevel::Critical,
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::fs;
+
+    use crate::config::{ConfigIO, HasFileName};
+
+    use super::{Configuration, NotificationEmitterSettings};
+
+    #[test]
+    fn test_write_config() -> anyhow::Result<()> {
+        let cfg = Configuration {
+            do_not_disturb: false,
+            emitters_settings: vec![NotificationEmitterSettings {
+                name: "test".to_string(),
+                ignore: true,
+                urgency_low_as: super::UrgencyLevel::Low,
+                urgency_normal_as: super::UrgencyLevel::Normal,
+                urgency_critical_as: super::UrgencyLevel::Critical,
+            }],
+        };
+        cfg.write_file()?;
+
+        let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
+        let config_path = xdg_dirs.place_config_file(Configuration::file_name())?;
+
+        assert!(config_path.exists());
+
+        fs::remove_file(config_path)?;
+
+        Ok(())
     }
 }

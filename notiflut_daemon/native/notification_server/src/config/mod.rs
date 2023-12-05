@@ -1,57 +1,59 @@
-mod models;
+mod general_settings;
+mod theme;
 
+use serde::{de::DeserializeOwned, Serialize};
 use std::fs;
 
-pub use models::{Configuration, NotificationEmitterSettings, UrgencyLevel};
+pub use general_settings::{Configuration, NotificationEmitterSettings, UrgencyLevel};
 
-/// reads the config file from xdg dir if it exists or returns the default configuration
-pub fn read_config_file() -> anyhow::Result<Configuration> {
-    let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
-    let config_path = xdg_dirs.place_config_file("config.toml")?;
-
-    let file_content = fs::read_to_string(config_path)?;
-    let config: Configuration = toml::from_str(&file_content)?;
-    Ok(config)
+trait HasFileName {
+    fn file_name() -> &'static str;
+}
+pub trait ConfigIO {
+    fn from_file() -> Self;
+    fn write_file(&self) -> anyhow::Result<()>;
+    fn read_file(&mut self) -> anyhow::Result<()>;
 }
 
-/// Writes the config to the config file using the xdg dir.
-pub fn write_config_file(config: &Configuration) -> anyhow::Result<()> {
-    #![allow(dead_code)]
-    let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
-    let config_path = xdg_dirs.place_config_file("config.toml")?;
-    let config_str = toml::to_string(config)?;
-    if let Some(path) = config_path.parent() {
-        fs::create_dir_all(path)?;
+impl<T> ConfigIO for T
+where
+    T: HasFileName + Serialize + DeserializeOwned + Default,
+{
+    fn write_file(&self) -> anyhow::Result<()> {
+        let filename = Self::file_name();
+        let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
+        let config_path = xdg_dirs.place_config_file(filename)?;
+        let config_str = toml::to_string(self)?;
+        if let Some(path) = config_path.parent() {
+            fs::create_dir_all(path)?;
+        }
+        fs::write(config_path, config_str).map_err(Into::into)
     }
-    fs::write(config_path, config_str).map_err(Into::into)
-}
 
-pub fn find_notification_emitter_settings<'a>(
-    config: &'a Configuration,
-    name: &str,
-) -> Option<&'a NotificationEmitterSettings> {
-    config
-        .emitters_settings
-        .iter()
-        .find(|&emit_cfg| emit_cfg.name == name)
-}
-
-#[cfg(test)]
-mod test {
-    use super::{write_config_file, NotificationEmitterSettings};
-
-    #[test]
-    fn test_write_config() -> anyhow::Result<()> {
-        write_config_file(&super::Configuration {
-            do_not_disturb: false,
-            emitters_settings: vec![NotificationEmitterSettings {
-                name: "test".to_string(),
-                ignore: true,
-                urgency_low_as: super::UrgencyLevel::Low,
-                urgency_normal_as: super::UrgencyLevel::Normal,
-                urgency_critical_as: super::UrgencyLevel::Critical,
-            }],
-        })?;
+    fn read_file(&mut self) -> anyhow::Result<()> {
+        let config: T = read_config_impl(Self::file_name())?;
+        let _ = std::mem::replace(self, config);
         Ok(())
     }
+
+    fn from_file() -> Self {
+        let config: anyhow::Result<T> = read_config_impl(Self::file_name());
+        match config {
+            Ok(cfg) => cfg,
+            Err(_) => Default::default(),
+        }
+    }
+}
+
+fn read_config_impl<T>(filename: &str) -> anyhow::Result<T>
+where
+    T: DeserializeOwned,
+{
+    let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
+    let config_path = xdg_dirs.place_config_file(filename)?;
+
+    let file_content = fs::read_to_string(config_path)?;
+    let config: T = toml::from_str(&file_content)?;
+    // let _ = std::mem::replace(self, config);
+    Ok(config)
 }
