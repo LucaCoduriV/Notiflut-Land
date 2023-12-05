@@ -1,7 +1,7 @@
 ![Notiflut-Land logo](/images/notiflut-logo.png)
 # Notiflut [Work in progress]
 
-This project is a notification center designed specifically for Wayland, implemented using Rust and Flutter. The notification center provides a seamless and intuitive user interface for managing and interacting with notifications on Wayland-based systems.
+This project is a notification center designed specifically for wlroots-based Wayland compositors, implemented using Rust and Flutter. The notification center provides a seamless and intuitive user interface for managing and interacting with notifications on Wayland-based systems.
 
 
 ## Screenshots
