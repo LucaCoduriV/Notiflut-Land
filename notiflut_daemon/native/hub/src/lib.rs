@@ -38,6 +38,7 @@ async fn main() {
             on_notification,
             on_notification_close,
             on_notification_center_state_change,
+            on_style_change,
         )
         .await
         .unwrap();
@@ -52,11 +53,28 @@ async fn main() {
         });
     }
 }
-fn on_notification(n: notification_server::Notification) {
+fn on_notification(n: &notification_server::Notification) {
     let signal_message = SignalAppEvent {
         r#type: signal_app_event::AppEventType::NewNotification.into(),
         notification: Some(n.into()),
         notification_id: None,
+        style: None,
+    };
+
+    let rust_signal = RustSignal {
+        resource: ID,
+        message: Some(signal_message.encode_to_vec()),
+        blob: None,
+    };
+    send_rust_signal(rust_signal);
+}
+
+fn on_style_change(s: &notification_server::Style) {
+    let signal_message = SignalAppEvent {
+        r#type: signal_app_event::AppEventType::StyleUpdated.into(),
+        notification: None,
+        notification_id: None,
+        style: Some(s.into()),
     };
 
     let rust_signal = RustSignal {
@@ -72,6 +90,7 @@ fn on_notification_close(n_id: u32) {
         r#type: signal_app_event::AppEventType::CloseNotification.into(),
         notification: None,
         notification_id: Some(n_id.into()),
+        style: None,
     };
 
     let rust_signal = RustSignal {

@@ -1,54 +1,98 @@
-use notification_server::{Hints, ImageData, ImageSource, Notification, Urgency};
+use notification_server::{
+    Hints, ImageData, ImageSource, Notification, NotificationCenterStyle, NotificationStyle, Style,
+    Theme, Urgency,
+};
 use prost_types::Timestamp;
 use std::convert::Into;
 
 use crate::messages;
 
-impl Into<messages::daemon_event::Notification> for Notification {
-    fn into(self) -> messages::daemon_event::Notification {
+impl From<Notification> for messages::daemon_event::Notification {
+    fn from(val: Notification) -> Self {
         let created_at = Timestamp {
-            seconds: self.created_at.timestamp(),
-            nanos: self.created_at.timestamp_subsec_nanos() as i32,
+            seconds: val.created_at.timestamp(),
+            nanos: val.created_at.timestamp_subsec_nanos() as i32,
         };
         messages::daemon_event::Notification {
-            id: self.n_id,
-            app_name: self.app_name,
-            replaces_id: self.replaces_id,
-            summary: self.summary,
-            body: self.body,
-            actions: self.actions,
-            timeout: self.timeout,
+            id: val.n_id,
+            app_name: val.app_name,
+            replaces_id: val.replaces_id,
+            summary: val.summary,
+            body: val.body,
+            actions: val.actions,
+            timeout: val.timeout,
             created_at: Some(created_at),
-            hints: Some(self.hints.into()),
-            app_icon: self.app_icon.map(|a| a.into()),
-            app_image: self.app_image.map(|a| a.into()),
+            hints: Some(val.hints.into()),
+            app_icon: val.app_icon.map(|a| a.into()),
+            app_image: val.app_image.map(|a| a.into()),
         }
     }
 }
 
-impl Into<messages::daemon_event::Hints> for Hints {
-    fn into(self) -> messages::daemon_event::Hints {
-        let urgency: Option<messages::daemon_event::hints::Urgency> =
-            self.urgency.map(|u| u.into());
+impl From<&Notification> for messages::daemon_event::Notification {
+    fn from(val: &Notification) -> Self {
+        let created_at = Timestamp {
+            seconds: val.created_at.timestamp(),
+            nanos: val.created_at.timestamp_subsec_nanos() as i32,
+        };
+        messages::daemon_event::Notification {
+            id: val.n_id,
+            app_name: val.app_name.clone(),
+            replaces_id: val.replaces_id,
+            summary: val.summary.clone(),
+            body: val.body.clone(),
+            actions: val.actions.clone(),
+            timeout: val.timeout,
+            created_at: Some(created_at),
+            hints: Some(val.hints.clone().into()),
+            app_icon: val.app_icon.as_ref().map(|a| a.into()),
+            app_image: val.app_image.as_ref().map(|a| a.into()),
+        }
+    }
+}
+
+impl From<Hints> for messages::daemon_event::Hints {
+    fn from(val: Hints) -> Self {
+        let urgency: Option<messages::daemon_event::hints::Urgency> = val.urgency.map(|u| u.into());
         messages::daemon_event::Hints {
-            actions_icon: self.actions_icon,
-            category: self.category,
-            desktop_entry: self.desktop_entry,
-            resident: self.resident,
-            sound_file: self.sound_file,
-            sound_name: self.sound_name,
-            suppress_sound: self.suppress_sound,
-            transient: self.transient,
-            x: self.x,
-            y: self.y,
+            actions_icon: val.actions_icon,
+            category: val.category,
+            desktop_entry: val.desktop_entry,
+            resident: val.resident,
+            sound_file: val.sound_file,
+            sound_name: val.sound_name,
+            suppress_sound: val.suppress_sound,
+            transient: val.transient,
+            x: val.x,
+            y: val.y,
             urgency: urgency.map(|u| u.into()),
         }
     }
 }
 
-impl Into<messages::daemon_event::hints::Urgency> for Urgency {
-    fn into(self) -> messages::daemon_event::hints::Urgency {
-        match self {
+impl From<&Hints> for messages::daemon_event::Hints {
+    fn from(val: &Hints) -> Self {
+        let urgency: Option<messages::daemon_event::hints::Urgency> =
+            val.urgency.clone().map(|u| u.into());
+        messages::daemon_event::Hints {
+            actions_icon: val.actions_icon,
+            category: val.category.clone(),
+            desktop_entry: val.desktop_entry.clone(),
+            resident: val.resident,
+            sound_file: val.sound_file.clone(),
+            sound_name: val.sound_name.clone(),
+            suppress_sound: val.suppress_sound,
+            transient: val.transient,
+            x: val.x,
+            y: val.y,
+            urgency: urgency.map(|u| u.into()),
+        }
+    }
+}
+
+impl From<Urgency> for messages::daemon_event::hints::Urgency {
+    fn from(val: Urgency) -> Self {
+        match val {
             Urgency::Low => messages::daemon_event::hints::Urgency::Low,
             Urgency::Normal => messages::daemon_event::hints::Urgency::Normal,
             Urgency::Critical => messages::daemon_event::hints::Urgency::Critical,
@@ -56,9 +100,9 @@ impl Into<messages::daemon_event::hints::Urgency> for Urgency {
     }
 }
 
-impl Into<messages::daemon_event::ImageSource> for ImageSource {
-    fn into(self) -> messages::daemon_event::ImageSource {
-        match self {
+impl From<ImageSource> for messages::daemon_event::ImageSource {
+    fn from(val: ImageSource) -> Self {
+        match val {
             ImageSource::Data(d) => messages::daemon_event::ImageSource {
                 r#type: messages::daemon_event::image_source::ImageSourceType::Data.into(),
                 image_data: Some(d.into()),
@@ -73,32 +117,117 @@ impl Into<messages::daemon_event::ImageSource> for ImageSource {
     }
 }
 
-impl Into<messages::daemon_event::ImageData> for ImageData {
-    fn into(self) -> messages::daemon_event::ImageData {
-        messages::daemon_event::ImageData {
-            width: self.width,
-            height: self.height,
-            rowstride: self.rowstride,
-            one_point_two_bit_alpha: self.one_point_two_bit_alpha,
-            bits_per_sample: self.bits_per_sample,
-            channels: self.channels,
-            data: self.data.into_iter().map(|d| d.into()).collect(),
+impl From<&ImageSource> for messages::daemon_event::ImageSource {
+    fn from(val: &ImageSource) -> Self {
+        match val {
+            ImageSource::Data(ref d) => messages::daemon_event::ImageSource {
+                r#type: messages::daemon_event::image_source::ImageSourceType::Data.into(),
+                image_data: Some(d.into()),
+                path: None,
+            },
+            ImageSource::Path(p) => messages::daemon_event::ImageSource {
+                r#type: messages::daemon_event::image_source::ImageSourceType::Path.into(),
+                image_data: None,
+                path: Some(p.clone()),
+            },
         }
     }
 }
 
-// impl Into<AppEvent> for messages::app_event::AppEvent {
-//     fn into(self) -> AppEvent {
-//         match self.r#type() {
-//             messages::app_event::AppEventType::Close => AppEvent::Close(self.notification_id()),
-//             messages::app_event::AppEventType::CloseAll => AppEvent::CloseAll,
-//             messages::app_event::AppEventType::CloseAllApp => {
-//                 AppEvent::CloseAllApp(self.data().to_owned())
-//             }
-//             messages::app_event::AppEventType::CloseNotification => AppEvent::CloseNotification,
-//             messages::app_event::AppEventType::ActionInvoked => {
-//                 AppEvent::ActionInvoked(self.notification_id(), self.data().to_owned())
-//             }
-//         }
-//     }
-// }
+impl From<ImageData> for messages::daemon_event::ImageData {
+    fn from(val: ImageData) -> Self {
+        messages::daemon_event::ImageData {
+            width: val.width,
+            height: val.height,
+            rowstride: val.rowstride,
+            one_point_two_bit_alpha: val.one_point_two_bit_alpha,
+            bits_per_sample: val.bits_per_sample,
+            channels: val.channels,
+            data: val.data.into_iter().map(|d| d.into()).collect(),
+        }
+    }
+}
+
+impl From<&ImageData> for messages::daemon_event::ImageData {
+    fn from(val: &ImageData) -> Self {
+        messages::daemon_event::ImageData {
+            width: val.width,
+            height: val.height,
+            rowstride: val.rowstride,
+            one_point_two_bit_alpha: val.one_point_two_bit_alpha,
+            bits_per_sample: val.bits_per_sample,
+            channels: val.channels,
+            data: val.data.iter().map(|d| *d as u32).collect(),
+        }
+    }
+}
+
+impl From<Style> for messages::daemon_event::Style {
+    fn from(val: Style) -> Self {
+        messages::daemon_event::Style {
+            light: Some(val.light.into()),
+            dark: Some(val.dark.into()),
+        }
+    }
+}
+
+impl From<&Style> for messages::daemon_event::Style {
+    fn from(val: &Style) -> Self {
+        messages::daemon_event::Style {
+            light: Some(val.light.clone().into()),
+            dark: Some(val.dark.clone().into()),
+        }
+    }
+}
+
+impl From<Theme> for messages::daemon_event::Theme {
+    fn from(val: Theme) -> Self {
+        messages::daemon_event::Theme {
+            notification_style: Some(val.notification.into()),
+            notification_center_style: Some(val.notification_center.into()),
+        }
+    }
+}
+
+impl From<&Theme> for messages::daemon_event::Theme {
+    fn from(val: &Theme) -> Self {
+        messages::daemon_event::Theme {
+            notification_style: Some(val.notification.clone().into()),
+            notification_center_style: Some(val.notification_center.clone().into()),
+        }
+    }
+}
+
+impl From<NotificationStyle> for messages::daemon_event::NotificationStyle {
+    fn from(val: NotificationStyle) -> Self {
+        messages::daemon_event::NotificationStyle {
+            background_color: val.background_color.0 as i32,
+            border_radius: val.border_radius.0 as i32,
+        }
+    }
+}
+
+impl From<&NotificationStyle> for messages::daemon_event::NotificationStyle {
+    fn from(val: &NotificationStyle) -> Self {
+        messages::daemon_event::NotificationStyle {
+            background_color: val.background_color.0 as i32,
+            border_radius: val.border_radius.0 as i32,
+        }
+    }
+}
+
+impl From<NotificationCenterStyle> for messages::daemon_event::NotificationCenterStyle {
+    fn from(val: NotificationCenterStyle) -> Self {
+        messages::daemon_event::NotificationCenterStyle {
+            background_color: val.background_color.0 as i32,
+        }
+    }
+}
+
+impl From<&NotificationCenterStyle> for messages::daemon_event::NotificationCenterStyle {
+    fn from(val: &NotificationCenterStyle) -> Self {
+        messages::daemon_event::NotificationCenterStyle {
+            background_color: val.background_color.0 as i32,
+        }
+    }
+}

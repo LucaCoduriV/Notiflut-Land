@@ -3,10 +3,11 @@ use std::sync::Arc;
 
 use crate::{
     cache,
-    config::{ConfigIO, Configuration},
+    config::{ConfigIO, Settings},
     db::{AppSettings, Database},
     notification_dbus::ImageSource,
     notification_dbus::{notification_server_core::NotificationServerCore, Notification},
+    Style,
 };
 
 use tracing::{debug, error, info, trace};
@@ -21,36 +22,45 @@ pub enum NotificationCenterCommand {
 pub struct NotificationServer {
     core: Option<Arc<NotificationServerCore>>,
     db: Arc<Database>,
-    config: Arc<Configuration>,
+    config: Arc<Settings>,
+    style: Arc<Style>,
 }
 
 impl NotificationServer {
     pub async fn new() -> Self {
-        let config = Arc::new(Configuration::from_file());
+        let config = Arc::new(Settings::from_file());
+        let style = Arc::new(Style::from_file());
+        let db = Arc::new(Database::new().await);
         Self {
             core: None,
-            db: Arc::new(Database::new().await),
+            db,
             config,
+            style,
         }
     }
 
-    pub async fn run<F1, F2, F3>(
+    pub async fn run<F1, F2, F3, F4>(
         &mut self,
         on_notification: F1,
         on_close: F2,
         on_state_change_notification_center: F3,
+        on_style_change: F4,
     ) -> anyhow::Result<()>
     where
-        F1: Fn(Notification) + Send + Clone + 'static,
+        F1: Fn(&Notification) + Send + Clone + 'static,
         F2: Fn(u32) + Send + Clone + 'static,
         F3: Fn(NotificationCenterCommand) + Send + Clone + 'static,
+        F4: Fn(&Style) + Send + Clone + 'static,
     {
         let on_state_change_notification_center_clone1 =
             on_state_change_notification_center.clone();
         let on_state_change_notification_center_clone2 =
             on_state_change_notification_center.clone();
 
+        // setup front-end
         self.send_notification_in_db(on_notification.clone());
+        on_style_change(&self.style);
+
         let db_clone1 = Arc::clone(&self.db);
         let db_clone2 = Arc::clone(&self.db);
         let db_clone3 = Arc::clone(&self.db);
@@ -99,7 +109,7 @@ impl NotificationServer {
                         cache::insert_file_cache(&n2.n_id.to_string(), path).await;
                     }
                 });
-                on_notification(n);
+                on_notification(&n);
             })
             .on_close(move |id| {
                 let db = db_clone2.clone();
@@ -157,9 +167,10 @@ impl NotificationServer {
         Ok(())
     }
 
+    /// calls the callback for each notification registered in the db.
     fn send_notification_in_db<F1>(&self, on_notification: F1)
     where
-        F1: Fn(Notification) + Send + Clone + 'static,
+        F1: Fn(&Notification) + Send + Clone + 'static,
     {
         let db = self.db.clone();
         tokio::spawn(async move {
@@ -180,7 +191,7 @@ impl NotificationServer {
                             let path = cache::load_cache(&noti.n_id.to_string()).await;
                             noti.app_image = Some(ImageSource::Path(path));
                         }
-                        on_notification(noti);
+                        on_notification(&noti);
                     });
                 }
             }
@@ -259,10 +270,11 @@ mod test {
         _server
             .run(
                 move |n| {
-                    send.send(n).unwrap();
+                    send.send(n.clone()).unwrap();
                 },
                 |id| println!("{}", id),
                 |state| println!("STATE: {:?}", state),
+                |style| println!("{:?}", style),
             )
             .await
             .unwrap();

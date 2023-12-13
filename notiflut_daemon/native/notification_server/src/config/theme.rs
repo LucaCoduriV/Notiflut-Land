@@ -2,40 +2,40 @@ use serde::{Deserialize, Serialize};
 
 use super::HasFileName;
 
-#[derive(Deserialize, Serialize, Default)]
-struct Color(u32);
+#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+pub struct Color(pub u32);
 
-#[derive(Deserialize, Serialize, Default)]
-struct Radius(u32);
+#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+pub struct Radius(pub u32);
 
-#[derive(Deserialize, Serialize, Default)]
-struct NotificationStyle {
-    background_color: Color,
-    border_radius: Radius,
-    text_color: Color,
+#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+pub struct NotificationStyle {
+    pub background_color: Color,
+    pub border_radius: Radius,
+    pub text_color: Color,
 }
 
-#[derive(Deserialize, Serialize, Default)]
-struct NotificationCenterStyle {
-    background_color: Color,
+#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+pub struct NotificationCenterStyle {
+    pub background_color: Color,
 }
 
-#[derive(Deserialize, Serialize, Default)]
-struct PopupStyle {
-    background_color: Color,
+#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+pub struct PopupStyle {
+    pub background_color: Color,
 }
 
-#[derive(Deserialize, Serialize, Default)]
-struct Theme {
-    notification_center: NotificationCenterStyle,
-    popup: PopupStyle,
-    notification: NotificationStyle,
+#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+pub struct Theme {
+    pub notification_center: NotificationCenterStyle,
+    pub popup: PopupStyle,
+    pub notification: NotificationStyle,
 }
 
-#[derive(Deserialize, Serialize, Default)]
-struct Style {
-    light: Theme,
-    dark: Theme,
+#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+pub struct Style {
+    pub light: Theme,
+    pub dark: Theme,
 }
 
 impl HasFileName for Style {

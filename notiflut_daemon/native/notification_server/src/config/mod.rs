@@ -4,7 +4,10 @@ mod theme;
 use serde::{de::DeserializeOwned, Serialize};
 use std::fs;
 
-pub use general_settings::{Configuration, NotificationEmitterSettings, UrgencyLevel};
+pub use general_settings::{NotificationEmitterSettings, Settings, UrgencyLevel};
+pub use theme::{
+    Color, NotificationCenterStyle, NotificationStyle, PopupStyle, Radius, Style, Theme,
+};
 
 trait HasFileName {
     fn file_name() -> &'static str;

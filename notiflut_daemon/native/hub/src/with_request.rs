@@ -23,7 +23,7 @@ pub fn handle_request(
         messages::app_event::ID => {
             let message_bytes = rust_request.message.unwrap();
             if let Ok(event) = messages::app_event::AppEvent::decode(message_bytes.as_slice()) {
-                let event: AppEvent = event.into();
+                let event: AppEvent = event;
                 match event.r#type() {
                     messages::app_event::AppEventType::Close => {
                         server.close_notification(event.notification_id.unwrap());

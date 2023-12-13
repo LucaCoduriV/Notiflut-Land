@@ -5,12 +5,12 @@ use crate::Urgency;
 use super::HasFileName;
 
 #[derive(Default, Deserialize, Serialize)]
-pub struct Configuration {
+pub struct Settings {
     pub do_not_disturb: bool,
     pub emitters_settings: Vec<NotificationEmitterSettings>,
 }
 
-impl Configuration {
+impl Settings {
     pub fn find_notification_emitter_settings<'a>(
         &'a self,
         name: &str,
@@ -21,7 +21,7 @@ impl Configuration {
     }
 }
 
-impl HasFileName for Configuration {
+impl HasFileName for Settings {
     fn file_name() -> &'static str {
         if cfg!(test) {
             "config_test.toml"
@@ -85,11 +85,11 @@ mod test {
 
     use crate::config::{ConfigIO, HasFileName};
 
-    use super::{Configuration, NotificationEmitterSettings};
+    use super::{NotificationEmitterSettings, Settings};
 
     #[test]
     fn test_write_config() -> anyhow::Result<()> {
-        let cfg = Configuration {
+        let cfg = Settings {
             do_not_disturb: false,
             emitters_settings: vec![NotificationEmitterSettings {
                 name: "test".to_string(),
@@ -102,7 +102,7 @@ mod test {
         cfg.write_file()?;
 
         let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
-        let config_path = xdg_dirs.place_config_file(Configuration::file_name())?;
+        let config_path = xdg_dirs.place_config_file(Settings::file_name())?;
 
         assert!(config_path.exists());
 
