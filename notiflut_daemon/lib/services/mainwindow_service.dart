@@ -9,6 +9,8 @@ import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
 import 'package:notiflut/messages/app_event.pb.dart' as app_event;
 import 'package:notiflut/services/subwindow_service.dart';
+import 'package:notiflut/services/theme_service.dart';
+import 'package:watch_it/watch_it.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:rinf/rinf.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
@@ -22,6 +24,7 @@ enum MainWindowEvents {
   }
 }
 
+// TODO create an other class to dispatch messages from rust
 class MainWindowService extends ChangeNotifier {
   List<daemon_event.Notification> notifications = [];
   bool isHidden = true;
@@ -116,6 +119,11 @@ class MainWindowService extends ChangeNotifier {
       case SignalAppEvent_AppEventType.CloseNotification:
         notifications.removeWhere(
             (element) => element.id == appEvent.notificationId.toInt());
+        break;
+      case SignalAppEvent_AppEventType.StyleUpdated:
+        final themeService = di<ThemeService>();
+        themeService.style = appEvent.style;
+        print("STYLE UPDATED");
         break;
     }
   }

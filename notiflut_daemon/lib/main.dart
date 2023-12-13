@@ -8,6 +8,8 @@ import 'package:notiflut/window_utils.dart';
 import 'package:rinf/rinf.dart';
 import 'package:watch_it/watch_it.dart';
 
+import 'services/theme_service.dart';
+
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   final isMainWindow = args.firstOrNull != 'multi_window';
@@ -17,11 +19,13 @@ void main(List<String> args) async {
     setupMainWindow();
     di.registerSingleton(MainWindowService());
     di.registerSingleton(MediaPlayerService()).init();
+    di.registerSingleton(ThemeService());
     await setupSubWindow();
     runApp(const MainWindow());
   } else {
     final windowId = int.parse(args[1]);
     di.registerSingleton(SubWindowService(windowId));
+    di.registerSingleton(ThemeService());
     runApp(const SubWindow());
   }
 }

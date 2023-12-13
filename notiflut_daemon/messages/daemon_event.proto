@@ -85,7 +85,7 @@ message NotificationCenterStyle {
 
 message Theme{
   NotificationStyle notification_style = 1;
-  NotificationCenterStyle notification_style = 2;
+  NotificationCenterStyle notification_center_style = 2;
 }
 
 message Style {
