@@ -33,16 +33,30 @@ async fn main() {
 
     let mut request_receiver = bridge::get_request_receiver();
     let mut server = notification_server::NotificationServer::new().await;
-    server
-        .run(
-            on_notification,
-            on_notification_close,
-            on_notification_center_state_change,
-            on_style_change,
-        )
-        .await
-        .unwrap();
+    let mut recv = server.run().await.unwrap();
     let server = Arc::new(server);
+
+    tokio::spawn(async move {
+        while let Some(event) = recv.recv().await {
+            match event {
+                notification_server::ServerEvent::ToggleNotificationCenter => {
+                    on_notification_center_state_change(NotificationCenterCommand::Toggle)
+                }
+                notification_server::ServerEvent::CloseNotificationCenter => {
+                    on_notification_center_state_change(NotificationCenterCommand::Close)
+                }
+                notification_server::ServerEvent::OpenNotificationCenter => {
+                    on_notification_center_state_change(NotificationCenterCommand::Open)
+                }
+                notification_server::ServerEvent::CloseNotification(id) => {
+                    on_notification_close(id)
+                }
+                notification_server::ServerEvent::NewNotification(n) => on_notification(&n),
+                notification_server::ServerEvent::NewNotificationId(_) => {}
+                notification_server::ServerEvent::StyleUpdate(style) => on_style_change(&style),
+            }
+        }
+    });
 
     // This is `tokio::sync::mpsc::Reciver` that receives the requests from Dart.
     while let Some(request_unique) = request_receiver.recv().await {

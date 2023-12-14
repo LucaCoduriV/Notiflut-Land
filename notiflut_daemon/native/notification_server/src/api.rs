@@ -12,6 +12,7 @@ use crate::{
     Style,
 };
 
+use tokio::sync::mpsc::channel;
 use tracing::{debug, error, info, trace};
 
 #[derive(Debug)]
@@ -41,27 +42,15 @@ impl NotificationServer {
         }
     }
 
-    pub async fn run<F1, F2, F3, F4>(
-        &mut self,
-        on_notification: F1,
-        on_close: F2,
-        on_state_change_notification_center: F3,
-        on_style_change: F4,
-    ) -> anyhow::Result<()>
-    where
-        F1: Fn(&Notification) + Send + Clone + 'static,
-        F2: Fn(u32) + Send + Clone + 'static,
-        F3: Fn(NotificationCenterCommand) + Send + Clone + 'static,
-        F4: Fn(&Style) + Send + Clone + 'static,
-    {
-        let on_state_change_notification_center_clone1 =
-            on_state_change_notification_center.clone();
-        let on_state_change_notification_center_clone2 =
-            on_state_change_notification_center.clone();
+    pub async fn run(&mut self) -> anyhow::Result<tokio::sync::mpsc::Receiver<ServerEvent>> {
+        let (sndr, result_recv) = channel::<ServerEvent>(20);
 
         // setup front-end
-        self.send_notification_in_db(on_notification.clone());
-        on_style_change(&self.style);
+        self.send_notification_in_db(sndr.clone());
+
+        sndr.send(ServerEvent::StyleUpdate(Box::new((*self.style).clone())))
+            .await
+            .unwrap();
 
         let db_clone1 = Arc::clone(&self.db);
         let db_clone2 = Arc::clone(&self.db);
@@ -75,7 +64,7 @@ impl NotificationServer {
             None => 1,
         };
 
-        let (core, mut recv) = NotificationServerCore::builder()
+        let (core, mut core_recv) = NotificationServerCore::builder()
             .start_id(id)
             .notification_count(move || {
                 let db = db_clone5.clone();
@@ -92,23 +81,26 @@ impl NotificationServer {
             .run()?;
 
         tokio::spawn(async move {
-            while let Some(event) = recv.recv().await {
+            let sndr = sndr;
+            while let Some(event) = core_recv.recv().await {
                 match event {
                     ServerEvent::ToggleNotificationCenter => {
                         trace!("Toggle NotificationCenter");
-                        on_state_change_notification_center_clone2(
-                            NotificationCenterCommand::Toggle,
-                        );
+                        sndr.send(ServerEvent::ToggleNotificationCenter)
+                            .await
+                            .unwrap();
                     }
                     ServerEvent::CloseNotificationCenter => {
                         trace!("Close NotificationCenter");
-                        on_state_change_notification_center_clone1(
-                            NotificationCenterCommand::Close,
-                        );
+                        sndr.send(ServerEvent::CloseNotificationCenter)
+                            .await
+                            .unwrap();
                     }
                     ServerEvent::OpenNotificationCenter => {
                         trace!("Open NotificationCenter");
-                        on_state_change_notification_center(NotificationCenterCommand::Open);
+                        sndr.send(ServerEvent::OpenNotificationCenter)
+                            .await
+                            .unwrap();
                     }
                     ServerEvent::CloseNotification(id) => {
                         let db = db_clone2.clone();
@@ -119,35 +111,38 @@ impl NotificationServer {
                             };
                             cache::delete_file_cache(&id.to_string()).await;
                         });
-                        on_close(id);
+
+                        sndr.send(ServerEvent::CloseNotification(id)).await.unwrap();
                     }
-                    ServerEvent::NewNotification(mut n) => 'nn: {
-                        let n = n.as_mut();
-                        debug!("{:?}", n);
+                    ServerEvent::NewNotification(mut boxed_notification) => 'nn: {
+                        let notification = boxed_notification.as_mut();
+                        debug!("{:?}", notification);
                         if let Some(emit_cfg) =
-                            config.find_notification_emitter_settings(&n.app_name)
+                            config.find_notification_emitter_settings(&notification.app_name)
                         {
                             if emit_cfg.ignore {
                                 break 'nn;
                             }
 
-                            if let Some(ref urgency) = n.hints.urgency {
+                            if let Some(ref urgency) = notification.hints.urgency {
                                 match urgency {
                                     crate::Urgency::Low => {
-                                        n.hints.urgency = Some((&emit_cfg.urgency_low_as).into())
+                                        notification.hints.urgency =
+                                            Some((&emit_cfg.urgency_low_as).into())
                                     }
                                     crate::Urgency::Normal => {
-                                        n.hints.urgency = Some((&emit_cfg.urgency_normal_as).into())
+                                        notification.hints.urgency =
+                                            Some((&emit_cfg.urgency_normal_as).into())
                                     }
                                     crate::Urgency::Critical => {
-                                        n.hints.urgency =
+                                        notification.hints.urgency =
                                             Some((&emit_cfg.urgency_critical_as).into())
                                     }
                                 }
                             }
                         }
 
-                        let n2 = n.clone();
+                        let n2 = notification.clone();
                         let db = db_clone1.clone();
                         tokio::spawn(async move {
                             match db.put_notification(&n2).await {
@@ -159,7 +154,10 @@ impl NotificationServer {
                                 cache::insert_file_cache(&n2.n_id.to_string(), path).await;
                             }
                         });
-                        on_notification(n);
+
+                        sndr.send(ServerEvent::NewNotification(boxed_notification))
+                            .await
+                            .unwrap();
                     }
                     ServerEvent::NewNotificationId(new_id) => {
                         let db = db_clone3.clone();
@@ -175,22 +173,23 @@ impl NotificationServer {
                             db.put_appsettings(app_settings).await.unwrap();
                         });
                     }
+                    ServerEvent::StyleUpdate(_style) => {
+                        // TODO remove this by creating an other enum
+                    }
                 };
             }
         });
 
         self.core = Some(core.into());
         info!("Listening for new notification");
-        Ok(())
+        Ok(result_recv)
     }
 
     /// calls the callback for each notification registered in the db.
-    fn send_notification_in_db<F1>(&self, on_notification: F1)
-    where
-        F1: Fn(&Notification) + Send + Clone + 'static,
-    {
+    fn send_notification_in_db(&self, sndr: tokio::sync::mpsc::Sender<ServerEvent>) {
         let db = self.db.clone();
         tokio::spawn(async move {
+            let sndr = sndr;
             let notifications = match db.get_notifications().await {
                 Ok(notifications) => Some(notifications),
                 Err(e) => {
@@ -201,14 +200,16 @@ impl NotificationServer {
 
             if let Some(notifications) = notifications {
                 for mut noti in notifications {
-                    let on_notification = on_notification.clone();
+                    let sndr = sndr.clone();
                     tokio::spawn(async move {
                         if let Some(ImageSource::Path(old_path)) = noti.app_image {
                             tracing::debug!("New image: {}", old_path);
                             let path = cache::load_cache(&noti.n_id.to_string()).await;
                             noti.app_image = Some(ImageSource::Path(path));
                         }
-                        on_notification(&noti);
+                        sndr.send(ServerEvent::NewNotification(Box::new(noti)))
+                            .await
+                            .unwrap();
                     });
                 }
             }
@@ -277,27 +278,16 @@ impl NotificationServer {
 mod test {
     use std::future;
 
-    use crate::{api::NotificationServer, notification_dbus::Notification};
+    use crate::api::NotificationServer;
 
     #[ignore]
     #[tokio::test]
     async fn notification_server_live_test() -> Result<(), Box<dyn std::error::Error>> {
-        let (send, recv) = std::sync::mpsc::channel::<Notification>();
         let mut _server = NotificationServer::new().await;
-        _server
-            .run(
-                move |n| {
-                    send.send(n.clone()).unwrap();
-                },
-                |id| println!("{}", id),
-                |state| println!("STATE: {:?}", state),
-                |style| println!("{:?}", style),
-            )
-            .await
-            .unwrap();
+        let mut server_recv = _server.run().await.unwrap();
 
-        for notification in recv {
-            println!("{:?}", notification);
+        while let Some(event) = server_recv.recv().await {
+            println!("{:?}", event);
         }
 
         future::pending::<()>().await;

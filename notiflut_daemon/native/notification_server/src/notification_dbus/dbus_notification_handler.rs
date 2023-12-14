@@ -6,8 +6,8 @@ use std::{
 use dbus::arg::{prop_cast, RefArg};
 use tracing::debug;
 
-use crate::desktop_file_manager::DesktopFileManager;
 use crate::notification_dbus::models::notification::{Hints, ImageData, ImageSource, Notification};
+use crate::{desktop_file_manager::DesktopFileManager, Style};
 
 use super::dbus_definition;
 
@@ -64,6 +64,7 @@ pub struct DbusNotificationHandler {
     pub sender: tokio::sync::mpsc::Sender<ServerEvent>,
 }
 
+#[derive(Debug)]
 pub enum ServerEvent {
     ToggleNotificationCenter,
     CloseNotificationCenter,
@@ -71,6 +72,7 @@ pub enum ServerEvent {
     CloseNotification(u32),
     NewNotification(Box<Notification>),
     NewNotificationId(u32),
+    StyleUpdate(Box<Style>),
 }
 
 impl dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler {

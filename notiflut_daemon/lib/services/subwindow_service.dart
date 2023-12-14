@@ -57,6 +57,7 @@ class SubWindowService extends ChangeNotifier {
         ),
     };
 
+    popups.removeWhere((e) => e.$1.id == notification.id);
     popups.insert(0, (notification, timer));
     popups = List.from(popups);
 
