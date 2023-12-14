@@ -39,21 +39,24 @@ async fn main() {
     tokio::spawn(async move {
         while let Some(event) = recv.recv().await {
             match event {
-                notification_server::ServerEvent::ToggleNotificationCenter => {
+                notification_server::NotificationServerEvent::ToggleNotificationCenter => {
                     on_notification_center_state_change(NotificationCenterCommand::Toggle)
                 }
-                notification_server::ServerEvent::CloseNotificationCenter => {
+                notification_server::NotificationServerEvent::CloseNotificationCenter => {
                     on_notification_center_state_change(NotificationCenterCommand::Close)
                 }
-                notification_server::ServerEvent::OpenNotificationCenter => {
+                notification_server::NotificationServerEvent::OpenNotificationCenter => {
                     on_notification_center_state_change(NotificationCenterCommand::Open)
                 }
-                notification_server::ServerEvent::CloseNotification(id) => {
+                notification_server::NotificationServerEvent::CloseNotification(id) => {
                     on_notification_close(id)
                 }
-                notification_server::ServerEvent::NewNotification(n) => on_notification(&n),
-                notification_server::ServerEvent::NewNotificationId(_) => {}
-                notification_server::ServerEvent::StyleUpdate(style) => on_style_change(&style),
+                notification_server::NotificationServerEvent::NewNotification(n) => {
+                    on_notification(&n)
+                }
+                notification_server::NotificationServerEvent::StyleUpdate(style) => {
+                    on_style_change(&style)
+                }
             }
         }
     });

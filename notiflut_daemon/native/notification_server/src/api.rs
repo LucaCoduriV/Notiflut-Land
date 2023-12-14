@@ -1,15 +1,13 @@
 #![allow(dead_code)]
-use std::sync::Arc;
+use std::{ops::Deref, sync::Arc};
 
 use crate::{
     cache,
     config::{ConfigIO, Settings},
     db::{AppSettings, Database},
     notification_dbus::ImageSource,
-    notification_dbus::{
-        notification_server_core::NotificationServerCore, Notification, ServerEvent,
-    },
-    Style,
+    notification_dbus::{notification_server_core::NotificationServerCore, InnerServerEvent},
+    Notification, Style,
 };
 
 use tokio::sync::mpsc::channel;
@@ -20,6 +18,16 @@ pub enum NotificationCenterCommand {
     Open,
     Close,
     Toggle,
+}
+
+#[derive(Debug)]
+pub enum NotificationServerEvent {
+    ToggleNotificationCenter,
+    CloseNotificationCenter,
+    OpenNotificationCenter,
+    CloseNotification(u32),
+    NewNotification(Box<Notification>),
+    StyleUpdate(Box<Style>),
 }
 
 pub struct NotificationServer {
@@ -42,15 +50,19 @@ impl NotificationServer {
         }
     }
 
-    pub async fn run(&mut self) -> anyhow::Result<tokio::sync::mpsc::Receiver<ServerEvent>> {
-        let (sndr, result_recv) = channel::<ServerEvent>(20);
+    pub async fn run(
+        &mut self,
+    ) -> anyhow::Result<tokio::sync::mpsc::Receiver<NotificationServerEvent>> {
+        let (sndr, result_recv) = channel::<NotificationServerEvent>(20);
 
         // setup front-end
-        self.send_notification_in_db(sndr.clone());
+        Self::send_notification_in_db(self.db.clone(), sndr.clone());
 
-        sndr.send(ServerEvent::StyleUpdate(Box::new((*self.style).clone())))
-            .await
-            .unwrap();
+        sndr.send(NotificationServerEvent::StyleUpdate(Box::new(
+            self.style.deref().clone(),
+        )))
+        .await
+        .unwrap();
 
         let db_clone1 = Arc::clone(&self.db);
         let db_clone2 = Arc::clone(&self.db);
@@ -84,25 +96,25 @@ impl NotificationServer {
             let sndr = sndr;
             while let Some(event) = core_recv.recv().await {
                 match event {
-                    ServerEvent::ToggleNotificationCenter => {
+                    InnerServerEvent::ToggleNotificationCenter => {
                         trace!("Toggle NotificationCenter");
-                        sndr.send(ServerEvent::ToggleNotificationCenter)
+                        sndr.send(NotificationServerEvent::ToggleNotificationCenter)
                             .await
                             .unwrap();
                     }
-                    ServerEvent::CloseNotificationCenter => {
+                    InnerServerEvent::CloseNotificationCenter => {
                         trace!("Close NotificationCenter");
-                        sndr.send(ServerEvent::CloseNotificationCenter)
+                        sndr.send(NotificationServerEvent::CloseNotificationCenter)
                             .await
                             .unwrap();
                     }
-                    ServerEvent::OpenNotificationCenter => {
+                    InnerServerEvent::OpenNotificationCenter => {
                         trace!("Open NotificationCenter");
-                        sndr.send(ServerEvent::OpenNotificationCenter)
+                        sndr.send(NotificationServerEvent::OpenNotificationCenter)
                             .await
                             .unwrap();
                     }
-                    ServerEvent::CloseNotification(id) => {
+                    InnerServerEvent::CloseNotification(id) => {
                         let db = db_clone2.clone();
                         tokio::spawn(async move {
                             match db.delete_notification(id.into()).await {
@@ -112,9 +124,11 @@ impl NotificationServer {
                             cache::delete_file_cache(&id.to_string()).await;
                         });
 
-                        sndr.send(ServerEvent::CloseNotification(id)).await.unwrap();
+                        sndr.send(NotificationServerEvent::CloseNotification(id))
+                            .await
+                            .unwrap();
                     }
-                    ServerEvent::NewNotification(mut boxed_notification) => 'nn: {
+                    InnerServerEvent::NewNotification(mut boxed_notification) => 'nn: {
                         let notification = boxed_notification.as_mut();
                         debug!("{:?}", notification);
                         if let Some(emit_cfg) =
@@ -155,11 +169,11 @@ impl NotificationServer {
                             }
                         });
 
-                        sndr.send(ServerEvent::NewNotification(boxed_notification))
+                        sndr.send(NotificationServerEvent::NewNotification(boxed_notification))
                             .await
                             .unwrap();
                     }
-                    ServerEvent::NewNotificationId(new_id) => {
+                    InnerServerEvent::NewNotificationId(new_id) => {
                         let db = db_clone3.clone();
                         tokio::spawn(async move {
                             let mut app_settings = db
@@ -173,9 +187,6 @@ impl NotificationServer {
                             db.put_appsettings(app_settings).await.unwrap();
                         });
                     }
-                    ServerEvent::StyleUpdate(_style) => {
-                        // TODO remove this by creating an other enum
-                    }
                 };
             }
         });
@@ -186,8 +197,10 @@ impl NotificationServer {
     }
 
     /// calls the callback for each notification registered in the db.
-    fn send_notification_in_db(&self, sndr: tokio::sync::mpsc::Sender<ServerEvent>) {
-        let db = self.db.clone();
+    fn send_notification_in_db(
+        db: Arc<Database>,
+        sndr: tokio::sync::mpsc::Sender<NotificationServerEvent>,
+    ) {
         tokio::spawn(async move {
             let sndr = sndr;
             let notifications = match db.get_notifications().await {
@@ -207,7 +220,7 @@ impl NotificationServer {
                             let path = cache::load_cache(&noti.n_id.to_string()).await;
                             noti.app_image = Some(ImageSource::Path(path));
                         }
-                        sndr.send(ServerEvent::NewNotification(Box::new(noti)))
+                        sndr.send(NotificationServerEvent::NewNotification(Box::new(noti)))
                             .await
                             .unwrap();
                     });

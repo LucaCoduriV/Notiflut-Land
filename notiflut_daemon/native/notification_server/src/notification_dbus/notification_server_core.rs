@@ -13,7 +13,7 @@ use tokio::task::JoinHandle;
 use crate::notification_dbus::dbus_notification_handler::DbusNotificationHandler;
 
 use super::dbus_definition;
-use super::dbus_notification_handler::ServerEvent;
+use super::dbus_notification_handler::InnerServerEvent;
 
 pub const NOTIFICATION_INTERFACE: &str = "org.freedesktop.Notifications";
 pub const NOTIFICATION_PATH: &str = "/org/freedesktop/Notifications";
@@ -50,7 +50,7 @@ where
         self,
     ) -> anyhow::Result<(
         NotificationServerCore,
-        tokio::sync::mpsc::Receiver<ServerEvent>,
+        tokio::sync::mpsc::Receiver<InnerServerEvent>,
     )> {
         let mut core = NotificationServerCore {
             handle: None,
@@ -79,12 +79,12 @@ impl NotificationServerCore {
     pub fn run<F7, F7Fut>(
         &mut self,
         core_builder: NotificationServerCoreBuilder<F7, F7Fut>,
-    ) -> anyhow::Result<tokio::sync::mpsc::Receiver<ServerEvent>>
+    ) -> anyhow::Result<tokio::sync::mpsc::Receiver<InnerServerEvent>>
     where
         F7: Fn() -> F7Fut + Send + Clone + 'static,
         F7Fut: Future<Output = u64> + Send + 'static,
     {
-        let (sndr, recv) = channel::<ServerEvent>(20);
+        let (sndr, recv) = channel::<InnerServerEvent>(20);
         // Connect to the D-Bus session bus (this is blocking, unfortunately).
         let (resource, c) = connection::new_session_sync()?;
 
@@ -137,9 +137,9 @@ impl NotificationServerCore {
                 let sender = sndr.clone();
                 builder.method_with_cr_async("OpenNC", (), ("reply",), move |mut ctx, _, ()| {
                     let sender = sender.clone();
-                    tokio::spawn(
-                        async move { sender.send(ServerEvent::OpenNotificationCenter).await },
-                    );
+                    tokio::spawn(async move {
+                        sender.send(InnerServerEvent::OpenNotificationCenter).await
+                    });
                     let message = (String::from("Notification center open"),);
                     async move { ctx.reply(Ok(message)) }
                 });
@@ -147,9 +147,9 @@ impl NotificationServerCore {
                 let sender = sndr.clone();
                 builder.method_with_cr_async("CloseNC", (), ("reply",), move |mut ctx, _, ()| {
                     let sender = sender.clone();
-                    tokio::spawn(
-                        async move { sender.send(ServerEvent::CloseNotificationCenter).await },
-                    );
+                    tokio::spawn(async move {
+                        sender.send(InnerServerEvent::CloseNotificationCenter).await
+                    });
                     let message = (String::from("Notification center closed"),);
                     async move { ctx.reply(Ok(message)) }
                 });
@@ -158,7 +158,9 @@ impl NotificationServerCore {
                 builder.method_with_cr_async("ToggleNC", (), ("reply",), move |mut ctx, _, ()| {
                     let sender = sender.clone();
                     tokio::spawn(async move {
-                        sender.send(ServerEvent::ToggleNotificationCenter).await
+                        sender
+                            .send(InnerServerEvent::ToggleNotificationCenter)
+                            .await
                     });
                     let message = (String::from("Notification center toggled"),);
                     async move { ctx.reply(Ok(message)) }

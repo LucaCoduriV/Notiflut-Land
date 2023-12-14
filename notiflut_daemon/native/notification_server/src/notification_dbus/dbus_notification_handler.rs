@@ -6,8 +6,8 @@ use std::{
 use dbus::arg::{prop_cast, RefArg};
 use tracing::debug;
 
+use crate::desktop_file_manager::DesktopFileManager;
 use crate::notification_dbus::models::notification::{Hints, ImageData, ImageSource, Notification};
-use crate::{desktop_file_manager::DesktopFileManager, Style};
 
 use super::dbus_definition;
 
@@ -61,18 +61,17 @@ const SERVER_CAPABILITIES: [&str; 8] = [
 #[derive(Clone)]
 pub struct DbusNotificationHandler {
     pub id_count: Arc<Mutex<u32>>,
-    pub sender: tokio::sync::mpsc::Sender<ServerEvent>,
+    pub sender: tokio::sync::mpsc::Sender<InnerServerEvent>,
 }
 
 #[derive(Debug)]
-pub enum ServerEvent {
+pub enum InnerServerEvent {
     ToggleNotificationCenter,
     CloseNotificationCenter,
     OpenNotificationCenter,
     CloseNotification(u32),
     NewNotification(Box<Notification>),
     NewNotificationId(u32),
-    StyleUpdate(Box<Style>),
 }
 
 impl dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler {
@@ -100,7 +99,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler {
         };
         let sender = self.sender.clone();
         tokio::spawn(async move {
-            let result = sender.send(ServerEvent::NewNotificationId(id)).await;
+            let result = sender.send(InnerServerEvent::NewNotificationId(id)).await;
             debug!("{:?}", result);
         });
 
@@ -162,7 +161,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler {
         let sender = self.sender.clone();
         tokio::spawn(async move {
             let result = sender
-                .send(ServerEvent::NewNotification(Box::new(notification)))
+                .send(InnerServerEvent::NewNotification(Box::new(notification)))
                 .await;
             debug!("{:?}", result);
         });
@@ -173,7 +172,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler {
     fn close_notification(&mut self, id: u32) -> Result<(), dbus::MethodErr> {
         let sender = self.sender.clone();
         tokio::spawn(async move {
-            let result = sender.send(ServerEvent::CloseNotification(id)).await;
+            let result = sender.send(InnerServerEvent::CloseNotification(id)).await;
             debug!("{:?}", result);
         });
         Ok(())

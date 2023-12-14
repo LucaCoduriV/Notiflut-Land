@@ -3,7 +3,7 @@ mod dbus_notification_handler;
 mod models;
 pub mod notification_server_core;
 
-pub use dbus_notification_handler::ServerEvent;
+pub use dbus_notification_handler::InnerServerEvent;
 pub use models::notification::Hints;
 pub use models::notification::ImageData;
 pub use models::notification::ImageSource;
