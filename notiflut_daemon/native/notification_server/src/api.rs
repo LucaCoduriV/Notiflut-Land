@@ -6,7 +6,9 @@ use crate::{
     config::{ConfigIO, Settings},
     db::{AppSettings, Database},
     notification_dbus::ImageSource,
-    notification_dbus::{notification_server_core::NotificationServerCore, Notification},
+    notification_dbus::{
+        notification_server_core::NotificationServerCore, Notification, ServerEvent,
+    },
     Style,
 };
 
@@ -73,81 +75,8 @@ impl NotificationServer {
             None => 1,
         };
 
-        let core = NotificationServerCore::builder()
+        let (core, mut recv) = NotificationServerCore::builder()
             .start_id(id)
-            .on_notification(move |mut n| {
-                debug!("{:?}", n);
-                if let Some(emit_cfg) = config.find_notification_emitter_settings(&n.app_name) {
-                    if emit_cfg.ignore {
-                        return;
-                    }
-
-                    if let Some(urgency) = n.hints.urgency {
-                        match urgency {
-                            crate::Urgency::Low => {
-                                n.hints.urgency = Some((&emit_cfg.urgency_low_as).into())
-                            }
-                            crate::Urgency::Normal => {
-                                n.hints.urgency = Some((&emit_cfg.urgency_normal_as).into())
-                            }
-                            crate::Urgency::Critical => {
-                                n.hints.urgency = Some((&emit_cfg.urgency_critical_as).into())
-                            }
-                        }
-                    }
-                }
-
-                let n2 = n.clone();
-                let db = db_clone1.clone();
-                tokio::spawn(async move {
-                    match db.put_notification(&n2).await {
-                        Ok(_) => (),
-                        Err(e) => error!("{}", e),
-                    };
-                    if let Some(ImageSource::Path(ref path)) = n2.app_image {
-                        debug!("New image: {}", path);
-                        cache::insert_file_cache(&n2.n_id.to_string(), path).await;
-                    }
-                });
-                on_notification(&n);
-            })
-            .on_close(move |id| {
-                let db = db_clone2.clone();
-                tokio::spawn(async move {
-                    match db.delete_notification(id.into()).await {
-                        Ok(_) => (),
-                        Err(e) => error!("{}", e),
-                    };
-                    cache::delete_file_cache(&id.to_string()).await;
-                });
-                on_close(id);
-            })
-            .on_open_notification_center(move || {
-                trace!("Open NotificationCenter");
-                on_state_change_notification_center(NotificationCenterCommand::Open);
-            })
-            .on_close_notification_center(move || {
-                trace!("Close NotificationCenter");
-                on_state_change_notification_center_clone1(NotificationCenterCommand::Close);
-            })
-            .on_toggle_notification_center(move || {
-                trace!("Toggle NotificationCenter");
-                on_state_change_notification_center_clone2(NotificationCenterCommand::Toggle);
-            })
-            .on_new_id(move |new_id| {
-                let db = db_clone3.clone();
-                tokio::spawn(async move {
-                    let mut app_settings = db
-                        .get_app_settings()
-                        .await
-                        .unwrap_or(Some(AppSettings::default()))
-                        .unwrap_or(AppSettings::default());
-
-                    app_settings.id_count = new_id;
-
-                    db.put_appsettings(app_settings).await.unwrap();
-                });
-            })
             .notification_count(move || {
                 let db = db_clone5.clone();
                 async move {
@@ -161,6 +90,94 @@ impl NotificationServer {
                 }
             })
             .run()?;
+
+        tokio::spawn(async move {
+            while let Some(event) = recv.recv().await {
+                match event {
+                    ServerEvent::ToggleNotificationCenter => {
+                        trace!("Toggle NotificationCenter");
+                        on_state_change_notification_center_clone2(
+                            NotificationCenterCommand::Toggle,
+                        );
+                    }
+                    ServerEvent::CloseNotificationCenter => {
+                        trace!("Close NotificationCenter");
+                        on_state_change_notification_center_clone1(
+                            NotificationCenterCommand::Close,
+                        );
+                    }
+                    ServerEvent::OpenNotificationCenter => {
+                        trace!("Open NotificationCenter");
+                        on_state_change_notification_center(NotificationCenterCommand::Open);
+                    }
+                    ServerEvent::CloseNotification(id) => {
+                        let db = db_clone2.clone();
+                        tokio::spawn(async move {
+                            match db.delete_notification(id.into()).await {
+                                Ok(_) => (),
+                                Err(e) => error!("{}", e),
+                            };
+                            cache::delete_file_cache(&id.to_string()).await;
+                        });
+                        on_close(id);
+                    }
+                    ServerEvent::NewNotification(mut n) => 'nn: {
+                        let n = n.as_mut();
+                        debug!("{:?}", n);
+                        if let Some(emit_cfg) =
+                            config.find_notification_emitter_settings(&n.app_name)
+                        {
+                            if emit_cfg.ignore {
+                                break 'nn;
+                            }
+
+                            if let Some(ref urgency) = n.hints.urgency {
+                                match urgency {
+                                    crate::Urgency::Low => {
+                                        n.hints.urgency = Some((&emit_cfg.urgency_low_as).into())
+                                    }
+                                    crate::Urgency::Normal => {
+                                        n.hints.urgency = Some((&emit_cfg.urgency_normal_as).into())
+                                    }
+                                    crate::Urgency::Critical => {
+                                        n.hints.urgency =
+                                            Some((&emit_cfg.urgency_critical_as).into())
+                                    }
+                                }
+                            }
+                        }
+
+                        let n2 = n.clone();
+                        let db = db_clone1.clone();
+                        tokio::spawn(async move {
+                            match db.put_notification(&n2).await {
+                                Ok(_) => (),
+                                Err(e) => error!("{}", e),
+                            };
+                            if let Some(ImageSource::Path(ref path)) = n2.app_image {
+                                debug!("New image: {}", path);
+                                cache::insert_file_cache(&n2.n_id.to_string(), path).await;
+                            }
+                        });
+                        on_notification(n);
+                    }
+                    ServerEvent::NewNotificationId(new_id) => {
+                        let db = db_clone3.clone();
+                        tokio::spawn(async move {
+                            let mut app_settings = db
+                                .get_app_settings()
+                                .await
+                                .unwrap_or(Some(AppSettings::default()))
+                                .unwrap_or(AppSettings::default());
+
+                            app_settings.id_count = new_id;
+
+                            db.put_appsettings(app_settings).await.unwrap();
+                        });
+                    }
+                };
+            }
+        });
 
         self.core = Some(core.into());
         info!("Listening for new notification");

@@ -4,6 +4,7 @@ use std::{
 };
 
 use dbus::arg::{prop_cast, RefArg};
+use tracing::debug;
 
 use crate::desktop_file_manager::DesktopFileManager;
 use crate::notification_dbus::models::notification::{Hints, ImageData, ImageSource, Notification};
@@ -58,25 +59,21 @@ const SERVER_CAPABILITIES: [&str; 8] = [
 ];
 
 #[derive(Clone)]
-pub struct DbusNotificationHandler<F1, F2, F3>
-where
-    F1: Fn(Notification),
-    F2: Fn(u32),
-    F3: Fn(u32),
-{
+pub struct DbusNotificationHandler {
     pub id_count: Arc<Mutex<u32>>,
-    pub on_notification: F1,
-    pub on_close: F2,
-    pub on_new_id: F3,
+    pub sender: tokio::sync::mpsc::Sender<ServerEvent>,
 }
 
-impl<F1, F2, F3> dbus_definition::OrgFreedesktopNotifications
-    for DbusNotificationHandler<F1, F2, F3>
-where
-    F1: Fn(Notification),
-    F2: Fn(u32),
-    F3: Fn(u32),
-{
+pub enum ServerEvent {
+    ToggleNotificationCenter,
+    CloseNotificationCenter,
+    OpenNotificationCenter,
+    CloseNotification(u32),
+    NewNotification(Box<Notification>),
+    NewNotificationId(u32),
+}
+
+impl dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler {
     fn notify(
         &mut self,
         app_name: String,
@@ -99,7 +96,11 @@ where
                 replaces_id
             }
         };
-        (self.on_new_id)(id);
+        let sender = self.sender.clone();
+        tokio::spawn(async move {
+            let result = sender.send(ServerEvent::NewNotificationId(id)).await;
+            debug!("{:?}", result);
+        });
 
         let image_data = match prop_cast::<VecDeque<Box<dyn RefArg>>>(&hints, "image-data") {
             Some(v) => ImageData::try_from(v).ok(),
@@ -156,13 +157,23 @@ where
             app_icon,
         };
 
-        (self.on_notification)(notification);
+        let sender = self.sender.clone();
+        tokio::spawn(async move {
+            let result = sender
+                .send(ServerEvent::NewNotification(Box::new(notification)))
+                .await;
+            debug!("{:?}", result);
+        });
 
         Ok(id)
     }
 
     fn close_notification(&mut self, id: u32) -> Result<(), dbus::MethodErr> {
-        (self.on_close)(id);
+        let sender = self.sender.clone();
+        tokio::spawn(async move {
+            let result = sender.send(ServerEvent::CloseNotification(id)).await;
+            debug!("{:?}", result);
+        });
         Ok(())
     }
 

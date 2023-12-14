@@ -7,84 +7,36 @@ use dbus::Path;
 use dbus_crossroads::Crossroads;
 use dbus_tokio::connection;
 use futures::Future;
+use tokio::sync::mpsc::channel;
 use tokio::task::JoinHandle;
 
 use crate::notification_dbus::dbus_notification_handler::DbusNotificationHandler;
-use crate::notification_dbus::Notification;
 
 use super::dbus_definition;
+use super::dbus_notification_handler::ServerEvent;
 
 pub const NOTIFICATION_INTERFACE: &str = "org.freedesktop.Notifications";
 pub const NOTIFICATION_PATH: &str = "/org/freedesktop/Notifications";
 
-pub struct NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>
+pub struct NotificationServerCoreBuilder<F7, F7Fut>
 where
-    F1: Fn(Notification) + Send + Clone + 'static,
-    F2: Fn(u32) + Send + Clone + 'static,
-    F3: Fn() + Send + Clone + 'static,
-    F4: Fn() + Send + Clone + 'static,
-    F5: Fn() + Send + Clone + 'static,
-    F6: Fn(u32) + Send + Clone + 'static,
     F7: Fn() -> F7Fut + Send + Clone + 'static,
     F7Fut: Future<Output = u64> + Send + 'static,
 {
     start_id: Option<u32>,
-    on_notification: Option<F1>,
-    on_close: Option<F2>,
-    on_open_notification_center: Option<F3>,
-    on_close_notification_center: Option<F4>,
-    on_toggle_notification_center: Option<F5>,
-    on_new_id: Option<F6>,
     notification_count: Option<F7>,
 }
 
-impl<F1, F2, F3, F4, F5, F6, F7, F7Fut>
-    NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>
+impl<F7, F7Fut> NotificationServerCoreBuilder<F7, F7Fut>
 where
-    F1: Fn(Notification) + Send + Clone + 'static,
-    F2: Fn(u32) + Send + Clone + 'static,
-    F3: Fn() + Send + Clone + 'static,
-    F4: Fn() + Send + Clone + 'static,
-    F5: Fn() + Send + Clone + 'static,
-    F6: Fn(u32) + Send + Clone + 'static,
     F7: Fn() -> F7Fut + Send + Clone + 'static,
     F7Fut: Future<Output = u64> + Send + 'static,
 {
     fn new() -> Self {
         NotificationServerCoreBuilder {
             start_id: None,
-            on_notification: None,
-            on_close: None,
-            on_open_notification_center: None,
-            on_close_notification_center: None,
-            on_toggle_notification_center: None,
-            on_new_id: None,
             notification_count: None,
         }
-    }
-    pub fn on_notification(mut self, f: F1) -> Self {
-        self.on_notification = Some(f);
-        self
-    }
-    pub fn on_close(mut self, f: F2) -> Self {
-        self.on_close = Some(f);
-        self
-    }
-    pub fn on_open_notification_center(mut self, f: F3) -> Self {
-        self.on_open_notification_center = Some(f);
-        self
-    }
-    pub fn on_close_notification_center(mut self, f: F4) -> Self {
-        self.on_close_notification_center = Some(f);
-        self
-    }
-    pub fn on_toggle_notification_center(mut self, f: F5) -> Self {
-        self.on_toggle_notification_center = Some(f);
-        self
-    }
-    pub fn on_new_id(mut self, f: F6) -> Self {
-        self.on_new_id = Some(f);
-        self
     }
     pub fn notification_count(mut self, f: F7) -> Self {
         self.notification_count = Some(f);
@@ -94,15 +46,20 @@ where
         self.start_id = Some(id);
         self
     }
-    pub fn run(self) -> anyhow::Result<NotificationServerCore> {
+    pub fn run(
+        self,
+    ) -> anyhow::Result<(
+        NotificationServerCore,
+        tokio::sync::mpsc::Receiver<ServerEvent>,
+    )> {
         let mut core = NotificationServerCore {
             handle: None,
             connection: None,
         };
 
-        core.run(self)?;
+        let recv = core.run(self)?;
 
-        Ok(core)
+        Ok((core, recv))
     }
 }
 
@@ -112,34 +69,22 @@ pub struct NotificationServerCore {
 }
 
 impl NotificationServerCore {
-    pub fn builder<F1, F2, F3, F4, F5, F6, F7, F7Fut>(
-    ) -> NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>
+    pub fn builder<F7, F7Fut>() -> NotificationServerCoreBuilder<F7, F7Fut>
     where
-        F1: Fn(Notification) + Send + Clone + 'static,
-        F2: Fn(u32) + Send + Clone + 'static,
-        F3: Fn() + Send + Clone + 'static,
-        F4: Fn() + Send + Clone + 'static,
-        F5: Fn() + Send + Clone + 'static,
-        F6: Fn(u32) + Send + Clone + 'static,
         F7: Fn() -> F7Fut + Send + Clone + 'static,
         F7Fut: Future<Output = u64> + Send + 'static,
     {
         NotificationServerCoreBuilder::new()
     }
-    pub fn run<F1, F2, F3, F4, F5, F6, F7, F7Fut>(
+    pub fn run<F7, F7Fut>(
         &mut self,
-        core_builder: NotificationServerCoreBuilder<F1, F2, F3, F4, F5, F6, F7, F7Fut>,
-    ) -> anyhow::Result<()>
+        core_builder: NotificationServerCoreBuilder<F7, F7Fut>,
+    ) -> anyhow::Result<tokio::sync::mpsc::Receiver<ServerEvent>>
     where
-        F1: Fn(Notification) + Send + Clone + 'static,
-        F2: Fn(u32) + Send + Clone + 'static,
-        F3: Fn() + Send + Clone + 'static,
-        F4: Fn() + Send + Clone + 'static,
-        F5: Fn() + Send + Clone + 'static,
-        F6: Fn(u32) + Send + Clone + 'static,
         F7: Fn() -> F7Fut + Send + Clone + 'static,
         F7Fut: Future<Output = u64> + Send + 'static,
     {
+        let (sndr, recv) = channel::<ServerEvent>(20);
         // Connect to the D-Bus session bus (this is blocking, unfortunately).
         let (resource, c) = connection::new_session_sync()?;
 
@@ -183,34 +128,38 @@ impl NotificationServerCore {
                 &[token],
                 DbusNotificationHandler {
                     id_count: Arc::new(core_builder.start_id.unwrap().into()),
-                    on_notification: core_builder.on_notification.unwrap(),
-                    on_close: core_builder.on_close.unwrap(),
-                    on_new_id: core_builder.on_new_id.unwrap(),
+                    sender: sndr.clone(),
                 },
             );
 
             // register our custom methods
             let token = cr.register(NOTIFICATION_INTERFACE, |builder| {
+                let sender = sndr.clone();
                 builder.method_with_cr_async("OpenNC", (), ("reply",), move |mut ctx, _, ()| {
-                    if let Some(func) = core_builder.on_open_notification_center.clone().take() {
-                        func()
-                    }
+                    let sender = sender.clone();
+                    tokio::spawn(
+                        async move { sender.send(ServerEvent::OpenNotificationCenter).await },
+                    );
                     let message = (String::from("Notification center open"),);
                     async move { ctx.reply(Ok(message)) }
                 });
 
+                let sender = sndr.clone();
                 builder.method_with_cr_async("CloseNC", (), ("reply",), move |mut ctx, _, ()| {
-                    if let Some(func) = core_builder.on_close_notification_center.clone().take() {
-                        func();
-                    }
+                    let sender = sender.clone();
+                    tokio::spawn(
+                        async move { sender.send(ServerEvent::CloseNotificationCenter).await },
+                    );
                     let message = (String::from("Notification center closed"),);
                     async move { ctx.reply(Ok(message)) }
                 });
 
+                let sender = sndr.clone();
                 builder.method_with_cr_async("ToggleNC", (), ("reply",), move |mut ctx, _, ()| {
-                    if let Some(func) = core_builder.on_toggle_notification_center.clone().take() {
-                        func();
-                    }
+                    let sender = sender.clone();
+                    tokio::spawn(async move {
+                        sender.send(ServerEvent::ToggleNotificationCenter).await
+                    });
                     let message = (String::from("Notification center toggled"),);
                     async move { ctx.reply(Ok(message)) }
                 });
@@ -249,7 +198,7 @@ impl NotificationServerCore {
 
         self.handle = Some(handle);
         self.connection = Some(connection);
-        Ok(())
+        Ok(recv)
     }
 
     pub fn invoke_action(&self, id: u32, action_key: String) {

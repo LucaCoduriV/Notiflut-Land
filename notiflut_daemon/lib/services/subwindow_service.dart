@@ -102,8 +102,10 @@ class SubWindowService extends ChangeNotifier {
 
   void updateTimer(int id, Timer timer) {
     final index = popups.indexWhere((tuple) => tuple.$1.id == id);
-    final tuple = popups[index];
-    popups[index] = (tuple.$1, timer);
+    if (index != -1) {
+      final tuple = popups[index];
+      popups[index] = (tuple.$1, timer);
+    }
   }
 
   void closePopupWithDate(int id, Timestamp date) {
