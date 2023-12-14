@@ -64,14 +64,10 @@ impl NotificationServer {
         .await
         .unwrap();
 
-        let db_clone1 = Arc::clone(&self.db);
-        let db_clone2 = Arc::clone(&self.db);
-        let db_clone3 = Arc::clone(&self.db);
-        let db_clone4 = Arc::clone(&self.db);
-        let db_clone5 = Arc::clone(&self.db);
+        let db = Arc::clone(&self.db);
         let config = Arc::clone(&self.config);
 
-        let id = match db_clone4.get_app_settings().await.unwrap_or(None) {
+        let id = match self.db.get_app_settings().await.unwrap_or(None) {
             Some(a) => a.id_count,
             None => 1,
         };
@@ -79,7 +75,7 @@ impl NotificationServer {
         let (core, mut core_recv) = NotificationServerCore::builder()
             .start_id(id)
             .notification_count(move || {
-                let db = db_clone5.clone();
+                let db = db.clone();
                 async move {
                     match db.get_notifications_count().await {
                         Ok(res) => res.unwrap_or(0),
@@ -92,8 +88,8 @@ impl NotificationServer {
             })
             .run()?;
 
+        let db = self.db.clone();
         tokio::spawn(async move {
-            let sndr = sndr;
             while let Some(event) = core_recv.recv().await {
                 match event {
                     InnerServerEvent::ToggleNotificationCenter => {
@@ -115,7 +111,7 @@ impl NotificationServer {
                             .unwrap();
                     }
                     InnerServerEvent::CloseNotification(id) => {
-                        let db = db_clone2.clone();
+                        let db = db.clone();
                         tokio::spawn(async move {
                             match db.delete_notification(id.into()).await {
                                 Ok(_) => (),
@@ -157,7 +153,7 @@ impl NotificationServer {
                         }
 
                         let n2 = notification.clone();
-                        let db = db_clone1.clone();
+                        let db = db.clone();
                         tokio::spawn(async move {
                             match db.put_notification(&n2).await {
                                 Ok(_) => (),
@@ -174,7 +170,7 @@ impl NotificationServer {
                             .unwrap();
                     }
                     InnerServerEvent::NewNotificationId(new_id) => {
-                        let db = db_clone3.clone();
+                        let db = db.clone();
                         tokio::spawn(async move {
                             let mut app_settings = db
                                 .get_app_settings()
