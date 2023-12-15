@@ -2,7 +2,7 @@ mod general_settings;
 mod theme;
 
 use serde::{de::DeserializeOwned, Serialize};
-use std::fs;
+use std::{fs, path::PathBuf};
 
 pub use general_settings::{NotificationEmitterSettings, Settings, UrgencyLevel};
 pub use theme::{
@@ -24,8 +24,7 @@ where
 {
     fn write_file(&self) -> anyhow::Result<()> {
         let filename = Self::file_name();
-        let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
-        let config_path = xdg_dirs.place_config_file(filename)?;
+        let config_path = get_path(filename)?;
         let config_str = toml::to_string(self)?;
         if let Some(path) = config_path.parent() {
             fs::create_dir_all(path)?;
@@ -41,19 +40,28 @@ where
 
     fn from_file() -> Self {
         let config: anyhow::Result<T> = read_config_impl(Self::file_name());
+
         match config {
             Ok(cfg) => cfg,
-            Err(_) => Default::default(),
+            Err(_) => {
+                let cfg = Self::default();
+                cfg.write_file().unwrap();
+                cfg
+            }
         }
     }
+}
+
+fn get_path(filename: &str) -> anyhow::Result<PathBuf> {
+    let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
+    xdg_dirs.place_config_file(filename).map_err(|e| e.into())
 }
 
 fn read_config_impl<T>(filename: &str) -> anyhow::Result<T>
 where
     T: DeserializeOwned,
 {
-    let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
-    let config_path = xdg_dirs.place_config_file(filename)?;
+    let config_path = get_path(filename)?;
 
     let file_content = fs::read_to_string(config_path)?;
     let config: T = toml::from_str(&file_content)?;
