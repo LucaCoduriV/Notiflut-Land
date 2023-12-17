@@ -73,6 +73,8 @@ pub enum InnerServerEvent {
     NewNotification(Box<Notification>),
     NewNotificationId(u32),
     Reload,
+    ThemeDark,
+    ThemeLight,
 }
 
 impl dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler {

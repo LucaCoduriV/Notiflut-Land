@@ -205,6 +205,8 @@ impl NotificationServer {
                             }
                         };
                     }
+                    InnerServerEvent::ThemeDark => todo!(),
+                    InnerServerEvent::ThemeLight => todo!(),
                 };
             }
         });

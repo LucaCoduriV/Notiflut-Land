@@ -174,6 +174,29 @@ impl NotificationServerCore {
                     async move { ctx.reply(Ok(message)) }
                 });
 
+                let sender = sndr.clone();
+                builder.method_with_cr_async("ThemeDark", (), ("reply",), move |mut ctx, _, ()| {
+                    let sender = sender.clone();
+                    tokio::spawn(async move { sender.send(InnerServerEvent::ThemeDark).await });
+                    let message = (String::from("Notification center reloaded"),);
+                    async move { ctx.reply(Ok(message)) }
+                });
+
+                let sender = sndr.clone();
+                builder.method_with_cr_async(
+                    "ThemeLight",
+                    (),
+                    ("reply",),
+                    move |mut ctx, _, ()| {
+                        let sender = sender.clone();
+                        tokio::spawn(
+                            async move { sender.send(InnerServerEvent::ThemeLight).await },
+                        );
+                        let message = (String::from("Notification center reloaded"),);
+                        async move { ctx.reply(Ok(message)) }
+                    },
+                );
+
                 builder.method_with_cr_async(
                     "notificationCount",
                     (),
