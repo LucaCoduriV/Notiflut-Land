@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -25,4 +25,12 @@ pub enum Commands {
         #[arg(short, long)]
         watch: bool,
     },
+    /// Change the current selected theme
+    Theme { variante: ThemeArgs },
+}
+
+#[derive(ValueEnum, Clone)]
+pub enum ThemeArgs {
+    Dark,
+    Light,
 }

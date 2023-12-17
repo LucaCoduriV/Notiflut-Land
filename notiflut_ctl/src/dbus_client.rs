@@ -62,6 +62,22 @@ impl DbusClient {
         Ok(result.0)
     }
 
+    pub fn set_light_theme(&self) -> Result<String> {
+        let result: (String,) = self
+            .proxy
+            .method_call(NOTIFICATION_INTERFACE, "ThemeLight", ())?;
+
+        Ok(result.0)
+    }
+
+    pub fn set_dark_theme(&self) -> Result<String> {
+        let result: (String,) = self
+            .proxy
+            .method_call(NOTIFICATION_INTERFACE, "ThemeDark", ())?;
+
+        Ok(result.0)
+    }
+
     pub fn get_notification_count(&self) -> Result<u64> {
         let result: (u64,) =
             self.proxy

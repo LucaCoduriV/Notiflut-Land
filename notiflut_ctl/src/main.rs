@@ -4,6 +4,8 @@ use clap::Parser;
 use cli::Commands;
 use notify::{RecursiveMode, Watcher};
 
+use crate::cli::ThemeArgs;
+
 mod cli;
 mod dbus_client;
 mod dto;
@@ -53,6 +55,12 @@ fn main() -> anyhow::Result<()> {
             "Watch end".to_string()
         }
         Commands::Reload { watch: false } => dbus_client.reload()?.to_string(),
+        Commands::Theme {
+            variante: ThemeArgs::Dark,
+        } => dbus_client.set_dark_theme()?.to_string(),
+        Commands::Theme {
+            variante: ThemeArgs::Light,
+        } => dbus_client.set_light_theme()?.to_string(),
     };
 
     println!("{}", result);
