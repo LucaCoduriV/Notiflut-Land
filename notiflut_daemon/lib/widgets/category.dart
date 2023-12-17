@@ -54,7 +54,7 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                         backgroundColor: MaterialStatePropertyAll(
                             widget.backgroundColor != null
                                 ? widget.backgroundColor!
-                                : const Color(0xBBE0E0E0)),
+                                : const Color(0xFFE0E0E0)),
                         shape: const MaterialStatePropertyAll(
                           RoundedRectangleBorder(
                               borderRadius:
@@ -119,7 +119,7 @@ class NotificationTileStack extends StatelessWidget {
     return Container(
       margin: EdgeInsets.fromLTRB(10 + lvl * 10, 0, 10 + lvl * 10, 0),
       decoration: BoxDecoration(
-        color: backgroundColor ?? const Color(0xBBE0E0E0),
+        color: backgroundColor ?? const Color(0xFFE0E0E0),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),

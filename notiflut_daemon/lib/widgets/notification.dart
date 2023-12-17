@@ -90,6 +90,7 @@ class NotificationTile extends StatelessWidget {
       onEnter: onHover,
       onExit: onHoverExit,
       child: Card(
+        surfaceTintColor: Colors.transparent,
         margin: margin,
         color: backgroundColor ?? const Color(0xBBE0E0E0),
         shape: RoundedRectangleBorder(
