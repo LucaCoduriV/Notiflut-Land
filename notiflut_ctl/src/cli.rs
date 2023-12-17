@@ -21,5 +21,8 @@ pub enum Commands {
     /// get notifications count
     Count,
     /// reload configs
-    Reload,
+    Reload {
+        #[arg(short, long)]
+        watch: bool,
+    },
 }

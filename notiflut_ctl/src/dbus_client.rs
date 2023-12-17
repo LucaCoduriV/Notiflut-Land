@@ -10,11 +10,11 @@ pub const NOTIFICATION_INTERFACE: &str = "org.freedesktop.Notifications";
 /// D-Bus path for desktop notifications.
 pub const NOTIFICATION_PATH: &str = "/org/freedesktop/Notifications";
 
-pub struct DbusClient<'a> {
-    proxy: Proxy<'a, Rc<Connection>>,
+pub struct DbusClient {
+    proxy: Proxy<'static, Rc<Connection>>,
 }
 
-impl<'a> DbusClient<'a> {
+impl DbusClient {
     pub fn init() -> Result<Self> {
         let connection = Connection::new_session()?;
         let ref_counter = Rc::new(connection);

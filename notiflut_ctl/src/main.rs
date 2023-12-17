@@ -1,5 +1,8 @@
+use std::{path::Path, sync::mpsc::channel};
+
 use clap::Parser;
 use cli::Commands;
+use notify::{RecursiveMode, Watcher};
 
 mod cli;
 mod dbus_client;
@@ -31,7 +34,25 @@ fn main() -> anyhow::Result<()> {
             serde_json::to_string(&status)?
         }
         Commands::Count => dbus_client.get_notification_count()?.to_string(),
-        Commands::Reload => dbus_client.reload()?.to_string(),
+        Commands::Reload { watch: true } => {
+            let (sndr, recv) = channel::<()>();
+            let mut watcher = notify::recommended_watcher(move |res| match res {
+                Ok(_event) => {
+                    sndr.send(()).unwrap();
+                }
+                Err(e) => println!("watch error: {:?}", e),
+            })?;
+            watcher.watch(
+                Path::new("/home/luca/.config/notiflut"),
+                RecursiveMode::Recursive,
+            )?;
+            for _ in recv.iter() {
+                println!("{}", dbus_client.reload().unwrap());
+            }
+
+            "Watch end".to_string()
+        }
+        Commands::Reload { watch: false } => dbus_client.reload()?.to_string(),
     };
 
     println!("{}", result);
