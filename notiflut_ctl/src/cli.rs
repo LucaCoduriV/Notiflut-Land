@@ -20,4 +20,6 @@ pub enum Commands {
     Status,
     /// get notifications count
     Count,
+    /// reload configs
+    Reload,
 }

@@ -8,11 +8,21 @@ pub struct Color(pub u32);
 #[derive(Deserialize, Serialize, Default, Debug, Clone)]
 pub struct Radius(pub u32);
 
-#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct NotificationStyle {
     pub background_color: Color,
     pub border_radius: Radius,
     pub text_color: Color,
+}
+
+impl Default for NotificationStyle {
+    fn default() -> Self {
+        Self {
+            background_color: Color(0xBBE0E0E0),
+            border_radius: Radius(20),
+            text_color: Color(0xFFFFFFFF),
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Default, Debug, Clone)]

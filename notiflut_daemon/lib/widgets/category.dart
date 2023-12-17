@@ -8,6 +8,7 @@ class NotificationCategory extends StatefulWidget {
   final List<NotificationTile> children;
   final Function()? onClose;
   final bool defaultState;
+  final Color? backgroundColor;
 
   const NotificationCategory({
     required this.appName,
@@ -15,6 +16,7 @@ class NotificationCategory extends StatefulWidget {
     this.children = const [],
     this.onClose,
     super.key,
+    this.backgroundColor,
   });
 
   @override
@@ -48,10 +50,12 @@ class _NotificationCategoryState extends State<NotificationCategory> {
               Row(
                 children: [
                   ElevatedButton(
-                    style: const ButtonStyle(
-                        backgroundColor:
-                            MaterialStatePropertyAll(Color(0xBBE0E0E0)),
-                        shape: MaterialStatePropertyAll(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(
+                            widget.backgroundColor != null
+                                ? widget.backgroundColor!
+                                : const Color(0xBBE0E0E0)),
+                        shape: const MaterialStatePropertyAll(
                           RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
@@ -85,7 +89,10 @@ class _NotificationCategoryState extends State<NotificationCategory> {
         AnimatedCrossFade(
           firstChild: widget.children.isEmpty
               ? NotificationTile.empty()
-              : NotificationTileStack(widget.children[0]),
+              : NotificationTileStack(
+                  widget.children[0],
+                  backgroundColor: widget.backgroundColor,
+                ),
           secondChild: Column(children: widget.children),
           crossFadeState: widget.children.length == 1
               ? CrossFadeState.showSecond
@@ -101,18 +108,23 @@ class _NotificationCategoryState extends State<NotificationCategory> {
 
 class NotificationTileStack extends StatelessWidget {
   final NotificationTile tile;
-  const NotificationTileStack(this.tile, {super.key});
+  final Color? backgroundColor;
+  const NotificationTileStack(
+    this.tile, {
+    super.key,
+    this.backgroundColor,
+  });
 
   Widget buildFakeNotificationBottomTile(BuildContext context, int lvl) {
     return Container(
       margin: EdgeInsets.fromLTRB(10 + lvl * 10, 0, 10 + lvl * 10, 0),
-      decoration: const BoxDecoration(
-        color: Color(0xBBE0E0E0),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: backgroundColor ?? const Color(0xBBE0E0E0),
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black54,
             blurRadius: 1.0,
@@ -146,6 +158,7 @@ class NotificationTileStack extends StatelessWidget {
                     tile.body,
                     actions: tile.actions,
                     margin: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                    backgroundColor: backgroundColor,
                   ),
                 ),
                 buildFakeNotificationBottomTile(context, 1),

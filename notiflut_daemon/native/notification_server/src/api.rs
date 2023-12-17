@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::{ops::Deref, sync::Arc};
+use std::sync::{Arc, Mutex};
 
 use crate::{
     cache,
@@ -34,13 +34,13 @@ pub struct NotificationServer {
     core: Option<Arc<NotificationServerCore>>,
     db: Arc<Database>,
     config: Arc<Settings>,
-    style: Arc<Style>,
+    style: Arc<Mutex<Style>>,
 }
 
 impl NotificationServer {
     pub async fn new() -> Self {
         let config = Arc::new(Settings::from_file());
-        let style = Arc::new(Style::from_file());
+        let style = Arc::new(Mutex::new(Style::from_file()));
         let db = Arc::new(Database::new().await);
         Self {
             core: None,
@@ -58,11 +58,11 @@ impl NotificationServer {
         // setup front-end
         Self::send_notification_in_db(self.db.clone(), sndr.clone());
 
-        sndr.send(NotificationServerEvent::StyleUpdate(Box::new(
-            self.style.deref().clone(),
-        )))
-        .await
-        .unwrap();
+        let style = { self.style.lock().unwrap().clone() };
+
+        sndr.send(NotificationServerEvent::StyleUpdate(Box::new(style)))
+            .await
+            .unwrap();
 
         let db = Arc::clone(&self.db);
         let config = Arc::clone(&self.config);
@@ -89,6 +89,7 @@ impl NotificationServer {
             .run()?;
 
         let db = self.db.clone();
+        let style = self.style.clone();
         tokio::spawn(async move {
             while let Some(event) = core_recv.recv().await {
                 match event {
@@ -182,6 +183,27 @@ impl NotificationServer {
 
                             db.put_appsettings(app_settings).await.unwrap();
                         });
+                    }
+                    InnerServerEvent::Reload => {
+                        let style = {
+                            let mut s = style.lock().unwrap();
+                            if let Err(err) = s.read_file() {
+                                Err(err)
+                            } else {
+                                Ok(s.clone())
+                            }
+                        };
+
+                        match style {
+                            Ok(style) => {
+                                sndr.send(NotificationServerEvent::StyleUpdate(Box::new(style)))
+                                    .await
+                                    .unwrap();
+                            }
+                            Err(err) => {
+                                error!("Couldn't reload: {}", err);
+                            }
+                        };
                     }
                 };
             }

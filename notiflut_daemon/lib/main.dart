@@ -30,7 +30,7 @@ void main(List<String> args) async {
   }
 }
 
-class MainWindow extends StatefulWidget {
+class MainWindow extends StatefulWidget with WatchItStatefulWidgetMixin {
   const MainWindow({super.key});
 
   @override
@@ -52,6 +52,7 @@ class _MainWindowState extends State<MainWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = watchIt<ThemeService>().theme;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Notiflut-Land',
@@ -60,14 +61,16 @@ class _MainWindowState extends State<MainWindow> {
         useMaterial3: true,
       ),
       home: Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.1),
+        backgroundColor: theme != null
+            ? Color(theme.notificationCenterStyle.backgroundColor)
+            : Colors.black.withOpacity(0.1),
         body: NotificationCenter(),
       ),
     );
   }
 }
 
-class SubWindow extends StatefulWidget {
+class SubWindow extends StatefulWidget with WatchItStatefulWidgetMixin {
   const SubWindow({super.key});
 
   @override
@@ -89,6 +92,7 @@ class _SubWindowState extends State<SubWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = watchIt<ThemeService>().theme;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Notiflut-Land',
@@ -97,7 +101,9 @@ class _SubWindowState extends State<SubWindow> {
         useMaterial3: true,
       ),
       home: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme != null
+            ? Color(theme.popupStyle.backgroundColor)
+            : Colors.transparent,
         body: PopupsList(),
       ),
     );

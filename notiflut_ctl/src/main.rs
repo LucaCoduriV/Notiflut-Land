@@ -31,6 +31,7 @@ fn main() -> anyhow::Result<()> {
             serde_json::to_string(&status)?
         }
         Commands::Count => dbus_client.get_notification_count()?.to_string(),
+        Commands::Reload => dbus_client.reload()?.to_string(),
     };
 
     println!("{}", result);

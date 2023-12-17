@@ -54,6 +54,14 @@ impl<'a> DbusClient<'a> {
         Ok(result.0)
     }
 
+    pub fn reload(&self) -> Result<String> {
+        let result: (String,) = self
+            .proxy
+            .method_call(NOTIFICATION_INTERFACE, "Reload", ())?;
+
+        Ok(result.0)
+    }
+
     pub fn get_notification_count(&self) -> Result<u64> {
         let result: (u64,) =
             self.proxy

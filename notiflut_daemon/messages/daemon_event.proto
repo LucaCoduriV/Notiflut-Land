@@ -83,9 +83,14 @@ message NotificationCenterStyle {
   int32 backgroundColor = 1;
 }
 
+message PopupStyle {
+  int32 backgroundColor = 1;
+}
+
 message Theme{
   NotificationStyle notification_style = 1;
   NotificationCenterStyle notification_center_style = 2;
+  PopupStyle popup_style = 3;
 }
 
 message Style {

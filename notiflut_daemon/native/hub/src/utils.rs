@@ -1,6 +1,6 @@
 use notification_server::{
-    Hints, ImageData, ImageSource, Notification, NotificationCenterStyle, NotificationStyle, Style,
-    Theme, Urgency,
+    Hints, ImageData, ImageSource, Notification, NotificationCenterStyle, NotificationStyle,
+    PopupStyle, Style, Theme, Urgency,
 };
 use prost_types::Timestamp;
 use std::convert::Into;
@@ -185,6 +185,7 @@ impl From<Theme> for messages::daemon_event::Theme {
         messages::daemon_event::Theme {
             notification_style: Some(val.notification.into()),
             notification_center_style: Some(val.notification_center.into()),
+            popup_style: Some(val.popup.into()),
         }
     }
 }
@@ -194,6 +195,7 @@ impl From<&Theme> for messages::daemon_event::Theme {
         messages::daemon_event::Theme {
             notification_style: Some(val.notification.clone().into()),
             notification_center_style: Some(val.notification_center.clone().into()),
+            popup_style: Some(val.popup.clone().into()),
         }
     }
 }
@@ -227,6 +229,22 @@ impl From<NotificationCenterStyle> for messages::daemon_event::NotificationCente
 impl From<&NotificationCenterStyle> for messages::daemon_event::NotificationCenterStyle {
     fn from(val: &NotificationCenterStyle) -> Self {
         messages::daemon_event::NotificationCenterStyle {
+            background_color: val.background_color.0 as i32,
+        }
+    }
+}
+
+impl From<PopupStyle> for messages::daemon_event::PopupStyle {
+    fn from(val: PopupStyle) -> Self {
+        messages::daemon_event::PopupStyle {
+            background_color: val.background_color.0 as i32,
+        }
+    }
+}
+
+impl From<&PopupStyle> for messages::daemon_event::PopupStyle {
+    fn from(val: &PopupStyle) -> Self {
+        messages::daemon_event::PopupStyle {
             background_color: val.background_color.0 as i32,
         }
     }

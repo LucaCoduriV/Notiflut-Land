@@ -9,6 +9,7 @@ import 'package:watch_it/watch_it.dart';
 
 import '../services/mainwindow_service.dart';
 import '../services/mediaplayer_service.dart';
+import '../services/theme_service.dart';
 import '../utils.dart';
 import 'category.dart';
 import 'notification.dart';
@@ -44,9 +45,12 @@ class _NotificationCenterState extends State<NotificationCenter> {
 
   @override
   Widget build(BuildContext context) {
-    final notifications = watchIt<MainWindowService>().notifications;
+    final mainWindowService = watchIt<MainWindowService>();
+    final notifications = mainWindowService.notifications;
+    final theme = watchIt<ThemeService>().theme;
     final showMediaPlayer =
         watchPropertyValue((MediaPlayerService s) => s.showMediaPlayerWidget);
+
     final notificationByCategory = notifications
         .fold(<String, List<daemon_event.Notification>>{}, (map, notification) {
       final key = notification.appName;
@@ -76,27 +80,37 @@ class _NotificationCenterState extends State<NotificationCenter> {
           actions: actionsListToMap(n.actions)
               .where((element) => element.$1 != "default")
               .map((e) => NotificationAction(e.$2, () {
-                    di<MainWindowService>().invokeAction(n.id, e.$1);
-                    di<MainWindowService>().closeNotification(n.id);
+                    mainWindowService.invokeAction(n.id, e.$1);
+                    mainWindowService.closeNotification(n.id);
                   }))
               .toList(),
           onTileTap: () {
-            di<MainWindowService>().invokeAction(n.id, "default");
-            di<MainWindowService>().closeNotification(n.id);
+            mainWindowService.invokeAction(n.id, "default");
+            mainWindowService.closeNotification(n.id);
           },
           closeAction: () {
-            di<MainWindowService>().closeNotification(n.id);
+            mainWindowService.closeNotification(n.id);
           },
+          backgroundColor: theme != null
+              ? Color(theme.notificationStyle.backgroundColor)
+              : null,
+          borderRadius: theme != null
+              ? BorderRadius.circular(
+                  theme.notificationStyle.borderRadius.toDouble())
+              : null,
         );
       }).toList();
 
       return NotificationCategory(
         key: Key(appName),
         appName: appName,
-        children: notificationTiles,
-        onClose: (){
-          di<MainWindowService>().closeAllAppNotifications(appName);
+        backgroundColor: theme != null
+            ? Color(theme.notificationStyle.backgroundColor)
+            : null,
+        onClose: () {
+          mainWindowService.closeAllAppNotifications(appName);
         },
+        children: notificationTiles,
       );
     }).toList();
 
@@ -109,10 +123,7 @@ class _NotificationCenterState extends State<NotificationCenter> {
           width: 500,
           color: Colors.transparent,
           child: ListView(
-            children: [
-              if (showMediaPlayer) MediaPlayer(),
-              ...categoryWidgets
-            ],
+            children: [if (showMediaPlayer) MediaPlayer(), ...categoryWidgets],
           ),
         ),
       ],

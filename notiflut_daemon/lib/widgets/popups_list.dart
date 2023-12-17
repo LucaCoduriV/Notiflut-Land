@@ -4,6 +4,8 @@ import 'package:notiflut/utils.dart';
 import 'package:notiflut/widgets/notification.dart';
 import 'package:watch_it/watch_it.dart';
 
+import '../services/theme_service.dart';
+
 class PopupsList extends StatefulWidget with WatchItStatefulWidgetMixin {
   PopupsList({super.key});
 
@@ -18,6 +20,7 @@ class _PopupsListState extends State<PopupsList> {
   Widget build(BuildContext context) {
     final notifications = watchIt<SubWindowService>().popups;
     final notificationService = di<SubWindowService>();
+    final theme = watchIt<ThemeService>().theme;
     resizeWindowAfterBuild();
     return ListView(
       shrinkWrap: true,
@@ -31,6 +34,12 @@ class _PopupsListState extends State<PopupsList> {
           n.appName,
           n.summary,
           n.body,
+          backgroundColor:
+              theme != null ? Color(theme.popupStyle.backgroundColor) : null,
+          borderRadius: theme != null
+              ? BorderRadius.circular(
+                  theme.notificationStyle.borderRadius.toDouble())
+              : null,
           iconProvider: iconeProvider,
           imageProvider: imageProvider,
           createdAt: n.createdAt.toDateTime(),

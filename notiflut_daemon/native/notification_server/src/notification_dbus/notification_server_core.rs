@@ -166,6 +166,14 @@ impl NotificationServerCore {
                     async move { ctx.reply(Ok(message)) }
                 });
 
+                let sender = sndr.clone();
+                builder.method_with_cr_async("Reload", (), ("reply",), move |mut ctx, _, ()| {
+                    let sender = sender.clone();
+                    tokio::spawn(async move { sender.send(InnerServerEvent::Reload).await });
+                    let message = (String::from("Notification center reloaded"),);
+                    async move { ctx.reply(Ok(message)) }
+                });
+
                 builder.method_with_cr_async(
                     "notificationCount",
                     (),
