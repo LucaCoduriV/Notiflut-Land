@@ -2,10 +2,18 @@ use serde::{Deserialize, Serialize};
 
 use super::HasFileName;
 
-#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+trait ThemeLight {
+    fn light() -> Self;
+}
+
+trait ThemeDark {
+    fn dark() -> Self;
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Color(pub u32);
 
-#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Radius(pub u32);
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -15,8 +23,8 @@ pub struct NotificationStyle {
     pub text_color: Color,
 }
 
-impl Default for NotificationStyle {
-    fn default() -> Self {
+impl ThemeLight for NotificationStyle {
+    fn light() -> Self {
         Self {
             background_color: Color(0xBBE0E0E0),
             border_radius: Radius(20),
@@ -25,26 +33,96 @@ impl Default for NotificationStyle {
     }
 }
 
-#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+impl ThemeDark for NotificationStyle {
+    fn dark() -> Self {
+        Self {
+            background_color: Color(0xBBE0E0E0),
+            border_radius: Radius(20),
+            text_color: Color(0xFFFFFFFF),
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct NotificationCenterStyle {
     pub background_color: Color,
 }
 
-#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+impl ThemeLight for NotificationCenterStyle {
+    fn light() -> Self {
+        Self {
+            background_color: Color(0x00FFFFFF),
+        }
+    }
+}
+
+impl ThemeDark for NotificationCenterStyle {
+    fn dark() -> Self {
+        Self {
+            background_color: Color(0x00FFFFFF),
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct PopupStyle {
     pub background_color: Color,
 }
 
-#[derive(Deserialize, Serialize, Default, Debug, Clone)]
+impl ThemeLight for PopupStyle {
+    fn light() -> Self {
+        Self {
+            background_color: Color(0x00FFFFFF),
+        }
+    }
+}
+
+impl ThemeDark for PopupStyle {
+    fn dark() -> Self {
+        Self {
+            background_color: Color(0x00FFFFFF),
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Theme {
     pub notification_center: NotificationCenterStyle,
     pub popup: PopupStyle,
     pub notification: NotificationStyle,
 }
 
+impl Default for Theme {
+    fn default() -> Self {
+        Self::light()
+    }
+}
+
+impl ThemeLight for Theme {
+    fn light() -> Self {
+        Self {
+            notification_center: NotificationCenterStyle::light(),
+            popup: PopupStyle::light(),
+            notification: NotificationStyle::light(),
+        }
+    }
+}
+
+impl ThemeDark for Theme {
+    fn dark() -> Self {
+        Self {
+            notification_center: NotificationCenterStyle::dark(),
+            popup: PopupStyle::dark(),
+            notification: NotificationStyle::dark(),
+        }
+    }
+}
+
 #[derive(Deserialize, Serialize, Default, Debug, Clone)]
 pub struct Style {
+    #[serde(default = "Theme::light")]
     pub light: Theme,
+    #[serde(default = "Theme::dark")]
     pub dark: Theme,
 }
 
