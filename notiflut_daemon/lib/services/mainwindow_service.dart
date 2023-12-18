@@ -76,8 +76,18 @@ class MainWindowService extends ChangeNotifier {
     final operation = settingsEvent.whichOperation();
     switch (operation) {
       case settings_event.SettingsSignal_Operation.theme:
-        print("SETTINGS: " + settingsEvent.theme.toString());
-      // TODO: Handle this case.
+        final themeService = di<ThemeService>();
+        final theme = switch (settingsEvent.theme) {
+          settings_event.ThemeVariante.Light => ThemeType.light,
+          settings_event.ThemeVariante.Dark => ThemeType.dark,
+          _ => null,
+        };
+        if (theme != null) {
+          themeService.type = theme;
+        } else {
+          print("Error theme variante not existing");
+        }
+
       case settings_event.SettingsSignal_Operation.notSet:
         break;
     }

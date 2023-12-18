@@ -65,7 +65,11 @@ impl NotificationServer {
             .await
             .unwrap();
 
-        // TODO send selected theme from settings
+        sndr.send(NotificationServerEvent::ThemeSelected(
+            self.config.theme.clone(),
+        ))
+        .await
+        .unwrap();
 
         let db = Arc::clone(&self.db);
         let config = Arc::clone(&self.config);

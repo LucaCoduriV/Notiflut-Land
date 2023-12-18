@@ -4,7 +4,7 @@ use crate::Urgency;
 
 use super::HasFileName;
 
-#[derive(Default, Deserialize, Serialize, Debug)]
+#[derive(Default, Deserialize, Serialize, Debug, Clone)]
 pub enum ThemeSettings {
     #[default]
     Light,
