@@ -178,7 +178,7 @@ impl NotificationServerCore {
                 builder.method_with_cr_async("ThemeDark", (), ("reply",), move |mut ctx, _, ()| {
                     let sender = sender.clone();
                     tokio::spawn(async move { sender.send(InnerServerEvent::ThemeDark).await });
-                    let message = (String::from("Notification center reloaded"),);
+                    let message = (String::from("Theme changed to dark"),);
                     async move { ctx.reply(Ok(message)) }
                 });
 
@@ -192,7 +192,7 @@ impl NotificationServerCore {
                         tokio::spawn(
                             async move { sender.send(InnerServerEvent::ThemeLight).await },
                         );
-                        let message = (String::from("Notification center reloaded"),);
+                        let message = (String::from("Theme changed to light"),);
                         async move { ctx.reply(Ok(message)) }
                     },
                 );

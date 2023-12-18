@@ -57,6 +57,7 @@ async fn main() {
                 notification_server::NotificationServerEvent::StyleUpdate(style) => {
                     on_style_change(&style)
                 }
+                notification_server::NotificationServerEvent::ThemeSelected(_) => todo!(),
             }
         }
     });

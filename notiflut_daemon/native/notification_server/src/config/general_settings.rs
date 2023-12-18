@@ -4,9 +4,17 @@ use crate::Urgency;
 
 use super::HasFileName;
 
+#[derive(Default, Deserialize, Serialize, Debug)]
+pub enum ThemeSettings {
+    #[default]
+    Light,
+    Dark,
+}
+
 #[derive(Default, Deserialize, Serialize)]
 pub struct Settings {
     pub do_not_disturb: bool,
+    pub theme: ThemeSettings,
     pub emitters_settings: Vec<NotificationEmitterSettings>,
 }
 
@@ -85,12 +93,13 @@ mod test {
 
     use crate::config::{ConfigIO, HasFileName};
 
-    use super::{NotificationEmitterSettings, Settings};
+    use super::{NotificationEmitterSettings, Settings, ThemeSettings};
 
     #[test]
     fn test_write_config() -> anyhow::Result<()> {
         let cfg = Settings {
             do_not_disturb: false,
+            theme: ThemeSettings::Light,
             emitters_settings: vec![NotificationEmitterSettings {
                 name: "test".to_string(),
                 ignore: true,

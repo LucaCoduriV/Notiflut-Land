@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     cache,
-    config::{ConfigIO, Settings},
+    config::{ConfigIO, Settings, ThemeSettings},
     db::{AppSettings, Database},
     notification_dbus::ImageSource,
     notification_dbus::{notification_server_core::NotificationServerCore, InnerServerEvent},
@@ -28,6 +28,7 @@ pub enum NotificationServerEvent {
     CloseNotification(u32),
     NewNotification(Box<Notification>),
     StyleUpdate(Box<Style>),
+    ThemeSelected(ThemeSettings),
 }
 
 pub struct NotificationServer {
@@ -63,6 +64,8 @@ impl NotificationServer {
         sndr.send(NotificationServerEvent::StyleUpdate(Box::new(style)))
             .await
             .unwrap();
+
+        // TODO send selected theme from settings
 
         let db = Arc::clone(&self.db);
         let config = Arc::clone(&self.config);
@@ -205,8 +208,16 @@ impl NotificationServer {
                             }
                         };
                     }
-                    InnerServerEvent::ThemeDark => todo!(),
-                    InnerServerEvent::ThemeLight => todo!(),
+                    InnerServerEvent::ThemeDark => {
+                        sndr.send(NotificationServerEvent::ThemeSelected(ThemeSettings::Dark))
+                            .await
+                            .unwrap();
+                    }
+                    InnerServerEvent::ThemeLight => {
+                        sndr.send(NotificationServerEvent::ThemeSelected(ThemeSettings::Light))
+                            .await
+                            .unwrap();
+                    }
                 };
             }
         });
