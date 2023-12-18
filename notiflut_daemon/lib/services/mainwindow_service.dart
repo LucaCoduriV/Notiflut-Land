@@ -5,9 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:notiflut/messages/daemon_event.pb.dart';
-import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
-    show Notification;
+import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event;
 import 'package:notiflut/messages/app_event.pb.dart' as app_event;
+import 'package:notiflut/messages/theme_event.pb.dart' as theme_event;
+import 'package:notiflut/messages/settings_event.pb.dart' as settings_event;
 import 'package:notiflut/services/subwindow_service.dart';
 import 'package:notiflut/services/theme_service.dart';
 import 'package:watch_it/watch_it.dart';
@@ -60,11 +61,29 @@ class MainWindowService extends ChangeNotifier {
     }
   }
 
-  _handleEvents(RustSignal event) async {
-    if (event.resource != app_event.ID) {
-      return;
-    }
+  _handleThemeEvents(RustSignal event) async {
+    final style =
+        await compute(theme_event.Style.fromBuffer, event.message!.toList());
 
+    final themeService = di<ThemeService>();
+    themeService.style = style;
+    print("STYLE UPDATED");
+  }
+
+  _handleSettingsEvents(RustSignal event) async {
+    final settingsEvent = await compute(
+        settings_event.SettingsSignal.fromBuffer, event.message!.toList());
+    final operation = settingsEvent.whichOperation();
+    switch (operation) {
+      case settings_event.SettingsSignal_Operation.theme:
+        print("SETTINGS: " + settingsEvent.theme.toString());
+      // TODO: Handle this case.
+      case settings_event.SettingsSignal_Operation.notSet:
+        break;
+    }
+  }
+
+  _handleNotificationEvents(RustSignal event) async {
     final appEvent =
         await compute(SignalAppEvent.fromBuffer, event.message!.toList());
     switch (appEvent.type) {
@@ -120,11 +139,23 @@ class MainWindowService extends ChangeNotifier {
         notifications.removeWhere(
             (element) => element.id == appEvent.notificationId.toInt());
         break;
-      case SignalAppEvent_AppEventType.StyleUpdated:
-        final themeService = di<ThemeService>();
-        themeService.style = appEvent.style;
-        print("STYLE UPDATED");
+    }
+  }
+
+  _handleEvents(RustSignal event) async {
+    switch (event.resource) {
+      case daemon_event.ID:
+        _handleNotificationEvents(event);
         break;
+      case theme_event.ID:
+        _handleThemeEvents(event);
+        break;
+      case settings_event.ID:
+        _handleSettingsEvents(event);
+        break;
+
+      default:
+        return;
     }
   }
 

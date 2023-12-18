@@ -1,0 +1,12 @@
+syntax = "proto3";
+package settings_event;
+message SettingsSignal {
+  oneof operation {
+    ThemeVariante theme = 2;
+  }
+}
+
+enum ThemeVariante {
+  Light = 0;
+  Dark = 1;
+}

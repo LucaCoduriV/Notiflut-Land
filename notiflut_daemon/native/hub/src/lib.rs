@@ -2,9 +2,15 @@ use std::sync::Arc;
 
 use bridge::RustSignal;
 use bridge::{respond_to_dart, send_rust_signal};
-use messages::app_event::ID;
+use messages::daemon_event::ID as DAEMON_EVENT_ID;
 use messages::daemon_event::{signal_app_event, SignalAppEvent};
-use notification_server::NotificationCenterCommand;
+use messages::settings_event::settings_signal::Operation;
+use messages::settings_event::SettingsSignal;
+use messages::settings_event::ThemeVariante;
+use messages::settings_event::ID as SETTINGS_EVENT_ID;
+use messages::theme_event::Style;
+use messages::theme_event::ID as THEME_EVENT_ID;
+use notification_server::{NotificationCenterCommand, ThemeSettings};
 use prost::Message;
 use tokio_with_wasm::tokio;
 use tracing::Level;
@@ -57,7 +63,9 @@ async fn main() {
                 notification_server::NotificationServerEvent::StyleUpdate(style) => {
                     on_style_change(&style)
                 }
-                notification_server::NotificationServerEvent::ThemeSelected(_) => todo!(),
+                notification_server::NotificationServerEvent::ThemeSelected(theme) => {
+                    on_theme_selected(theme)
+                }
             }
         }
     });
@@ -76,11 +84,10 @@ fn on_notification(n: &notification_server::Notification) {
         r#type: signal_app_event::AppEventType::NewNotification.into(),
         notification: Some(n.into()),
         notification_id: None,
-        style: None,
     };
 
     let rust_signal = RustSignal {
-        resource: ID,
+        resource: DAEMON_EVENT_ID,
         message: Some(signal_message.encode_to_vec()),
         blob: None,
     };
@@ -88,15 +95,9 @@ fn on_notification(n: &notification_server::Notification) {
 }
 
 fn on_style_change(s: &notification_server::Style) {
-    let signal_message = SignalAppEvent {
-        r#type: signal_app_event::AppEventType::StyleUpdated.into(),
-        notification: None,
-        notification_id: None,
-        style: Some(s.into()),
-    };
-
+    let signal_message: Style = s.into();
     let rust_signal = RustSignal {
-        resource: ID,
+        resource: THEME_EVENT_ID,
         message: Some(signal_message.encode_to_vec()),
         blob: None,
     };
@@ -108,11 +109,10 @@ fn on_notification_close(n_id: u32) {
         r#type: signal_app_event::AppEventType::CloseNotification.into(),
         notification: None,
         notification_id: Some(n_id.into()),
-        style: None,
     };
 
     let rust_signal = RustSignal {
-        resource: ID,
+        resource: DAEMON_EVENT_ID,
         message: Some(signal_message.encode_to_vec()),
         blob: None,
     };
@@ -132,7 +132,20 @@ fn on_notification_center_state_change(state: NotificationCenterCommand) {
         ..Default::default()
     };
     let rust_signal = RustSignal {
-        resource: ID,
+        resource: DAEMON_EVENT_ID,
+        message: Some(signal_message.encode_to_vec()),
+        blob: None,
+    };
+    send_rust_signal(rust_signal);
+}
+
+fn on_theme_selected(theme_settings: ThemeSettings) {
+    let variante: ThemeVariante = theme_settings.into();
+    let signal_message = SettingsSignal {
+        operation: Some(Operation::Theme(variante.into())),
+    };
+    let rust_signal = RustSignal {
+        resource: SETTINGS_EVENT_ID,
         message: Some(signal_message.encode_to_vec()),
         blob: None,
     };

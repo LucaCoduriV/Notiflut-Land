@@ -1,6 +1,6 @@
 use notification_server::{
     Hints, ImageData, ImageSource, Notification, NotificationCenterStyle, NotificationStyle,
-    PopupStyle, Style, Theme, Urgency,
+    PopupStyle, Style, Theme, ThemeSettings, Urgency,
 };
 use prost_types::Timestamp;
 use std::convert::Into;
@@ -120,12 +120,12 @@ impl From<ImageSource> for messages::daemon_event::ImageSource {
 impl From<&ImageSource> for messages::daemon_event::ImageSource {
     fn from(val: &ImageSource) -> Self {
         match val {
-            ImageSource::Data(ref d) => messages::daemon_event::ImageSource {
+            ImageSource::Data(ref d) => Self {
                 r#type: messages::daemon_event::image_source::ImageSourceType::Data.into(),
                 image_data: Some(d.into()),
                 path: None,
             },
-            ImageSource::Path(p) => messages::daemon_event::ImageSource {
+            ImageSource::Path(p) => Self {
                 r#type: messages::daemon_event::image_source::ImageSourceType::Path.into(),
                 image_data: None,
                 path: Some(p.clone()),
@@ -136,7 +136,7 @@ impl From<&ImageSource> for messages::daemon_event::ImageSource {
 
 impl From<ImageData> for messages::daemon_event::ImageData {
     fn from(val: ImageData) -> Self {
-        messages::daemon_event::ImageData {
+        Self {
             width: val.width,
             height: val.height,
             rowstride: val.rowstride,
@@ -150,7 +150,7 @@ impl From<ImageData> for messages::daemon_event::ImageData {
 
 impl From<&ImageData> for messages::daemon_event::ImageData {
     fn from(val: &ImageData) -> Self {
-        messages::daemon_event::ImageData {
+        Self {
             width: val.width,
             height: val.height,
             rowstride: val.rowstride,
@@ -162,27 +162,27 @@ impl From<&ImageData> for messages::daemon_event::ImageData {
     }
 }
 
-impl From<Style> for messages::daemon_event::Style {
+impl From<Style> for messages::theme_event::Style {
     fn from(val: Style) -> Self {
-        messages::daemon_event::Style {
+        Self {
             light: Some(val.light.into()),
             dark: Some(val.dark.into()),
         }
     }
 }
 
-impl From<&Style> for messages::daemon_event::Style {
+impl From<&Style> for messages::theme_event::Style {
     fn from(val: &Style) -> Self {
-        messages::daemon_event::Style {
+        Self {
             light: Some(val.light.clone().into()),
             dark: Some(val.dark.clone().into()),
         }
     }
 }
 
-impl From<Theme> for messages::daemon_event::Theme {
+impl From<Theme> for messages::theme_event::Theme {
     fn from(val: Theme) -> Self {
-        messages::daemon_event::Theme {
+        Self {
             notification_style: Some(val.notification.into()),
             notification_center_style: Some(val.notification_center.into()),
             popup_style: Some(val.popup.into()),
@@ -190,9 +190,9 @@ impl From<Theme> for messages::daemon_event::Theme {
     }
 }
 
-impl From<&Theme> for messages::daemon_event::Theme {
+impl From<&Theme> for messages::theme_event::Theme {
     fn from(val: &Theme) -> Self {
-        messages::daemon_event::Theme {
+        Self {
             notification_style: Some(val.notification.clone().into()),
             notification_center_style: Some(val.notification_center.clone().into()),
             popup_style: Some(val.popup.clone().into()),
@@ -200,52 +200,70 @@ impl From<&Theme> for messages::daemon_event::Theme {
     }
 }
 
-impl From<NotificationStyle> for messages::daemon_event::NotificationStyle {
+impl From<NotificationStyle> for messages::theme_event::NotificationStyle {
     fn from(val: NotificationStyle) -> Self {
-        messages::daemon_event::NotificationStyle {
+        Self {
             background_color: val.background_color.0 as i32,
             border_radius: val.border_radius.0 as i32,
         }
     }
 }
 
-impl From<&NotificationStyle> for messages::daemon_event::NotificationStyle {
+impl From<&NotificationStyle> for messages::theme_event::NotificationStyle {
     fn from(val: &NotificationStyle) -> Self {
-        messages::daemon_event::NotificationStyle {
+        Self {
             background_color: val.background_color.0 as i32,
             border_radius: val.border_radius.0 as i32,
         }
     }
 }
 
-impl From<NotificationCenterStyle> for messages::daemon_event::NotificationCenterStyle {
+impl From<NotificationCenterStyle> for messages::theme_event::NotificationCenterStyle {
     fn from(val: NotificationCenterStyle) -> Self {
-        messages::daemon_event::NotificationCenterStyle {
+        Self {
             background_color: val.background_color.0 as i32,
         }
     }
 }
 
-impl From<&NotificationCenterStyle> for messages::daemon_event::NotificationCenterStyle {
+impl From<&NotificationCenterStyle> for messages::theme_event::NotificationCenterStyle {
     fn from(val: &NotificationCenterStyle) -> Self {
-        messages::daemon_event::NotificationCenterStyle {
+        Self {
             background_color: val.background_color.0 as i32,
         }
     }
 }
 
-impl From<PopupStyle> for messages::daemon_event::PopupStyle {
+impl From<PopupStyle> for messages::theme_event::PopupStyle {
     fn from(val: PopupStyle) -> Self {
-        messages::daemon_event::PopupStyle {
+        Self {
             background_color: val.background_color.0 as i32,
         }
     }
 }
 
-impl From<&PopupStyle> for messages::daemon_event::PopupStyle {
+impl From<&PopupStyle> for messages::theme_event::PopupStyle {
     fn from(val: &PopupStyle) -> Self {
-        messages::daemon_event::PopupStyle {
+        Self {
             background_color: val.background_color.0 as i32,
+        }
+    }
+}
+
+impl From<ThemeSettings> for messages::settings_event::ThemeVariante {
+    fn from(val: ThemeSettings) -> Self {
+        match val {
+            ThemeSettings::Light => messages::settings_event::ThemeVariante::Light,
+            ThemeSettings::Dark => messages::settings_event::ThemeVariante::Dark,
+        }
+    }
+}
+
+impl From<&ThemeSettings> for messages::settings_event::ThemeVariante {
+    fn from(val: &ThemeSettings) -> Self {
+        match val {
+            ThemeSettings::Light => messages::settings_event::ThemeVariante::Light,
+            ThemeSettings::Dark => messages::settings_event::ThemeVariante::Dark,
         }
     }
 }

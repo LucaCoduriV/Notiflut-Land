@@ -10,12 +10,10 @@ message SignalAppEvent {
     ShowNotificationCenter = 2;
     HideNotificationCenter = 3;
     ToggleNotificationCenter = 4;
-    StyleUpdated = 5;
   }
   AppEventType type = 1;
   optional Notification notification = 5;
   optional uint64 notificationId = 4;
-  optional Style style = 6;
 }
 
 
@@ -72,28 +70,4 @@ message ImageData {
   int32 bits_per_sample = 5;
   int32 channels = 6;
   repeated uint32 data = 7;
-}
-
-message NotificationStyle {
-  int32 backgroundColor = 1;
-  int32 borderRadius = 2;
-}
-
-message NotificationCenterStyle {
-  int32 backgroundColor = 1;
-}
-
-message PopupStyle {
-  int32 backgroundColor = 1;
-}
-
-message Theme{
-  NotificationStyle notification_style = 1;
-  NotificationCenterStyle notification_center_style = 2;
-  PopupStyle popup_style = 3;
-}
-
-message Style {
-  Theme light = 1;
-  Theme dark = 2;
 }

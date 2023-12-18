@@ -10,6 +10,7 @@ pub use api::NotificationServer;
 pub use api::NotificationServerEvent;
 pub use config::{
     Color, NotificationCenterStyle, NotificationStyle, PopupStyle, Radius, Style, Theme,
+    ThemeSettings,
 };
 pub use notification_dbus::Hints;
 pub use notification_dbus::ImageData;

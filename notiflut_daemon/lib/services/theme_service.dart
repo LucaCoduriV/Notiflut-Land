@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notiflut/messages/daemon_event.pb.dart' as proto;
+import 'package:notiflut/messages/theme_event.pb.dart' as proto;
 
 enum ThemeType {
   light,

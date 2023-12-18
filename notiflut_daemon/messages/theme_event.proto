@@ -1,0 +1,26 @@
+syntax = "proto3";
+package theme_event;
+
+message NotificationStyle {
+  int32 backgroundColor = 1;
+  int32 borderRadius = 2;
+}
+
+message NotificationCenterStyle {
+  int32 backgroundColor = 1;
+}
+
+message PopupStyle {
+  int32 backgroundColor = 1;
+}
+
+message Theme{
+  NotificationStyle notification_style = 1;
+  NotificationCenterStyle notification_center_style = 2;
+  PopupStyle popup_style = 3;
+}
+
+message Style {
+  Theme light = 1;
+  Theme dark = 2;
+}
