@@ -6,7 +6,20 @@ import 'package:watch_it/watch_it.dart';
 import '../services/mediaplayer_service.dart';
 
 class MediaPlayer extends StatefulWidget with WatchItStatefulWidgetMixin {
-  MediaPlayer({super.key});
+  final BorderRadius? borderRadius;
+  final Color? backgroundColor;
+  final Color? titleTextColor;
+  final Color? subtitleTextColor;
+  final Color? bodyTextColor;
+
+  MediaPlayer({
+    super.key,
+    this.borderRadius,
+    this.backgroundColor,
+    this.bodyTextColor,
+    this.titleTextColor,
+    this.subtitleTextColor,
+  });
 
   @override
   State<MediaPlayer> createState() => _MediaPlayerState();
@@ -25,16 +38,30 @@ class _MediaPlayerState extends State<MediaPlayer> {
   Widget build(BuildContext context) {
     final mpService = watchIt<MediaPlayerService>();
     final metadata = mpService.metadata;
-    final color = mpService.bestTextColor ?? Colors.black;
-    final textStyle = TextStyle(
-      color: color,
+    final bodyColor =
+        mpService.bestTextColor ?? widget.bodyTextColor ?? Colors.black;
+    final titleColor =
+        mpService.bestTextColor ?? widget.titleTextColor ?? Colors.black;
+    final subtitleColor =
+        mpService.bestTextColor ?? widget.subtitleTextColor ?? Colors.black;
+
+    final bodyTextStyle = TextStyle(
+      color: bodyColor,
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    );
+    final subtitleTextStyle = TextStyle(
+      color: subtitleColor,
       fontSize: 16,
       fontWeight: FontWeight.w500,
     );
 
     return Card(
-      color: const Color(0xBBE0E0E0),
+      surfaceTintColor: Colors.transparent,
+      color: widget.backgroundColor ?? const Color(0xBBE0E0E0),
       clipBehavior: Clip.antiAliasWithSaveLayer,
+      shape: RoundedRectangleBorder(
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(20)),
       child: Container(
         decoration: metadata?.trackArtUrl != null
             ? BoxDecoration(
@@ -54,14 +81,14 @@ class _MediaPlayerState extends State<MediaPlayer> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CardTitle(color: color),
+                    CardTitle(color: titleColor),
                     if (metadata?.trackArtists != null)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             metadata!.trackArtists!.join(" - "),
-                            style: textStyle,
+                            style: subtitleTextStyle,
                           )
                         ],
                       ),
@@ -70,10 +97,10 @@ class _MediaPlayerState extends State<MediaPlayer> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                          width: 400,
+                            width: 400,
                             child: Text(
                               metadata!.trackTitle!,
-                              style: textStyle,
+                              style: bodyTextStyle,
                               overflow: TextOverflow.fade,
                               softWrap: false,
                               textAlign: TextAlign.center,
@@ -81,7 +108,7 @@ class _MediaPlayerState extends State<MediaPlayer> {
                           )
                         ],
                       ),
-                    PlayerButtons(color: color),
+                    PlayerButtons(color: bodyColor),
                   ],
                 ),
               ],
@@ -139,7 +166,7 @@ class _PlayerButtonsState extends State<PlayerButtons> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (mpService.shuffle != null)
-                SuffleButton(mpService: mpService, color: color),
+                ShuffleButton(mpService: mpService, color: color),
               PreviousButton(mpService: mpService, color: color),
               PlayPauseButton(mpService: mpService, color: color),
               NextButton(mpService: mpService, color: color),
@@ -236,8 +263,8 @@ class PreviousButton extends StatelessWidget {
   }
 }
 
-class SuffleButton extends StatelessWidget {
-  const SuffleButton({
+class ShuffleButton extends StatelessWidget {
+  const ShuffleButton({
     super.key,
     required this.mpService,
     required this.color,

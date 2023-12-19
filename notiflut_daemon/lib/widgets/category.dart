@@ -51,6 +51,8 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                 children: [
                   ElevatedButton(
                     style: ButtonStyle(
+                        surfaceTintColor:
+                            MaterialStateProperty.all(Colors.transparent),
                         backgroundColor: MaterialStatePropertyAll(
                             widget.backgroundColor != null
                                 ? widget.backgroundColor!
@@ -74,6 +76,9 @@ class _NotificationCategoryState extends State<NotificationCategory> {
                     backgroundColor: const Color(0xBBE0E0E0),
                     child: IconButton(
                       iconSize: 15,
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              widget.backgroundColor)),
                       icon: const Icon(
                         Icons.close,
                         color: Colors.black,
@@ -117,7 +122,7 @@ class NotificationTileStack extends StatelessWidget {
 
   Widget buildFakeNotificationBottomTile(BuildContext context, int lvl) {
     return Container(
-      margin: EdgeInsets.fromLTRB(10 + lvl * 10, 0, 10 + lvl * 10, 0),
+      margin: EdgeInsets.fromLTRB(5 + lvl * 5, 0, 5 + lvl * 5, 0),
       decoration: BoxDecoration(
         color: backgroundColor ?? const Color(0xFFE0E0E0),
         borderRadius: const BorderRadius.only(

@@ -39,6 +39,10 @@ class NotificationTile extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final Color? backgroundColor;
   final BorderRadius? borderRadius;
+  final Color? bodyTextColor;
+  final Color? titleTextColor;
+  final Color? subtitleTextColor;
+  final Color? buttonTextColor;
 
   factory NotificationTile.empty() {
     return const NotificationTile(0, "", "", "");
@@ -61,6 +65,10 @@ class NotificationTile extends StatelessWidget {
     this.margin,
     this.backgroundColor,
     this.borderRadius,
+    this.bodyTextColor,
+    this.titleTextColor,
+    this.subtitleTextColor,
+    this.buttonTextColor,
   });
   // This widget is the root of your application.
   @override
@@ -70,7 +78,7 @@ class NotificationTile extends StatelessWidget {
             onPressed: v.action,
             child: Text(
               v.label,
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: buttonTextColor ?? Colors.black),
             )))
         .toList();
     String time = "";
@@ -110,17 +118,19 @@ class NotificationTile extends StatelessWidget {
                         radius: 13,
                       ),
                       const SizedBox(width: 10),
-                      Text(appName, style: const TextStyle(fontSize: 13)),
+                      Text(appName,
+                          style:
+                              TextStyle(fontSize: 13, color: titleTextColor)),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(time),
+                      Text(time, style: TextStyle(color: titleTextColor)),
                       InkWell(
                         borderRadius: BorderRadius.circular(20),
                         onTap: closeAction,
-                        child: const Icon(Icons.close),
+                        child: Icon(Icons.close, color: titleTextColor),
                       ),
                     ],
                   ),
@@ -128,7 +138,7 @@ class NotificationTile extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text(title),
+              title: Text(title, style: TextStyle(color: subtitleTextColor)),
               onTap: onTileTap,
               subtitle: Html(
                 data: body.replaceAll("\\n", "</br>"),
@@ -155,8 +165,8 @@ class NotificationTile extends StatelessWidget {
                   openUrl(link!);
                 },
                 style: {
-                  "a": Style(
-                    color: Colors.black,
+                  "*": Style(
+                    color: bodyTextColor ?? Colors.black,
                   ),
                   // "body": Style(
                   //   margin: Margins.all(0.0),

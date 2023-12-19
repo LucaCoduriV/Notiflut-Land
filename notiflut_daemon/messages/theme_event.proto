@@ -4,6 +4,10 @@ package theme_event;
 message NotificationStyle {
   int32 backgroundColor = 1;
   int32 borderRadius = 2;
+  int32 bodyTextColor = 3;
+  int32 titleTextColor = 4;
+  int32 subtitleTextColor = 5;
+  int32 buttonTextColor = 6;
 }
 
 message NotificationCenterStyle {

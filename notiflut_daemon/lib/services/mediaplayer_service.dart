@@ -35,7 +35,7 @@ class MediaPlayerService extends ChangeNotifier {
           case PlayerUnmountEvent(:final playerName):
             players.removeWhere((t) => t.$1.name == playerName);
             final nextPlayer = players.firstOrNull;
-            if(nextPlayer != null){
+            if (nextPlayer != null) {
               selectPlayer(nextPlayer.$2);
             }
             notifyListeners();
@@ -46,13 +46,13 @@ class MediaPlayerService extends ChangeNotifier {
     });
   }
 
-  Future<Color> _computeBestTextColor(String url) async {
+  Future<Color?> _computeBestTextColor(String url) async {
     if (bestTextColorCache[url] != null) {
       return bestTextColorCache[url]!;
     }
     final dominantColor = await getDominantColor(NetworkImage(url));
     if (dominantColor == null) {
-      return Colors.black;
+      return null;
     }
     final textColor = getContrastingTextColor(dominantColor);
     bestTextColorCache[url] = textColor;
@@ -93,8 +93,8 @@ class MediaPlayerService extends ChangeNotifier {
           bestTextColor = color;
           notifyListeners();
         });
-      }else{
-        bestTextColor = Colors.black;
+      } else {
+        bestTextColor = null;
       }
     }).catchError((e) {
       metadata = null;
@@ -107,8 +107,9 @@ class MediaPlayerService extends ChangeNotifier {
       playbackStatus = null;
       notifyListeners();
     });
-      _currentPlayerEventSub?.cancel();
-      _currentPlayerEventSub = currentPlayer?.$1.propertiesChanged().listen(_propertiesChanged);
+    _currentPlayerEventSub?.cancel();
+    _currentPlayerEventSub =
+        currentPlayer?.$1.propertiesChanged().listen(_propertiesChanged);
   }
 
   void deinit() {
@@ -136,40 +137,40 @@ class MediaPlayerService extends ChangeNotifier {
     return players.map((e) => e.$2).toList();
   }
 
-  void _propertiesChanged(PropertyChangedEvent event){
-      switch (event) {
-        case UnsuportedEvent(:final value):
-          print(value);
-        case MetaDataChanged(:final metadata):
-          this.metadata = metadata;
+  void _propertiesChanged(PropertyChangedEvent event) {
+    switch (event) {
+      case UnsuportedEvent(:final value):
+        print(value);
+      case MetaDataChanged(:final metadata):
+        this.metadata = metadata;
 
-          if (metadata.trackArtUrl != null) {
-            print("TRACK URL ${metadata.trackArtUrl}");
-            _computeBestTextColor(metadata.trackArtUrl!).then((color) {
-              bestTextColor = color;
-              notifyListeners();
-            });
-          }else{
-            bestTextColor = Colors.black;
-          }
-        case PlaybackStatusChanged(:final playbackStatus):
-          this.playbackStatus = playbackStatus;
-        case LoopStatusChanged(:final loopStatus):
-          this.loopStatus = loopStatus;
-        case ShuffleChanged(:final shuffle):
-          this.shuffle = shuffle;
-        case VolumeChanged(:final volume):
-          this.volume = volume;
-      }
-      notifyListeners();
-
+        if (metadata.trackArtUrl != null) {
+          print("TRACK URL ${metadata.trackArtUrl}");
+          _computeBestTextColor(metadata.trackArtUrl!).then((color) {
+            bestTextColor = color;
+            notifyListeners();
+          });
+        } else {
+          bestTextColor = null;
+        }
+      case PlaybackStatusChanged(:final playbackStatus):
+        this.playbackStatus = playbackStatus;
+      case LoopStatusChanged(:final loopStatus):
+        this.loopStatus = loopStatus;
+      case ShuffleChanged(:final shuffle):
+        this.shuffle = shuffle;
+      case VolumeChanged(:final volume):
+        this.volume = volume;
+    }
+    notifyListeners();
   }
 
   void selectPlayer(String id) {
     _currentPlayerEventSub?.cancel();
     final tuple = players.where((player) => player.$2 == id).firstOrNull;
     final player = tuple?.$1;
-    _currentPlayerEventSub = player?.propertiesChanged().listen(_propertiesChanged);
+    _currentPlayerEventSub =
+        player?.propertiesChanged().listen(_propertiesChanged);
     if (player != null) {
       currentPlayer = (player, id);
       _getAllCurrentPlayerData();

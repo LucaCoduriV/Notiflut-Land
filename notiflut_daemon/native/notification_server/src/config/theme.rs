@@ -20,14 +20,20 @@ pub struct Radius(pub u32);
 pub struct NotificationStyle {
     pub background_color: Color,
     pub border_radius: Radius,
-    pub text_color: Color,
+    pub body_text_color: Color,
+    pub title_text_color: Color,
+    pub subtitle_text_color: Color,
+    pub button_text_color: Color,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct NotificationStyleInner {
     pub background_color: Option<Color>,
     pub border_radius: Option<Radius>,
-    pub text_color: Option<Color>,
+    pub body_text_color: Option<Color>,
+    pub title_text_color: Option<Color>,
+    pub subtitle_text_color: Option<Color>,
+    pub button_text_color: Option<Color>,
 }
 
 #[derive(Debug, Clone)]
@@ -135,11 +141,29 @@ impl From<StyleInner> for Style {
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.border_radius.clone())
                         .unwrap_or(Radius(20)),
-                    text_color: value
+                    body_text_color: value
                         .light
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
-                        .and_then(|v| v.text_color.clone())
+                        .and_then(|v| v.body_text_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                    title_text_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.title_text_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                    subtitle_text_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.subtitle_text_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                    button_text_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.button_text_color.clone())
                         .unwrap_or(Color(0xFFFFFFFF)),
                 },
             },
@@ -173,11 +197,29 @@ impl From<StyleInner> for Style {
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.border_radius.clone())
                         .unwrap_or(Radius(20)),
-                    text_color: value
+                    body_text_color: value
                         .light
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
-                        .and_then(|v| v.text_color.clone())
+                        .and_then(|v| v.body_text_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                    title_text_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.title_text_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                    subtitle_text_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.subtitle_text_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                    button_text_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.button_text_color.clone())
                         .unwrap_or(Color(0xFFFFFFFF)),
                 },
             },

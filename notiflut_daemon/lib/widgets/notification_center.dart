@@ -98,6 +98,18 @@ class _NotificationCenterState extends State<NotificationCenter> {
               ? BorderRadius.circular(
                   theme.notificationStyle.borderRadius.toDouble())
               : null,
+          bodyTextColor: theme != null
+              ? Color(theme.notificationStyle.bodyTextColor)
+              : null,
+          titleTextColor: theme != null
+              ? Color(theme.notificationStyle.titleTextColor)
+              : null,
+          subtitleTextColor: theme != null
+              ? Color(theme.notificationStyle.subtitleTextColor)
+              : null,
+          buttonTextColor: theme != null
+              ? Color(theme.notificationStyle.buttonTextColor)
+              : null,
         );
       }).toList();
 
@@ -123,7 +135,28 @@ class _NotificationCenterState extends State<NotificationCenter> {
           width: 500,
           color: Colors.transparent,
           child: ListView(
-            children: [if (showMediaPlayer) MediaPlayer(), ...categoryWidgets],
+            children: [
+              if (showMediaPlayer)
+                MediaPlayer(
+                  borderRadius: theme != null
+                      ? BorderRadius.circular(
+                          theme.notificationStyle.borderRadius.toDouble())
+                      : null,
+                  backgroundColor: theme != null
+                      ? Color(theme.notificationStyle.backgroundColor)
+                      : null,
+                  bodyTextColor: theme != null
+                      ? Color(theme.notificationStyle.bodyTextColor)
+                      : null,
+                  titleTextColor: theme != null
+                      ? Color(theme.notificationStyle.titleTextColor)
+                      : null,
+                  subtitleTextColor: theme != null
+                      ? Color(theme.notificationStyle.subtitleTextColor)
+                      : null,
+                ),
+              ...categoryWidgets
+            ],
           ),
         ),
       ],
