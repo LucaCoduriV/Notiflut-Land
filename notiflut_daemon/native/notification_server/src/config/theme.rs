@@ -16,36 +16,28 @@ pub struct Color(pub u32);
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Radius(pub u32);
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct NotificationStyle {
     pub background_color: Color,
     pub border_radius: Radius,
     pub text_color: Color,
 }
 
-impl ThemeLight for NotificationStyle {
-    fn light() -> Self {
-        Self {
-            background_color: Color(0xBBE0E0E0),
-            border_radius: Radius(20),
-            text_color: Color(0xFFFFFFFF),
-        }
-    }
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct NotificationStyleInner {
+    pub background_color: Option<Color>,
+    pub border_radius: Option<Radius>,
+    pub text_color: Option<Color>,
 }
 
-impl ThemeDark for NotificationStyle {
-    fn dark() -> Self {
-        Self {
-            background_color: Color(0xBBE0E0E0),
-            border_radius: Radius(20),
-            text_color: Color(0xFFFFFFFF),
-        }
-    }
+#[derive(Debug, Clone)]
+pub struct NotificationCenterStyle {
+    pub background_color: Color,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct NotificationCenterStyle {
-    pub background_color: Color,
+pub struct NotificationCenterStyleInner {
+    pub background_color: Option<Color>,
 }
 
 impl ThemeLight for NotificationCenterStyle {
@@ -64,9 +56,14 @@ impl ThemeDark for NotificationCenterStyle {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct PopupStyle {
     pub background_color: Color,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct PopupStyleInner {
+    pub background_color: Option<Color>,
 }
 
 impl ThemeLight for PopupStyle {
@@ -85,48 +82,116 @@ impl ThemeDark for PopupStyle {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct Theme {
     pub notification_center: NotificationCenterStyle,
     pub popup: PopupStyle,
     pub notification: NotificationStyle,
 }
 
-impl Default for Theme {
-    fn default() -> Self {
-        Self::light()
-    }
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct ThemeInner {
+    pub notification_center: Option<NotificationCenterStyleInner>,
+    pub popup: Option<PopupStyleInner>,
+    pub notification: Option<NotificationStyleInner>,
 }
 
-impl ThemeLight for Theme {
-    fn light() -> Self {
-        Self {
-            notification_center: NotificationCenterStyle::light(),
-            popup: PopupStyle::light(),
-            notification: NotificationStyle::light(),
-        }
-    }
+#[derive(Debug, Clone)]
+pub struct Style {
+    pub light: Theme,
+    pub dark: Theme,
 }
 
-impl ThemeDark for Theme {
-    fn dark() -> Self {
+impl From<StyleInner> for Style {
+    fn from(value: StyleInner) -> Self {
         Self {
-            notification_center: NotificationCenterStyle::dark(),
-            popup: PopupStyle::dark(),
-            notification: NotificationStyle::dark(),
+            light: Theme {
+                notification_center: NotificationCenterStyle {
+                    background_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification_center.as_ref())
+                        .and_then(|v| v.background_color.clone())
+                        .unwrap_or(Color(0x00FFFFFF)),
+                },
+                popup: PopupStyle {
+                    background_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.popup.as_ref())
+                        .and_then(|v| v.background_color.clone())
+                        .unwrap_or(Color(0x00FFFFFF)),
+                },
+                notification: NotificationStyle {
+                    background_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.background_color.clone())
+                        .unwrap_or(Color(0xBBE0E0E0)),
+                    border_radius: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.border_radius.clone())
+                        .unwrap_or(Radius(20)),
+                    text_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.text_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                },
+            },
+            dark: Theme {
+                notification_center: NotificationCenterStyle {
+                    background_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification_center.as_ref())
+                        .and_then(|v| v.background_color.clone())
+                        .unwrap_or(Color(0x00FFFFFF)),
+                },
+                popup: PopupStyle {
+                    background_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.popup.as_ref())
+                        .and_then(|v| v.background_color.clone())
+                        .unwrap_or(Color(0x00FFFFFF)),
+                },
+                notification: NotificationStyle {
+                    background_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.background_color.clone())
+                        .unwrap_or(Color(0xBBE0E0E0)),
+                    border_radius: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.border_radius.clone())
+                        .unwrap_or(Radius(20)),
+                    text_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.text_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                },
+            },
         }
     }
 }
 
 #[derive(Deserialize, Serialize, Default, Debug, Clone)]
-pub struct Style {
-    #[serde(default = "Theme::light")]
-    pub light: Theme,
-    #[serde(default = "Theme::dark")]
-    pub dark: Theme,
+pub struct StyleInner {
+    pub light: Option<ThemeInner>,
+    pub dark: Option<ThemeInner>,
 }
 
-impl HasFileName for Style {
+impl HasFileName for StyleInner {
     fn file_name() -> &'static str {
         if cfg!(test) {
             "style_test.toml"
@@ -142,15 +207,15 @@ mod test {
 
     use crate::config::{ConfigIO, HasFileName};
 
-    use super::Style;
+    use super::StyleInner;
 
     #[test]
     fn test_write_style() -> anyhow::Result<()> {
-        let cfg = Style::default();
+        let cfg = StyleInner::default();
         cfg.write_file()?;
 
         let xdg_dirs = xdg::BaseDirectories::with_prefix("notiflut").unwrap();
-        let config_path = xdg_dirs.place_config_file(Style::file_name())?;
+        let config_path = xdg_dirs.place_config_file(StyleInner::file_name())?;
 
         assert!(config_path.exists());
 

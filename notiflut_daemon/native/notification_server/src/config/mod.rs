@@ -6,7 +6,7 @@ use std::{fs, path::PathBuf};
 
 pub use general_settings::{NotificationEmitterSettings, Settings, ThemeSettings, UrgencyLevel};
 pub use theme::{
-    Color, NotificationCenterStyle, NotificationStyle, PopupStyle, Radius, Style, Theme,
+    Color, NotificationCenterStyle, NotificationStyle, PopupStyle, Radius, Style, StyleInner, Theme,
 };
 
 trait HasFileName {

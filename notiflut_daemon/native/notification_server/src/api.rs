@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     cache,
-    config::{ConfigIO, Settings, ThemeSettings},
+    config::{ConfigIO, Settings, StyleInner, ThemeSettings},
     db::{AppSettings, Database},
     notification_dbus::ImageSource,
     notification_dbus::{notification_server_core::NotificationServerCore, InnerServerEvent},
@@ -35,13 +35,13 @@ pub struct NotificationServer {
     core: Option<Arc<NotificationServerCore>>,
     db: Arc<Database>,
     config: Arc<Settings>,
-    style: Arc<Mutex<Style>>,
+    style: Arc<Mutex<StyleInner>>,
 }
 
 impl NotificationServer {
     pub async fn new() -> Self {
         let config = Arc::new(Settings::from_file());
-        let style = Arc::new(Mutex::new(Style::from_file()));
+        let style = Arc::new(Mutex::new(StyleInner::from_file()));
         let db = Arc::new(Database::new().await);
         Self {
             core: None,
@@ -61,7 +61,7 @@ impl NotificationServer {
 
         let style = { self.style.lock().unwrap().clone() };
 
-        sndr.send(NotificationServerEvent::StyleUpdate(Box::new(style)))
+        sndr.send(NotificationServerEvent::StyleUpdate(Box::new(style.into())))
             .await
             .unwrap();
 
@@ -203,9 +203,11 @@ impl NotificationServer {
 
                         match style {
                             Ok(style) => {
-                                sndr.send(NotificationServerEvent::StyleUpdate(Box::new(style)))
-                                    .await
-                                    .unwrap();
+                                sndr.send(NotificationServerEvent::StyleUpdate(Box::new(
+                                    style.into(),
+                                )))
+                                .await
+                                .unwrap();
                             }
                             Err(err) => {
                                 error!("Couldn't reload: {}", err);
