@@ -205,6 +205,8 @@ impl From<NotificationStyle> for messages::theme_event::NotificationStyle {
         Self {
             background_color: val.background_color.0 as i32,
             border_radius: val.border_radius.0 as i32,
+            border_color: val.border_color.0 as i32,
+            border_width: val.border_width as i32,
             body_text_color: val.body_text_color.0 as i32,
             title_text_color: val.title_text_color.0 as i32,
             subtitle_text_color: val.subtitle_text_color.0 as i32,
@@ -218,6 +220,8 @@ impl From<&NotificationStyle> for messages::theme_event::NotificationStyle {
         Self {
             background_color: val.background_color.0 as i32,
             border_radius: val.border_radius.0 as i32,
+            border_color: val.border_color.0 as i32,
+            border_width: val.border_width as i32,
             body_text_color: val.body_text_color.0 as i32,
             title_text_color: val.title_text_color.0 as i32,
             subtitle_text_color: val.subtitle_text_color.0 as i32,

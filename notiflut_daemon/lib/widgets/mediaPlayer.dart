@@ -11,6 +11,8 @@ class MediaPlayer extends StatefulWidget with WatchItStatefulWidgetMixin {
   final Color? titleTextColor;
   final Color? subtitleTextColor;
   final Color? bodyTextColor;
+  final Color? borderColor;
+  final double? borderWidth;
 
   MediaPlayer({
     super.key,
@@ -19,6 +21,8 @@ class MediaPlayer extends StatefulWidget with WatchItStatefulWidgetMixin {
     this.bodyTextColor,
     this.titleTextColor,
     this.subtitleTextColor,
+    this.borderWidth,
+    this.borderColor,
   });
 
   @override
@@ -61,7 +65,11 @@ class _MediaPlayerState extends State<MediaPlayer> {
       color: widget.backgroundColor ?? const Color(0xBBE0E0E0),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       shape: RoundedRectangleBorder(
-          borderRadius: widget.borderRadius ?? BorderRadius.circular(20)),
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(20),
+        side: BorderSide(
+            color: widget.borderColor ?? Colors.black,
+            width: widget.borderWidth ?? 0),
+      ),
       child: Container(
         decoration: metadata?.trackArtUrl != null
             ? BoxDecoration(

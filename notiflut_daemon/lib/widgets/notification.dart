@@ -43,33 +43,32 @@ class NotificationTile extends StatelessWidget {
   final Color? titleTextColor;
   final Color? subtitleTextColor;
   final Color? buttonTextColor;
+  final Color? borderColor;
+  final double? borderWidth;
 
   factory NotificationTile.empty() {
     return const NotificationTile(0, "", "", "");
   }
 
-  const NotificationTile(
-    this.id,
-    this.appName,
-    this.title,
-    this.body, {
-    super.key,
-    this.imageProvider,
-    this.iconProvider,
-    this.closeAction,
-    this.onTileTap,
-    this.onHover,
-    this.onHoverExit,
-    this.actions,
-    this.createdAt,
-    this.margin,
-    this.backgroundColor,
-    this.borderRadius,
-    this.bodyTextColor,
-    this.titleTextColor,
-    this.subtitleTextColor,
-    this.buttonTextColor,
-  });
+  const NotificationTile(this.id, this.appName, this.title, this.body,
+      {super.key,
+      this.imageProvider,
+      this.iconProvider,
+      this.closeAction,
+      this.onTileTap,
+      this.onHover,
+      this.onHoverExit,
+      this.actions,
+      this.createdAt,
+      this.margin,
+      this.backgroundColor,
+      this.borderRadius,
+      this.bodyTextColor,
+      this.titleTextColor,
+      this.subtitleTextColor,
+      this.buttonTextColor,
+      this.borderColor,
+      this.borderWidth});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -102,7 +101,10 @@ class NotificationTile extends StatelessWidget {
         margin: margin,
         color: backgroundColor ?? const Color(0xBBE0E0E0),
         shape: RoundedRectangleBorder(
-            borderRadius: borderRadius ?? BorderRadius.circular(20)),
+          borderRadius: borderRadius ?? BorderRadius.circular(20),
+          side: BorderSide(
+              color: borderColor ?? Colors.black, width: borderWidth ?? 0),
+        ),
         child: Column(
           children: [
             Padding(

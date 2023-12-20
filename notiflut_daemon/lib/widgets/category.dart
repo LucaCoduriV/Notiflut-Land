@@ -9,6 +9,9 @@ class NotificationCategory extends StatefulWidget {
   final Function()? onClose;
   final bool defaultState;
   final Color? backgroundColor;
+  final Color? borderColor;
+  final double? borderRadius;
+  final double? borderWidth;
 
   const NotificationCategory({
     required this.appName,
@@ -17,6 +20,9 @@ class NotificationCategory extends StatefulWidget {
     this.onClose,
     super.key,
     this.backgroundColor,
+    this.borderColor,
+    this.borderRadius,
+    this.borderWidth,
   });
 
   @override
@@ -97,6 +103,10 @@ class _NotificationCategoryState extends State<NotificationCategory> {
               : NotificationTileStack(
                   widget.children[0],
                   backgroundColor: widget.backgroundColor,
+                  borderSide: BorderSide(
+                    color: widget.borderColor ?? Colors.black,
+                    width: widget.borderWidth ?? 0,
+                  ),
                 ),
           secondChild: Column(children: widget.children),
           crossFadeState: widget.children.length == 1
@@ -114,10 +124,14 @@ class _NotificationCategoryState extends State<NotificationCategory> {
 class NotificationTileStack extends StatelessWidget {
   final NotificationTile tile;
   final Color? backgroundColor;
+  final BorderSide borderSide;
+  final double? borderRadius;
   const NotificationTileStack(
     this.tile, {
     super.key,
     this.backgroundColor,
+    required this.borderSide,
+    this.borderRadius,
   });
 
   Widget buildFakeNotificationBottomTile(BuildContext context, int lvl) {
@@ -125,10 +139,11 @@ class NotificationTileStack extends StatelessWidget {
       margin: EdgeInsets.fromLTRB(5 + lvl * 5, 0, 5 + lvl * 5, 0),
       decoration: BoxDecoration(
         color: backgroundColor ?? const Color(0xFFE0E0E0),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(borderRadius ?? 30),
+          bottomRight: Radius.circular(borderRadius ?? 30),
         ),
+        border: Border(left: borderSide, right: borderSide, bottom: borderSide),
         boxShadow: const [
           BoxShadow(
             color: Colors.black54,

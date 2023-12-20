@@ -8,6 +8,8 @@ message NotificationStyle {
   int32 titleTextColor = 4;
   int32 subtitleTextColor = 5;
   int32 buttonTextColor = 6;
+  int32 borderColor = 7;
+  int32 borderWidth = 8;
 }
 
 message NotificationCenterStyle {

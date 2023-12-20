@@ -110,6 +110,9 @@ class _NotificationCenterState extends State<NotificationCenter> {
           buttonTextColor: theme != null
               ? Color(theme.notificationStyle.buttonTextColor)
               : null,
+          borderWidth: theme?.notificationStyle.borderWidth.toDouble(),
+          borderColor:
+              theme != null ? Color(theme.notificationStyle.borderColor) : null,
         );
       }).toList();
 
@@ -122,6 +125,10 @@ class _NotificationCenterState extends State<NotificationCenter> {
         onClose: () {
           mainWindowService.closeAllAppNotifications(appName);
         },
+        borderColor:
+            theme != null ? Color(theme.notificationStyle.borderColor) : null,
+        borderWidth: theme?.notificationStyle.borderWidth.toDouble(),
+        borderRadius: theme?.notificationStyle.borderRadius.toDouble(),
         children: notificationTiles,
       );
     }).toList();
@@ -153,6 +160,10 @@ class _NotificationCenterState extends State<NotificationCenter> {
                       : null,
                   subtitleTextColor: theme != null
                       ? Color(theme.notificationStyle.subtitleTextColor)
+                      : null,
+                  borderWidth: theme?.notificationStyle.borderWidth.toDouble(),
+                  borderColor: theme != null
+                      ? Color(theme.notificationStyle.borderColor)
                       : null,
                 ),
               ...categoryWidgets

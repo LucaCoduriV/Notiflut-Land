@@ -20,6 +20,8 @@ pub struct Radius(pub u32);
 pub struct NotificationStyle {
     pub background_color: Color,
     pub border_radius: Radius,
+    pub border_color: Color,
+    pub border_width: u32,
     pub body_text_color: Color,
     pub title_text_color: Color,
     pub subtitle_text_color: Color,
@@ -30,6 +32,8 @@ pub struct NotificationStyle {
 pub struct NotificationStyleInner {
     pub background_color: Option<Color>,
     pub border_radius: Option<Radius>,
+    pub border_color: Option<Color>,
+    pub border_width: Option<u32>,
     pub body_text_color: Option<Color>,
     pub title_text_color: Option<Color>,
     pub subtitle_text_color: Option<Color>,
@@ -141,6 +145,18 @@ impl From<StyleInner> for Style {
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.border_radius.clone())
                         .unwrap_or(Radius(20)),
+                    border_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.border_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                    border_width: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.border_width)
+                        .unwrap_or(0),
                     body_text_color: value
                         .light
                         .as_ref()
@@ -197,6 +213,18 @@ impl From<StyleInner> for Style {
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.border_radius.clone())
                         .unwrap_or(Radius(20)),
+                    border_color: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.border_color.clone())
+                        .unwrap_or(Color(0xFFFFFFFF)),
+                    border_width: value
+                        .light
+                        .as_ref()
+                        .and_then(|v| v.notification.as_ref())
+                        .and_then(|v| v.border_width)
+                        .unwrap_or(0),
                     body_text_color: value
                         .light
                         .as_ref()
