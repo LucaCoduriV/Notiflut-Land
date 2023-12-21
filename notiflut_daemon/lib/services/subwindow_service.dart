@@ -1,13 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:notiflut/services/rust_event_listener.dart';
+import 'package:rinf/rinf.dart';
+import 'package:watch_it/watch_it.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
 
 import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
 
+import '../messages/daemon_event.pb.dart';
 import '../messages/google/protobuf/timestamp.pb.dart';
 
 enum SubWindowEvents {
@@ -30,7 +35,9 @@ class SubWindowService extends ChangeNotifier {
       : layerController = LayerShellController.fromWindowId(windowId);
 
   void init() {
-    WaylandMultiWindow.setMethodHandler(_handleEvents);
+    WaylandMultiWindow.setMethodHandler(_handleMainWindowEvents);
+    //di<RustEventListener>().notificationsStream.listen(_handleEvents);
+    print("init");
   }
 
   @override
@@ -39,9 +46,26 @@ class SubWindowService extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<dynamic> _handleEvents(MethodCall call, int fromWindowId) async {
-    final data = call.arguments as List<int>;
-    final notification = daemon_event.Notification.fromBuffer(data);
+  Future<dynamic> _handleMainWindowEvents(
+      MethodCall method, int windowsId) async {
+    final data =
+        await compute(PopupSignal.fromBuffer, method.arguments as List<int>);
+
+    switch (data.whichData()) {
+      case PopupSignal_Data.notification:
+        final notification = await compute(
+            daemon_event.Notification.fromBuffer, data.notification.data);
+        _handleEvents(notification);
+        break;
+      case PopupSignal_Data.style:
+        break;
+      case PopupSignal_Data.notSet:
+        break;
+    }
+  }
+
+  Future<dynamic> _handleEvents(daemon_event.Notification notification) async {
+    print("new event");
 
     if (popups.isEmpty) {
       layerController.show();

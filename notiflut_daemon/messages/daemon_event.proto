@@ -16,6 +16,16 @@ message SignalAppEvent {
   optional uint64 notificationId = 4;
 }
 
+message PopupSignal {
+  oneof data {
+    Data style = 1;
+    Data notification = 2;
+  }
+}
+
+message Data {
+  repeated uint32 data = 1;
+}
 
 message Notification {
   uint32 id = 1;

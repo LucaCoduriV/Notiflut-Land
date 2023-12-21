@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notiflut/services/mainwindow_service.dart';
 import 'package:notiflut/services/mediaplayer_service.dart';
+import 'package:notiflut/services/rust_event_listener.dart';
 import 'package:notiflut/services/subwindow_service.dart';
 import 'package:notiflut/widgets/notification_center.dart';
 import 'package:notiflut/widgets/popups_list.dart';
@@ -17,15 +18,17 @@ void main(List<String> args) async {
   if (isMainWindow) {
     await Rinf.ensureInitialized();
     setupMainWindow();
-    di.registerSingleton(MainWindowService());
     di.registerSingleton(MediaPlayerService()).init();
     di.registerSingleton(ThemeService());
+    di.registerSingleton(RustEventListener(rustBroadcaster.stream));
+    di.registerSingleton(MainWindowService());
     await setupSubWindow();
     runApp(const MainWindow());
   } else {
     final windowId = int.parse(args[1]);
-    di.registerSingleton(SubWindowService(windowId));
     di.registerSingleton(ThemeService());
+    //di.registerSingleton(RustEventListener(rustBroadcaster.stream));
+    di.registerSingleton(SubWindowService(windowId));
     runApp(const SubWindow());
   }
 }

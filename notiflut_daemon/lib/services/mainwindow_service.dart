@@ -7,10 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:notiflut/messages/daemon_event.pb.dart';
 import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event;
 import 'package:notiflut/messages/app_event.pb.dart' as app_event;
-import 'package:notiflut/messages/theme_event.pb.dart' as theme_event;
-import 'package:notiflut/messages/settings_event.pb.dart' as settings_event;
+import 'package:notiflut/services/rust_event_listener.dart';
 import 'package:notiflut/services/subwindow_service.dart';
-import 'package:notiflut/services/theme_service.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:rinf/rinf.dart';
@@ -31,7 +29,9 @@ class MainWindowService extends ChangeNotifier {
   bool isHidden = true;
 
   MainWindowService() {
-    rustBroadcaster.stream.listen(_handleEvents);
+    di<RustEventListener>()
+        .notificationsStream
+        .listen(_handleNotificationEvents);
   }
 
   void init() {
@@ -58,38 +58,6 @@ class MainWindowService extends ChangeNotifier {
       case SubWindowEvents.notificationClosed:
         final notificationId = args["id"];
         closeNotification(notificationId);
-    }
-  }
-
-  _handleThemeEvents(RustSignal event) async {
-    final style =
-        await compute(theme_event.Style.fromBuffer, event.message!.toList());
-
-    final themeService = di<ThemeService>();
-    themeService.style = style;
-    print("STYLE UPDATED");
-  }
-
-  _handleSettingsEvents(RustSignal event) async {
-    final settingsEvent = await compute(
-        settings_event.SettingsSignal.fromBuffer, event.message!.toList());
-    final operation = settingsEvent.whichOperation();
-    switch (operation) {
-      case settings_event.SettingsSignal_Operation.theme:
-        final themeService = di<ThemeService>();
-        final theme = switch (settingsEvent.theme) {
-          settings_event.ThemeVariante.Light => ThemeType.light,
-          settings_event.ThemeVariante.Dark => ThemeType.dark,
-          _ => null,
-        };
-        if (theme != null) {
-          themeService.type = theme;
-        } else {
-          print("Error theme variante not existing");
-        }
-
-      case settings_event.SettingsSignal_Operation.notSet:
-        break;
     }
   }
 
@@ -121,12 +89,15 @@ class MainWindowService extends ChangeNotifier {
         break;
       case SignalAppEvent_AppEventType.NewNotification:
         final notification = appEvent.notification;
+        final data = PopupSignal(
+            notification:
+                daemon_event.Data(data: notification.writeToBuffer()));
 
         if (isHidden) {
           WaylandMultiWindow.invokeMethod(
             1, // 1 is the id of the popup subwindow
             MainWindowEvents.newNotification.toString(),
-            notification.writeToBuffer(),
+            data.writeToBuffer(),
           );
         }
 
@@ -149,23 +120,6 @@ class MainWindowService extends ChangeNotifier {
         notifications.removeWhere(
             (element) => element.id == appEvent.notificationId.toInt());
         break;
-    }
-  }
-
-  _handleEvents(RustSignal event) async {
-    switch (event.resource) {
-      case daemon_event.ID:
-        _handleNotificationEvents(event);
-        break;
-      case theme_event.ID:
-        _handleThemeEvents(event);
-        break;
-      case settings_event.ID:
-        _handleSettingsEvents(event);
-        break;
-
-      default:
-        return;
     }
   }
 
