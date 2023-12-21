@@ -4,16 +4,17 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:notiflut/services/rust_event_listener.dart';
-import 'package:rinf/rinf.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
 
 import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
     show Notification;
+import 'package:notiflut/messages/theme_event.pb.dart' as theme_event;
+import 'package:notiflut/messages/settings_event.pb.dart' as settings_event;
 
 import '../messages/daemon_event.pb.dart';
 import '../messages/google/protobuf/timestamp.pb.dart';
+import 'theme_service.dart';
 
 enum SubWindowEvents {
   invokeAction,
@@ -36,7 +37,6 @@ class SubWindowService extends ChangeNotifier {
 
   void init() {
     WaylandMultiWindow.setMethodHandler(_handleMainWindowEvents);
-    //di<RustEventListener>().notificationsStream.listen(_handleEvents);
     print("init");
   }
 
@@ -58,6 +58,33 @@ class SubWindowService extends ChangeNotifier {
         _handleEvents(notification);
         break;
       case PopupSignal_Data.style:
+        final style =
+            await compute(theme_event.Style.fromBuffer, data.style.data);
+
+        final themeService = di<ThemeService>();
+        themeService.style = style;
+        break;
+      case PopupSignal_Data.settings:
+        final settingsEvent = await compute(
+            settings_event.SettingsSignal.fromBuffer, data.style.data);
+        final operation = settingsEvent.whichOperation();
+        switch (operation) {
+          case settings_event.SettingsSignal_Operation.theme:
+            final themeService = di<ThemeService>();
+            final theme = switch (settingsEvent.theme) {
+              settings_event.ThemeVariante.Light => ThemeType.light,
+              settings_event.ThemeVariante.Dark => ThemeType.dark,
+              _ => null,
+            };
+            if (theme != null) {
+              themeService.type = theme;
+            } else {
+              print("Error theme variante not existing");
+            }
+
+          case settings_event.SettingsSignal_Operation.notSet:
+            break;
+        }
         break;
       case PopupSignal_Data.notSet:
         break;

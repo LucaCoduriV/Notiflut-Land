@@ -82,8 +82,7 @@ async fn main() {
 fn on_notification(n: &notification_server::Notification) {
     let signal_message = SignalAppEvent {
         r#type: signal_app_event::AppEventType::NewNotification.into(),
-        notification: Some(n.into()),
-        notification_id: None,
+        data: Some(signal_app_event::Data::Notification(n.into())),
     };
 
     let rust_signal = RustSignal {
@@ -107,8 +106,7 @@ fn on_style_change(s: &notification_server::Style) {
 fn on_notification_close(n_id: u32) {
     let signal_message = SignalAppEvent {
         r#type: signal_app_event::AppEventType::CloseNotification.into(),
-        notification: None,
-        notification_id: Some(n_id.into()),
+        data: Some(signal_app_event::Data::NotificationId(n_id.into())),
     };
 
     let rust_signal = RustSignal {

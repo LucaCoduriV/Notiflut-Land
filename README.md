@@ -44,7 +44,7 @@ Then you need to generates code from protobuf with this command:
 `dart run rust_in_flutter message`
 
 This project also uses well known types for dates.
-`protoc --dart_out=./lib/messages google/protobuf/timestamp.proto`
+`protoc --dart_out=./lib/messages google/protobuf/timestamp.proto google/protobuf/empty.proto`
 
 If you have any trouble running these commands look first for help here: https://docs.cunarist.com/rust-in-flutter/
 
