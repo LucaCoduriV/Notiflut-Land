@@ -203,6 +203,7 @@ impl NotificationServer {
 
                         match style {
                             Ok(style) => {
+                                debug!("{:?}", style);
                                 sndr.send(NotificationServerEvent::StyleUpdate(Box::new(
                                     style.into(),
                                 )))

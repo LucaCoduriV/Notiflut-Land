@@ -186,7 +186,7 @@ impl From<StyleInner> for Style {
             dark: Theme {
                 notification_center: NotificationCenterStyle {
                     background_color: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification_center.as_ref())
                         .and_then(|v| v.background_color.clone())
@@ -194,7 +194,7 @@ impl From<StyleInner> for Style {
                 },
                 popup: PopupStyle {
                     background_color: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.popup.as_ref())
                         .and_then(|v| v.background_color.clone())
@@ -202,49 +202,49 @@ impl From<StyleInner> for Style {
                 },
                 notification: NotificationStyle {
                     background_color: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.background_color.clone())
                         .unwrap_or(Color(0xBBE0E0E0)),
                     border_radius: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.border_radius.clone())
                         .unwrap_or(Radius(20)),
                     border_color: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.border_color.clone())
                         .unwrap_or(Color(0xFFFFFFFF)),
                     border_width: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.border_width)
                         .unwrap_or(0),
                     body_text_color: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.body_text_color.clone())
                         .unwrap_or(Color(0xFFFFFFFF)),
                     title_text_color: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.title_text_color.clone())
                         .unwrap_or(Color(0xFFFFFFFF)),
                     subtitle_text_color: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.subtitle_text_color.clone())
                         .unwrap_or(Color(0xFFFFFFFF)),
                     button_text_color: value
-                        .light
+                        .dark
                         .as_ref()
                         .and_then(|v| v.notification.as_ref())
                         .and_then(|v| v.button_text_color.clone())

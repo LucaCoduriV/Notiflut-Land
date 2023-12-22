@@ -53,6 +53,13 @@ class RustEventListener {
   _handleSettingsEvents(RustSignal event) async {
     final settingsEvent = await compute(
         settings_event.SettingsSignal.fromBuffer, event.message!.toList());
+
+    WaylandMultiWindow.invokeMethod(
+      1, // 1 is the id of the popup subwindow
+      MainWindowEvents.settingsUpdate.toString(),
+      settingsEvent.writeToBuffer(),
+    );
+
     final operation = settingsEvent.whichOperation();
     switch (operation) {
       case settings_event.SettingsSignal_Operation.theme:
@@ -62,6 +69,7 @@ class RustEventListener {
           settings_event.ThemeVariante.Dark => ThemeType.dark,
           _ => null,
         };
+
         if (theme != null) {
           themeService.type = theme;
         } else {

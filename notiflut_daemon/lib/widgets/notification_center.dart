@@ -47,7 +47,8 @@ class _NotificationCenterState extends State<NotificationCenter> {
   Widget build(BuildContext context) {
     final mainWindowService = watchIt<MainWindowService>();
     final notifications = mainWindowService.notifications;
-    final theme = watchIt<ThemeService>().theme;
+    final themeService = watchIt<ThemeService>();
+    final theme = themeService.theme;
     final showMediaPlayer =
         watchPropertyValue((MediaPlayerService s) => s.showMediaPlayerWidget);
 

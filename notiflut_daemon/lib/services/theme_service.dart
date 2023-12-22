@@ -20,8 +20,10 @@ class ThemeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  proto.Theme? get theme => switch (_type) {
-        ThemeType.light => _style?.light,
-        ThemeType.dark => _style?.dark,
-      };
+  proto.Theme? get theme {
+    return switch (_type) {
+      ThemeType.light => _style?.light,
+      ThemeType.dark => _style?.dark,
+    };
+  }
 }
