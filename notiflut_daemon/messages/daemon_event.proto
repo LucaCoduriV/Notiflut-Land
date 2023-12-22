@@ -19,18 +19,6 @@ message SignalAppEvent {
   }
 }
 
-message PopupSignal {
-  oneof data {
-    Data style = 1;
-    Data notification = 2;
-    Data settings = 3;
-  }
-}
-
-message Data {
-  repeated uint32 data = 1;
-}
-
 message Notification {
   uint32 id = 1;
   string app_name = 2;

@@ -15,7 +15,9 @@ import 'package:rinf/rinf.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
 
 enum MainWindowEvents {
-  newNotification;
+  newNotification,
+  styleUpdate,
+  settingsUpdate;
 
   factory MainWindowEvents.fromString(String value) {
     return MainWindowEvents.values.firstWhere((e) => e.toString() == value,
@@ -89,15 +91,12 @@ class MainWindowService extends ChangeNotifier {
         break;
       case SignalAppEvent_AppEventType.NewNotification:
         final notification = appEvent.notification;
-        final data = PopupSignal(
-            notification:
-                daemon_event.Data(data: notification.writeToBuffer()));
 
         if (isHidden) {
           WaylandMultiWindow.invokeMethod(
             1, // 1 is the id of the popup subwindow
             MainWindowEvents.newNotification.toString(),
-            data.writeToBuffer(),
+            notification.writeToBuffer(),
           );
         }
 

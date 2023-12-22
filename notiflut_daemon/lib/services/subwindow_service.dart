@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:notiflut/services/mainwindow_service.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
 
@@ -12,7 +13,6 @@ import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event
 import 'package:notiflut/messages/theme_event.pb.dart' as theme_event;
 import 'package:notiflut/messages/settings_event.pb.dart' as settings_event;
 
-import '../messages/daemon_event.pb.dart';
 import '../messages/google/protobuf/timestamp.pb.dart';
 import 'theme_service.dart';
 
@@ -48,25 +48,21 @@ class SubWindowService extends ChangeNotifier {
 
   Future<dynamic> _handleMainWindowEvents(
       MethodCall method, int windowsId) async {
-    final data =
-        await compute(PopupSignal.fromBuffer, method.arguments as List<int>);
-
-    switch (data.whichData()) {
-      case PopupSignal_Data.notification:
-        final notification = await compute(
-            daemon_event.Notification.fromBuffer, data.notification.data);
+    switch (MainWindowEvents.fromString(method.method)) {
+      case MainWindowEvents.newNotification:
+        final notification = await compute(daemon_event.Notification.fromBuffer,
+            method.arguments as List<int>);
         _handleEvents(notification);
-        break;
-      case PopupSignal_Data.style:
-        final style =
-            await compute(theme_event.Style.fromBuffer, data.style.data);
+      case MainWindowEvents.styleUpdate:
+        final style = await compute(
+            theme_event.Style.fromBuffer, method.arguments as List<int>);
 
         final themeService = di<ThemeService>();
         themeService.style = style;
-        break;
-      case PopupSignal_Data.settings:
+      case MainWindowEvents.settingsUpdate:
         final settingsEvent = await compute(
-            settings_event.SettingsSignal.fromBuffer, data.style.data);
+            settings_event.SettingsSignal.fromBuffer,
+            method.arguments as List<int>);
         final operation = settingsEvent.whichOperation();
         switch (operation) {
           case settings_event.SettingsSignal_Operation.theme:
@@ -85,9 +81,6 @@ class SubWindowService extends ChangeNotifier {
           case settings_event.SettingsSignal_Operation.notSet:
             break;
         }
-        break;
-      case PopupSignal_Data.notSet:
-        break;
     }
   }
 

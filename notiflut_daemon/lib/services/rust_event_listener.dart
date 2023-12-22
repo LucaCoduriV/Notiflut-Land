@@ -8,7 +8,6 @@ import 'package:notiflut/messages/settings_event.pb.dart' as settings_event;
 import 'package:watch_it/watch_it.dart';
 import 'package:wayland_multi_window/wayland_multi_window.dart';
 
-import '../messages/daemon_event.pb.dart';
 import 'mainwindow_service.dart';
 import 'theme_service.dart';
 
@@ -42,13 +41,11 @@ class RustEventListener {
         await compute(theme_event.Style.fromBuffer, event.message!.toList());
 
     final themeService = di<ThemeService>();
-    final data =
-        PopupSignal(style: daemon_event.Data(data: style.writeToBuffer()));
     themeService.style = style;
     WaylandMultiWindow.invokeMethod(
       1, // 1 is the id of the popup subwindow
-      MainWindowEvents.newNotification.toString(),
-      data.writeToBuffer(),
+      MainWindowEvents.styleUpdate.toString(),
+      style.writeToBuffer(),
     );
     print("STYLE UPDATED");
   }
