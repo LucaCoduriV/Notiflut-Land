@@ -101,7 +101,9 @@ class NotificationTile extends StatelessWidget {
         margin: margin,
         color: backgroundColor ?? const Color(0xBBE0E0E0),
         shape: RoundedRectangleBorder(
-          borderRadius: borderRadius ?? BorderRadius.circular(20),
+          borderRadius: borderWidth == null || borderWidth == 0
+              ? borderRadius ?? BorderRadius.circular(20)
+              : BorderRadius.circular(0),
           side: BorderSide(
               color: borderColor ?? Colors.black, width: borderWidth ?? 0),
         ),

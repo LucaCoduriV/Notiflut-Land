@@ -32,14 +32,12 @@ class SubWindowService extends ChangeNotifier {
       : layerController = LayerShellController.fromWindowId(windowId);
 
   void init() {
-    // WaylandMultiWindow.setMethodHandler(_handleMainWindowEvents);
     di<EventDispatcher>().notificationsStream.listen(_handleEvents);
     print("init");
   }
 
   @override
   void dispose() {
-    // WaylandMultiWindow.setMethodHandler(null);
     super.dispose();
   }
 
