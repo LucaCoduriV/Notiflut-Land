@@ -29,8 +29,8 @@ This project is a notification center designed specifically for wlroots-based Wa
 - [x] Filter notifications
 - [x] support for waybar
 - [x] Media player controller
+- [x] custom styling
 - [ ] Widgets (Maybe a bad idea)
-- [ ] custom styling
 
 ## requirement
 
