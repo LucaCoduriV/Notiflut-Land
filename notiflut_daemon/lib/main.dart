@@ -1,13 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:notiflut/services/events_handlers.dart';
 import 'package:notiflut/services/mainwindow_service.dart';
 import 'package:notiflut/services/mediaplayer_service.dart';
-import 'package:notiflut/services/rust_event_listener.dart';
+import 'package:notiflut/services/event_dispatcher.dart';
 import 'package:notiflut/services/subwindow_service.dart';
 import 'package:notiflut/widgets/notification_center.dart';
 import 'package:notiflut/widgets/popups_list.dart';
 import 'package:notiflut/window_utils.dart';
 import 'package:rinf/rinf.dart';
 import 'package:watch_it/watch_it.dart';
+import 'package:wayland_multi_window/wayland_multi_window.dart';
 
 import 'services/theme_service.dart';
 
@@ -20,15 +25,34 @@ void main(List<String> args) async {
     setupMainWindow();
     di.registerSingleton(MediaPlayerService()).init();
     di.registerSingleton(ThemeService());
-    di.registerSingleton(RustEventListener(rustBroadcaster.stream));
+    final dispatcher = EventDispatcher(
+      rustBroadcaster.stream
+          .map((event) => StreamAdapter.fromRustSignal(event)),
+      propagateToWindowId: 1,
+    );
+    di.registerSingleton(dispatcher);
     di.registerSingleton(MainWindowService());
     await setupSubWindow();
+    dispatcher.styleUpdateStream.listen(handleThemeChanged);
+    dispatcher.themeChangedStram.listen(handleThemeTypeChanged);
     runApp(const MainWindow());
   } else {
     final windowId = int.parse(args[1]);
     di.registerSingleton(ThemeService());
-    //di.registerSingleton(RustEventListener(rustBroadcaster.stream));
+
+    StreamController<StreamAdapter> mainWindowEventsStream =
+        StreamController<StreamAdapter>();
+    WaylandMultiWindow.setMethodHandler(
+        (MethodCall method, int windowsId) async {
+      mainWindowEventsStream.add(StreamAdapter(
+          eventId: int.parse(method.method),
+          data: method.arguments as List<int>));
+    });
+    final dispatcher = EventDispatcher(mainWindowEventsStream.stream);
+    di.registerSingleton(dispatcher);
     di.registerSingleton(SubWindowService(windowId));
+    dispatcher.styleUpdateStream.listen(handleThemeChanged);
+    dispatcher.themeChangedStram.listen(handleThemeTypeChanged);
     runApp(const SubWindow());
   }
 }

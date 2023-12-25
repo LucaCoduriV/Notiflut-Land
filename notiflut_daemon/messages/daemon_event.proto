@@ -11,6 +11,7 @@ message SignalAppEvent {
     ShowNotificationCenter = 2;
     HideNotificationCenter = 3;
     ToggleNotificationCenter = 4;
+    PopupNotification = 5;
   }
   AppEventType type = 1;
   oneof data {

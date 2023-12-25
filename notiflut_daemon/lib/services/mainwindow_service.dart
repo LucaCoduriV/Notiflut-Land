@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:notiflut/messages/daemon_event.pb.dart';
 import 'package:notiflut/messages/daemon_event.pb.dart' as daemon_event;
 import 'package:notiflut/messages/app_event.pb.dart' as app_event;
-import 'package:notiflut/services/rust_event_listener.dart';
+import 'package:notiflut/services/event_dispatcher.dart';
 import 'package:notiflut/services/subwindow_service.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:window_manager/window_manager.dart';
@@ -31,9 +31,7 @@ class MainWindowService extends ChangeNotifier {
   bool isHidden = true;
 
   MainWindowService() {
-    di<RustEventListener>()
-        .notificationsStream
-        .listen(_handleNotificationEvents);
+    di<EventDispatcher>().notificationsStream.listen(_handleNotificationEvents);
   }
 
   void init() {
@@ -63,9 +61,7 @@ class MainWindowService extends ChangeNotifier {
     }
   }
 
-  _handleNotificationEvents(RustSignal event) async {
-    final appEvent =
-        await compute(SignalAppEvent.fromBuffer, event.message!.toList());
+  _handleNotificationEvents(SignalAppEvent appEvent) async {
     switch (appEvent.type) {
       case SignalAppEvent_AppEventType.ToggleNotificationCenter:
         isHidden = !isHidden;
@@ -93,10 +89,11 @@ class MainWindowService extends ChangeNotifier {
         final notification = appEvent.notification;
 
         if (isHidden) {
+          appEvent.type = SignalAppEvent_AppEventType.PopupNotification;
           WaylandMultiWindow.invokeMethod(
             1, // 1 is the id of the popup subwindow
-            MainWindowEvents.newNotification.toString(),
-            notification.writeToBuffer(),
+            daemon_event.ID.toString(),
+            appEvent.writeToBuffer(),
           );
         }
 
@@ -118,6 +115,8 @@ class MainWindowService extends ChangeNotifier {
       case SignalAppEvent_AppEventType.CloseNotification:
         notifications.removeWhere(
             (element) => element.id == appEvent.notificationId.toInt());
+        break;
+      case SignalAppEvent_AppEventType.PopupNotification:
         break;
     }
   }
