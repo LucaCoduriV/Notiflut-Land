@@ -32,10 +32,10 @@ pub fn handle_request(
                         server.close_all_notifications();
                     }
                     messages::app_event::AppEventType::CloseAllApp => {
-                        server.close_all_notification_from_app(event.data.unwrap());
+                        server.close_all_notification_from_app(&event.data.unwrap());
                     }
                     messages::app_event::AppEventType::ActionInvoked => {
-                        server.invoke_action(event.notification_id.unwrap(), event.data.unwrap());
+                        server.invoke_action(event.notification_id.unwrap(), &event.data.unwrap());
                     }
                 }
                 RustResponse {

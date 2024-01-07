@@ -160,18 +160,21 @@ impl NotificationServer {
                             }
                         }
 
-                        let n2 = notification.clone();
-                        let db = db.clone();
-                        tokio::spawn(async move {
-                            match db.put_notification(&n2).await {
-                                Ok(_) => (),
-                                Err(e) => error!("{}", e),
-                            };
-                            if let Some(ImageSource::Path(ref path)) = n2.app_image {
-                                debug!("New image: {}", path);
-                                cache::insert_file_cache(&n2.n_id.to_string(), path).await;
-                            }
-                        });
+                        // Save only if the urgency is higher than low
+                        if notification.hints.urgency != Some(crate::Urgency::Low) {
+                            let n2 = notification.clone();
+                            let db = db.clone();
+                            tokio::spawn(async move {
+                                match db.put_notification(&n2).await {
+                                    Ok(_) => (),
+                                    Err(e) => error!("{}", e),
+                                };
+                                if let Some(ImageSource::Path(ref path)) = n2.app_image {
+                                    debug!("New image: {}", path);
+                                    cache::insert_file_cache(&n2.n_id.to_string(), path).await;
+                                }
+                            });
+                        }
 
                         sndr.send(NotificationServerEvent::NewNotification(boxed_notification))
                             .await
@@ -290,9 +293,10 @@ impl NotificationServer {
             cache::clear_cache().await;
         });
     }
-    pub fn close_all_notification_from_app(&self, app_name: String) {
+    pub fn close_all_notification_from_app(&self, app_name: &str) {
         trace!("Closing all notifications of {}", app_name);
         let db = self.db.clone();
+        let app_name = app_name.to_string();
         tokio::spawn(async move {
             let deleted_notifications = match db.delete_notification_with_app_name(&app_name).await
             {
@@ -311,8 +315,9 @@ impl NotificationServer {
             }
         });
     }
-    pub fn invoke_action(&self, notification_id: u32, action: String) {
+    pub fn invoke_action(&self, notification_id: u32, action: &str) {
         trace!("Invoking {} for notification {}", action, notification_id);
+        let action = action.to_string();
         let core = self.core.clone();
         let db = self.db.clone();
         tokio::spawn(async move {

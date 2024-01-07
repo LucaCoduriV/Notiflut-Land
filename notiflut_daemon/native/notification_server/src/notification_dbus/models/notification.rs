@@ -111,7 +111,7 @@ impl From<&PropMap> for Hints {
         }
     }
 }
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 pub enum Urgency {
     Low,
     Normal,

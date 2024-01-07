@@ -126,8 +126,7 @@ impl dbus_definition::OrgFreedesktopNotifications for DbusNotificationHandler {
                 .desktop_entry
                 .as_ref()
                 .map(|e| {
-                    e.clone()
-                        .replace("org", "")
+                    e.replace("org", "")
                         .replace(".desktop", "")
                         .replace("com", "")
                         .replace('.', "")
